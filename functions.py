@@ -37,6 +37,8 @@ def remnant_mass(m):
         rem_mass = 1.5
     else:
         rem_mass = 0.61*m - 13.75
+        
+    rem_mass = rem_mass*units.solMass
     return rem_mass
     
 def grow_timescale(e,G,SFR,Z,D):
@@ -57,6 +59,8 @@ def grow_timescale(e,G,SFR,Z,D):
     SFR_in_years = SFR/1e9 # to convert from per Gyr to per yr
     t_grow = G/(e*Z*SFR_in_years)
     t_grow = t_grow/(1-((D/G)/Z)) #to account for metals already locked up in grains
+    
+    t_grow = t_grow*units.year
     return t_grow
 
 def destruction_timescale(m,G,SN_rate):
@@ -76,6 +80,8 @@ def destruction_timescale(m,G,SN_rate):
     
     SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
     t_destroy = G/(m*SN_rate_in_years)
+    
+    t_destroy = t_destroy*units.year
     return t_destroy
     
 def initial_mass_function(choice,m):
