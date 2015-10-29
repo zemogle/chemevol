@@ -27,11 +27,11 @@ def remnant_mass(mass):
     which in turn is based on Iben & Tsutukov 1984, Woosley & Weaver 1995.
     '''
     if mass <= 9.0:
-        rem_mass = 0.106*mass+0.446
-    elif (mass < 25.0) & (mass > 9.0):
+        rem_mass = 0.106*mass + 0.446
+    elif (mass > 9.0) & (mass < 25.0):
         rem_mass = 1.5
     else:
-        rem_mass = 0.61*m-13.75
+        rem_mass = 0.61*m - 13.75
     return rem_mass
     
 def grow_timescale(e,G,SFR,Z,D):
@@ -67,4 +67,40 @@ def destruction_timescale(m,G,SN_rate):
     t_destroy = G/(m*SN_rate_in_years)
     return t_destroy
     
-
+def initial_mass_function(choice,m):
+    '''
+    Returns the IMF for a given choice of function and mass range.
+    
+    - "Chab" selects the Chabrier 2003 IMF (PASP 115 763)  
+    - "TopChab" selects a top heavy Chabrier IMF with high mass slope -0.8
+    - "Kroup" selects the Kroupa & Weidner 2003 IMF (ApJ 598 1076)
+    - "Salp" selects the Salpeter 1955 IMF (ApJ 121 161)
+    '''
+    
+    if choice == "Chab":
+        if m <= 0.5:
+            imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
+            imf = (0.85*imf)/((2.*0.69**2.))/m
+        else:
+            imf = 0.24*(m**-1.3)/m
+            
+    if choice == "TopChab":
+        # If you want to do -0.5 slope, need to change norm factor by
+        # 4.72424 
+        if m <= 1.0:
+            imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
+            imf = imf*(0.85/2.21896)/((2.*0.69**2.))/m
+        else:
+            imf = (0.24/2.21896)*(m**-0.8)/m   
+            
+    if choice == "Kroup":
+        if m <= 0.5:
+            imf = 0.58*(m**-0.30)/m
+        elif (m > 0.5) & (m <= 1.0):
+            imf = 0.31*(m**-1.20)/m
+        else:
+            imf = 0.31*(m**-1.70)/m
+            
+    if choice == "Salp":
+        imf = (0.17/0.990465)*(m**-1.35)/m 
+    return imf
