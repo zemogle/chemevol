@@ -1,10 +1,10 @@
 '''
-Chemevol - Python package to read in a star formation history file, 
+Chemevol - Python package to read in a star formation history file,
 input galaxy parameters and run chemical evolution to determine the evolution
-of gas, metals and dust in galaxies.  
+of gas, metals and dust in galaxies.
 
-The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427) 
-and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).   
+The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
+and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
 
 If you use this code, please do cite the above papers.
 
@@ -23,7 +23,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
+
 from astropy.table import Table
+
 '''
 - lifetime: the lifetime of stars of a given mass 
 
@@ -32,10 +34,10 @@ from astropy.table import Table
             3rd col: lifetime in Gyrs, Z >= 0.008
             
             Values from Schaller et al 1992 (A & AS 96 269)
-            this table allows us to call lifetime star but also 
+            this table allows us to call lifetime star but also
             mass of star that corresponds to age of system
 '''
-lifetime =  [(0.8, 15.0, 26.0),
+lifetime =  ((0.8, 15.0, 26.0),
             (0.9, 9.5, 15.0),
             (1.0, 6.3, 10.0),
             (1.5, 1.8, 2.7),
@@ -50,8 +52,8 @@ lifetime =  [(0.8, 15.0, 26.0),
             (40.0, 0.0049, 0.0043),
             (60.0, 0.0037, 0.0034),
             (85.0, 0.0031, 0.0028),
-            (120.0, 0.0028, 0.0026)]
-            
+            (120.0, 0.0028, 0.0026))
+
 t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low','lifetime_high'),meta={'name': 'Lifetime'})
 
 t_lifetime['mass'].unit = 'solMass'
@@ -93,4 +95,3 @@ mass_yields =[(0.9,),
              (60.0,),
              (85.0,),
              (120.0,),]
-
