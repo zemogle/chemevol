@@ -29,6 +29,10 @@ from astropy.table import Table
             2nd col: lifetime in Gyrs when metallicity < 0.008
             3rd col: lifetime in Gyrs when metallicity >= 0.008
             Values from Schaller et al 1992 (A & AS 96 269)
+            this table allows us to call lifetime star but also 
+            mass of star that corresponds to age of system
+            
+
 '''
 lifetime =  [(0.8, 15.0, 26.0),
             (0.9, 9.5, 15.0),
@@ -49,6 +53,9 @@ lifetime =  [(0.8, 15.0, 26.0),
             
 t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low','lifetime_high'),meta={'name': 'Lifetime'})
 
-#lifetime = (
-#    (0.8,26.0,15.0),
-#)
+t['mass'].unit = 'solMass'
+t['lifetime_low'].unit = 'Gyr'
+t['lifetime_high'].unit = 'Gyr'
+
+mass_yields
+
