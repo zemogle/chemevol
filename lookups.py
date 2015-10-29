@@ -25,14 +25,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 '''
 from astropy.table import Table
 '''
-- lifetime: the lifetime of stars of a given mass (1st column)
-            2nd col: lifetime in Gyrs when metallicity < 0.008
-            3rd col: lifetime in Gyrs when metallicity >= 0.008
+- lifetime: the lifetime of stars of a given mass 
+
+            1st col: initial mass of star Msolar
+            2nd col: lifetime in Gyrs, metallicity (Z) < 0.008
+            3rd col: lifetime in Gyrs, Z >= 0.008
+            
             Values from Schaller et al 1992 (A & AS 96 269)
             this table allows us to call lifetime star but also 
             mass of star that corresponds to age of system
-            
-
 '''
 lifetime =  [(0.8, 15.0, 26.0),
             (0.9, 9.5, 15.0),
@@ -53,9 +54,43 @@ lifetime =  [(0.8, 15.0, 26.0),
             
 t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low','lifetime_high'),meta={'name': 'Lifetime'})
 
-t['mass'].unit = 'solMass'
-t['lifetime_low'].unit = 'Gyr'
-t['lifetime_high'].unit = 'Gyr'
+t_lifetime['mass'].unit = 'solMass'
+t_lifetime['lifetime_low'].unit = 'Gyr'
+t_lifetime['lifetime_high'].unit = 'Gyr'
 
-mass_yields
+'''
+- mass_yields: ejected yield (all heavy elements) in Msolar
+
+            1st col: initial mass of star Msolar
+            2nd col: ejected yield Msolar,metallicity (Z) < 0.004
+            3rd col: ejected yield Msolar, 0.004< Z < 0.008
+            4th col: ejected yield Msolar, 0.008< Z < 0.019
+            5th col: ejected yield Msolar, Z > 0.019 
+
+            M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
+            M < 9 Msolar: mp_Z from van den Hoek & 
+            Groenewegen 1997 (A & AS 123 305)
+'''
+
+mass_yields =[(0.9,),
+             (1.0,),
+             (1.3,),
+             (1.5,),
+             (1.7,),
+             (2.0,),
+             (2.5,),
+             (3.0,),
+             (4.0,),
+             (5.0,),
+             (6.0,),
+             (7.0,),
+             (8.0,),
+             (9.0,),
+             (12.0,),
+             (15.0,),
+             (20.0,),
+             (40.0,),
+             (60.0,),
+             (85.0,),
+             (120.0,),]
 
