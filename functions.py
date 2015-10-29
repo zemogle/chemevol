@@ -34,7 +34,7 @@ def remnant_mass(mass):
         rem_mass = 0.61*m-13.75
     return rem_mass
     
-def grow_timescale(choice,e,G,SFR,Z,D):
+def grow_timescale(e,G,SFR,Z,D):
     '''
     Calculates the grain growth timescale in years.
     
@@ -66,3 +66,5 @@ def destruction_timescale(m,G,SN_rate):
     SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
     t_destroy = G/(m*SN_rate_in_years)
     return t_destroy
+    
+
