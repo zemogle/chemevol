@@ -23,8 +23,12 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
+import functions as f
 
-'''
+init_keys = (['gasmass_init','SFH','inflows','outflows','dust_source','destroy',\
+'IMF_fn','gamma'])
+
+'''------------------------------------------------------------------------
 First set up initial parameters for galaxy model by editing the dictionary
 initial_galaxy_params
 
@@ -35,7 +39,7 @@ initial_galaxy_params
 - dust_source: choice of dust sources to be included: 
 	SN: supernova dust onlt
 	LIMS: low intermediate mass stars dust only
-	LIMS+SN: SN+LIMS
+	LIMS+SN: both SN and LIMS included
 	GG: interstellar grain growth only
 	ALL: grain growth 
 - destroy: add dust destruction from SN shocks True or False 
@@ -44,51 +48,16 @@ initial_galaxy_params
 
 Each run will be used to generate the evolution of dust, gas, 
 SFR, metals and stars over time
+---------------------------------------------------------------------------
 '''
-
-
 
 initial_galaxy_params = {
 				'run1':{'gasmass_init':4e10, 'SFH':'MilkyWay.sfh','gamma':0, \
 				'IMF_fn':'Chab', 'dust_source':'ALL', 'destroy':True, \
 				'inflows':0, 'outflows':0},
-				'run2':{'gasmass_init':4e10, 'SFH':0,'gamma':0, \
-				'IMF_fn':'Chab', 'dust_source':'LIMS+SN', 'destroy':True, \
+				'run2':{'gasmass_init':4e10, 'SFH':'MilkyWay.sfh','gamma':0, \
+				'IMF_fn':'Chab', 'dust_source':'GG', 'destroy':True, \
 				'inflows':0, 'outflows':0}}
 
-
-
-
-init_runs = initial_galaxy_params[] #['run1', 'run2']
-init_keys = ['gasmass_init','SFH','inflows','outflows','dust_source','destroy',\
-'IMF_fn','gamma']
-
 #Now we will test that the input parameters are A-OK:
-
-for run in init_runs:
-	# check if all the keys are present
-	for k in init_keys:
-		try:
-			dummy = initial_galaxy_params[run][k]
-		except KeyError:
-			print("Oops key %r is missing in %r" % (k, run))
-		else:
-			# check gasmass, gamma, inflows and outflows are numbers:
-			if (k == 'gasmass_init') or (k == 'inflows') \
-				or (k == 'outflows') or (k == 'gamma'):
-				try:
-					dummy = int(initial_galaxy_params[run][k])
-				except ValueError:
-					print("Oops we were expecting a number in %r:%r" % (run,k))
-		
-			# check SFH is a string :
-			if (k == 'SFH'):
-				try:
-					dummy = str(initial_galaxy_params[run][k])
-				except ValueError:
-					print("Oops we were expecting a string in %r:%r" % (run,k))
-
-
-# is IMF_fn one of the four choices allowed
-# is dust_source one of the four choices allowed
-		
+f.test_initial_galaxy_params(init_keys, initial_galaxy_params)

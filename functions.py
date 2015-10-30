@@ -124,3 +124,42 @@ def initial_mass_function(choice,m):
     if choice == "Salp":
         imf = (0.17/0.990465)*(m**-1.35)/m
     return imf
+
+def test_initial_galaxy_params(keysdict,data_dict):
+
+    for run,keys in data_dict.items():
+        for k in keysdict:
+            try:	
+                dummy = data_dict[run][k]
+            except KeyError:
+                print("Oops key %r is missing in %r" % (k,run))
+            else:
+
+            # check gasmass, gamma, inflows and outflows are numbers:
+                if (k == 'gasmass_init') or (k == 'inflows') \
+                    or (k == 'outflows') or (k == 'gamma'):
+                    try:
+                        dummy = int(data_dict[run][k])
+                    except ValueError:
+                        print("Oops we were expecting a number in %r:%r" % (run,k))
+
+            # check SFH is a string :
+                if (k == 'SFH'):
+                    if not isinstance(data_dict[run][k], basestring):
+                        raise TypeError("Oops %r:%r should be a string" % (run,k))
+
+            # check dust_source options correct
+                if (k == 'dust_source'):
+                    dummy = data_dict[run][k]
+                    if not ((dummy == 'SN') or (dummy == 'LIMS') or \
+                           (dummy == 'LIMS+SN') or (dummy == 'GG') or\
+                           (dummy == 'ALL')):
+                        raise ValueError("Oops double check %r:%r" % (run,k))
+
+            # check IMF_fn source options correct
+                if (k == 'IMF_fn'):
+                    dummy = data_dict[run][k]
+                    if not ((dummy == 'Chab') or (dummy == 'TopChab') or \
+                           (dummy == 'Kroup') or (dummy == 'Salp')):
+                        raise ValueError("Oops check %r in %r" % (k,run))
+                        
