@@ -47,10 +47,12 @@ SFR, metals and stars over time
 '''
 
 initial_galaxy_params = {
-				1:{"gasmass_0":4e10, "SFH":"MilkyWay","gamma":0, \
-				"IMF_fn":"Chab", "dust_source":"ALL", "destroy":True, \
-				"inflows":0, "outflows":0},
-				2:{"gasmass_0":4e10, "SFH":"MilkyWay","gamma":0, \
-				"IMF_fn":"Chab", "dust_source":"LIMS+SN", "destroy":True, \
-				 "inflows":0, "outflows":0}}
+				1:{'gasmass_0':4e10, 'SFH':'MilkyWay.sfh','gamma':0, \
+				'IMF_fn':'Chab', 'dust_source':'ALL', 'destroy':True, \
+				'inflows':0, 'outflows':0},
+				2:{'gasmass_0':4e10, 'SFH':'MilkyWay.sfh','gamma':0, \
+				'IMF_fn':'Chab', 'dust_source':'LIMS+SN', 'destroy':True, \
+				'inflows':0, 'outflows':0}}
+
+
 	
