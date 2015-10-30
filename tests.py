@@ -1,5 +1,6 @@
 import pytest
 from functions import remnant_mass, destruction_timescale, grow_timescale
+from lookups import lifetime, mass_yields_001, mass_yields_004, mass_yields_008, mass_yields_02
 
 class TestFunctions:
 
@@ -24,5 +25,26 @@ class TestFunctions:
         grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
         grow = grow/1e6 #in Myr
         assert grow.value == 86.31618004965111
-        
 
+class TestTables:
+    
+    def test_lifetimes(self):
+        assert lifetime[1][1] == 9.5
+        assert lifetime[15][2] == 0.0026        
+
+    def test_yields_001(self):
+        assert mass_yields_001[1][1] == 0.
+        assert mass_yields_001[12][1] == 0.27   
+
+    def test_yields_004(self):
+        assert mass_yields_004[1][2] == 8.54e-4
+        assert mass_yields_004[20][1] == 41.6 
+        
+    def test_yields_008(self):
+        assert mass_yields_008[1][2] == 1.12e-4
+        assert mass_yields_008[20][2] == 0. 
+    
+    def test_yields_002(self):
+        assert mass_yields_02[1][2] == 1.61e-3
+        assert mass_yields_02[19][2] == 17.75
+        
