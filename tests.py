@@ -1,6 +1,7 @@
 import pytest
 from functions import remnant_mass, destruction_timescale, grow_timescale
 from lookups import lifetime, mass_yields_001, mass_yields_004, mass_yields_008, mass_yields_02
+from main import initial_galaxy_params
 
 class TestFunctions:
 
@@ -47,4 +48,8 @@ class TestTables:
     def test_yields_002(self):
         assert mass_yields_02[1][2] == 1.61e-3
         assert mass_yields_02[19][2] == 17.75
-        
+
+ 
+
+
+            
