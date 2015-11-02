@@ -60,4 +60,4 @@ initial_galaxy_params = {
 				'inflows':0, 'outflows':0}}
 
 #Now we will test that the input parameters are A-OK:
-f.test_initial_galaxy_params(init_keys, initial_galaxy_params)
+f.test_initial_dict(init_keys, initial_galaxy_params)

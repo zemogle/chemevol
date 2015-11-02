@@ -1,7 +1,6 @@
 import pytest
-from functions import *
+from functions import remnant_mass, destruction_timescale, grow_timescale
 from lookups import lifetime, mass_yields_001, mass_yields_004, mass_yields_008, mass_yields_02
-from main import initial_galaxy_params, init_keys
 
 class TestFunctions:
 

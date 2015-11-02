@@ -125,7 +125,7 @@ def initial_mass_function(choice,m):
         imf = (0.17/0.990465)*(m**-1.35)/m
     return imf
 
-def test_initial_galaxy_params(keysdict,data_dict):
+def test_initial_dict(keysdict,data_dict):
 
     for run,keys in data_dict.items():
         for k in keysdict:
@@ -162,4 +162,4 @@ def test_initial_galaxy_params(keysdict,data_dict):
                     if not ((dummy == 'Chab') or (dummy == 'TopChab') or \
                            (dummy == 'Kroup') or (dummy == 'Salp')):
                         raise ValueError("Oops check %r in %r" % (k,run))
-                        
+            
