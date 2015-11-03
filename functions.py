@@ -40,9 +40,10 @@ def ejected_gas_mass_func(m, t, choice):
     '''
     ej = (m - remnant_mass(m)) * sfr_t0(t) * initial_mass_function(choice, m)
     return ej
-    
+
+'''    
 def ejected_metal_mass_func(m, t, choice):
-    '''
+    
     Calculate the ejected metal mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
     age of system (tau(m)) -- 120 Msolar
@@ -50,11 +51,12 @@ def ejected_metal_mass_func(m, t, choice):
     First term: the heavy elements initially lost from the ISM
     when stars formed and now re-released when stars die
     Second term: new metals synthesized by stars released during mass loss
-    '''
+    
     ej_metal = ((m - remnant_mass(m))*metals_old + mass_yields(m) ) * &
     & sfr_t0(t) *  initial_mass_function(choice, m)
     return ej_metal
-    
+'''
+
 def metallicity(metalmass,gasmass):
     '''
     Calculates the metal mass fraction 
@@ -72,14 +74,14 @@ def remnant_mass(m):
     which in turn is based on Iben & Tsutukov 1984, Woosley & Weaver 1995.
     Stars with mass above m_bh don't eject material into the ISM
     '''
-    m_bh = 40.0
+    m_bh = 60.0
     if m <= 9.0:
         rem_mass = 0.106*m + 0.446
     elif (m > 9.0) & (m < 25.0):
         rem_mass = 1.5
     elif (m >=25.0) & (m<m_bh):
         rem_mass = 0.61*m - 13.75
-    else
+    elif (m >= m_bh):
         rem_mass = m
 
     rem_mass = rem_mass*u.solMass
