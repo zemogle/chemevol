@@ -30,12 +30,25 @@ import logging
 
 logger = logging.Logger('chem')
 
-def ejected_mass_func(m, t, choice):
+def ejected_gas_mass_func(m, t, choice):
     '''
-    Calculate ejected mass increment per timestep for given mass range
+    Calculate the ejected mass from stars by mass loss/stellar death
+    at time t, needs to be integrated from mass corresponding to
+    age of system (tau(m)) -- 120 Msolar
+    
+    e(t) = (m-m_R(m)) x SFR(t-tau(m)) x phi(m)
     '''
     ej = (m - remnant_mass(m)) * sfr_t0(t) * initial_mass_function(choice, m)
     return ej
+    
+def metallicity(metalmass,gasmass):
+    '''
+    Calculates the metal mass fraction 
+    
+    Z = M_Z/M_g  
+    '''
+    metals = metalmass/gasmass
+    return metals  
 
 def remnant_mass(m):
     '''

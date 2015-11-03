@@ -1,5 +1,5 @@
 import pytest
-from functions import remnant_mass, destruction_timescale, grow_timescale
+from functions import remnant_mass, destruction_timescale, grow_timescale,metallicity
 from lookups import lifetime, mass_yields_001, mass_yields_004, mass_yields_008, mass_yields_02
 
 class TestFunctions:
@@ -25,6 +25,10 @@ class TestFunctions:
         grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
         grow = grow/1e6 #in Myr
         assert 80 < grow.value < 90 
+        
+    def test_metallicity(self):
+        metals = metallicity(8e8, 4e10)
+        assert 0.019 <metals < 0.022
 
 class TestTables:
     
