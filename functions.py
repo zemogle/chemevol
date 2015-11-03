@@ -26,6 +26,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 from astropy import units as u
 import numpy as np
+import logging
+
+logger = logging.Logger('chem')
+
+def ejected_mass_func(m, t, choice):
+    '''
+    Calculate ejected mass increment per timestep for given mass range
+    '''
+    ej = (m - remnant_mass(m)) * sfr_t0(t) * initial_mass_function(choice, m)
+    return ej
 
 def remnant_mass(m):
     '''
@@ -87,7 +97,7 @@ def destruction_timescale(m,G,SN_rate):
     t_destroy = t_destroy*u.year
     return t_destroy
 
-def initial_mass_function(choice,m):
+def initial_mass_function(m, choice='salp'):
     '''
     Returns the IMF for a given choice of function and mass range.
 
@@ -95,16 +105,17 @@ def initial_mass_function(choice,m):
     - "TopChab" selects a top heavy Chabrier IMF with high mass slope -0.8
     - "Kroup" selects the Kroupa & Weidner 2003 IMF (ApJ 598 1076)
     - "Salp" selects the Salpeter 1955 IMF (ApJ 121 161)
+
     '''
 
-    if choice == "Chab":
+    if (choice == "Chab" or choice == "chab" or choice == "c"):
         if m <= 0.5:
             imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
             imf = (0.85*imf)/((2.*0.69**2.))/m
         else:
             imf = 0.24*(m**-1.3)/m
 
-    if choice == "TopChab":
+    if (choice == "TopChab" or choice == 'topchab' or choice == "tc"):
         # If you want to do -0.5 slope, need to change norm factor by
         # 4.72424
         if m <= 1.0:
@@ -113,7 +124,7 @@ def initial_mass_function(choice,m):
         else:
             imf = (0.24/2.21896)*(m**-0.8)/m
 
-    if choice == "Kroup":
+    if (choice == "Kroup" or choice == "kroup" or choice == "k"):
         if m <= 0.5:
             imf = 0.58*(m**-0.30)/m
         elif (m > 0.5) & (m <= 1.0):
@@ -121,15 +132,29 @@ def initial_mass_function(choice,m):
         else:
             imf = 0.31*(m**-1.70)/m
 
-    if choice == "Salp":
+    if (choice == "Salp" or choice == "salp" or choice == "s"):
         imf = (0.17/0.990465)*(m**-1.35)/m
     return imf
 
-def test_initial_dict(keysdict,data_dict):
+def validate_initial_dict(keysdict, data_dict):
+    '''
+    Validate the initial data
 
+    example
+    input = {
+			'gasmass_init':4e10,
+			'SFH':'MilkyWay.sfh',
+			'gamma':0,
+			'IMF_fn':'Chab',
+			'dust_source':'ALL',
+			'destroy':True,
+			'inflows':0,
+			'outflows':0
+			}
+    '''
     for run,keys in data_dict.items():
         for k in keysdict:
-            try:	
+            try:
                 dummy = data_dict[run][k]
             except KeyError:
                 print("Oops key %r is missing in %r" % (k,run))
@@ -162,4 +187,3 @@ def test_initial_dict(keysdict,data_dict):
                     if not ((dummy == 'Chab') or (dummy == 'TopChab') or \
                            (dummy == 'Kroup') or (dummy == 'Salp')):
                         raise ValueError("Oops check %r in %r" % (k,run))
-            

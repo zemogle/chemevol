@@ -25,19 +25,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 '''
 
 '''
-This lists the different tables required for lifetimes of stars of 
-ifferent initial mass, and metal mass yields from
+This lists the different tables required for lifetimes of stars of
+different initial mass, and metal mass yields from
 supernovae or from stellar winds at different metallicities
 '''
 
 from astropy.table import Table
+import numpy as np
 
 '''
-- lifetime: the lifetime of stars of a given mass 
+- lifetime: the lifetime of stars of a given mass
             1st col: initial mass of star Msolar
             2nd col: lifetime in Gyrs, metallicity (Z) < 0.008
             3rd col: lifetime in Gyrs, Z >= 0.008
-            
+
             Values from Schaller et al 1992 (A & AS 96 269)
             this table allows us to call lifetime star but also
             mass of star that corresponds to age of system
@@ -73,7 +74,7 @@ t_lifetime['lifetime_high'].unit = 'Gyr'
 
             M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
             Z = 0.001
-            M < 9 Msolar: mp_Z from van den Hoek & 
+            M < 9 Msolar: mp_Z from van den Hoek &
             Groenewegen 1997 (A & AS 123 305) Z = 0.001
 '''
 mass_yields_001 =((0.9, 0, 0.),
@@ -97,7 +98,7 @@ mass_yields_001 =((0.9, 0, 0.),
              (60., 17.1, 0.),
              (85., 26.7, 0.),
              (120., 41.6, 0.))
-             
+
 t_yields_001 = Table(rows=mass_yields_001, names=('mass','yields_sn','yields_winds'),meta={'name': 'Yields Z=0.001'})
 
 t_yields_001['mass'].unit = 'solMass'
@@ -113,7 +114,7 @@ t_yields_001['yields_winds'].unit = 'solMass'
 
             M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
             Z = 0.001 (no other information available)
-            M < 9 Msolar: mp_Z from van den Hoek & 
+            M < 9 Msolar: mp_Z from van den Hoek &
             Groenewegen 1997 (A & AS 123 305) Z = 0.004
 '''
 
@@ -153,7 +154,7 @@ t_yields_004['yields_winds'].unit = 'solMass'
 
             M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
             Z = 0.001 (no other information available)
-            M < 9 Msolar: mp_Z from van den Hoek & 
+            M < 9 Msolar: mp_Z from van den Hoek &
             Groenewegen 1997 (A & AS 123 305) Z = 0.008
 '''
 
@@ -193,7 +194,7 @@ t_yields_008['yields_winds'].unit = 'solMass'
 
             M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
             Z = 0.02 (no other information available)
-            M < 9 Msolar: mp_Z from van den Hoek & 
+            M < 9 Msolar: mp_Z from van den Hoek &
             Groenewegen 1997 (A & AS 123 305) Z = 0.019
 '''
 mass_yields_02 =((0.9, 0, 0.),
@@ -223,3 +224,11 @@ t_yields_02 = Table(rows=mass_yields_02, names=('mass','yields_sn','yields_winds
 t_yields_02['mass'].unit = 'solMass'
 t_yields_02['yields_sn'].unit = 'solMass'
 t_yields_02['yields_winds'].unit = 'solMass'
+
+def find_nearest(lookup,value):
+    '''
+    Take a 2D array and return pair of nearest neighbour values based on first column
+    '''
+    col1 = lookup[:,0]
+    idx = (np.abs(col1-value)).argmin()
+    return lookup[idx]
