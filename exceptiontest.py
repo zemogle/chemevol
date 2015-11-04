@@ -33,6 +33,8 @@ def test_initial_galaxy_params():
 			# check IMF_fn source options correct
 				if (k == 'IMF_fn'):
 					dummy = initial_galaxy_params[run][k]
-					if not ((dummy == 'Chab') or (dummy == 'TopChab') or \
-						   (dummy == 'Kroup') or (dummy == 'Salp')):
+					if not ((dummy == 'Chab') or (dummy == 'chab') or (dummy == 'c') or \	
+							(dummy == 'TopChab') or (dummy == 'topchab') or (dummy == 'tc') \
+						   (dummy == 'Kroup') or (dummy == 'Salp') or \
+						   ):
 						raise ValueError("Oops check %r in %r" % (k,run))

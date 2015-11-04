@@ -41,22 +41,6 @@ def ejected_gas_mass(m, sfr, choice):
     dej = (m - remnant_mass(m)) * sfr * initial_mass_function(m, choice)
     return dej
 
-'''    
-def ejected_metal_mass(m, t, choice):
-    
-    Calculate the ejected metal mass from stars by mass loss/stellar death
-    at time t, needs to be integrated from mass corresponding to
-    age of system (tau(m)) -- 120 Msolar
-
-    First term: the heavy elements initially lost from the ISM
-    when stars formed and now re-released when stars die
-    Second term: new metals synthesized by stars released during mass loss
-    
-    d ej_metal/dm = ((m - remnant_mass(m))*metals_old + mass_yields(m) ) * &
-    & sfr_t0(t) *  initial_mass_function(choice, m)
-    return ej_metal
-'''
-
 def metallicity(metalmass,gasmass):
     '''
     Calculates the metal mass fraction 
@@ -136,9 +120,8 @@ def initial_mass_function(m, choice='Chab'):
 
     - "Chab", "chab" or "c" selects the Chabrier 2003 IMF (PASP 115 763)
     - "TopChab", "topchab", or "tc" selects a top heavy Chabrier IMF with high mass slope -0.8
-    - "Kroup", "kroup" r "k" selects the Kroupa & Weidner 2003 IMF (ApJ 598 1076)
+    - "Kroup", "kroup" or "k" selects the Kroupa & Weidner 2003 IMF (ApJ 598 1076)
     - "Salp", "salp" or "s" selects the Salpeter 1955 IMF (ApJ 121 161)
-
     '''
 
     if (choice == "Chab" or choice == "chab" or choice == "c"):
@@ -213,10 +196,13 @@ def validate_initial_dict(keysdict, data_dict):
                            (dummy == 'LIMS+SN') or (dummy == 'GG') or\
                            (dummy == 'ALL')):
                         raise ValueError("Oops double check %r:%r" % (run,k))
-
+            
             # check IMF_fn source options correct
                 if (k == 'IMF_fn'):
-                    dummy = data_dict[run][k]
-                    if not ((dummy == 'Chab') or (dummy == 'TopChab') or \
-                           (dummy == 'Kroup') or (dummy == 'Salp')):
+                    dummy = data_dict[run][k]    
+                    if not ((dummy == 'Chab') or (dummy == 'chab') or (dummy == 'c') or  \
+                            (dummy == 'TopChab') or (dummy == 'topchab') or (dummy == 'tc') or \
+                            (dummy == 'Kroup') or (dummy == 'kroup') or (dummy == 'k') or \
+                            (dummy == 'Salp') or (dummy == 'salp') or (dummy == 's')):
                         raise ValueError("Oops check %r in %r" % (k,run))
+            

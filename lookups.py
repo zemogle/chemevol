@@ -25,9 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 '''
 
 '''
-This lists the different tables required for lifetimes of stars of
+This file lists the different tables required for lifetimes of stars of
 different initial mass, and metal mass yields from
-supernovae or from stellar winds at different metallicities
+supernovae or from stellar winds at different metallicities.
+
+It also includes a function to lookup nearest neighbour quantities
 '''
 
 from astropy.table import Table
