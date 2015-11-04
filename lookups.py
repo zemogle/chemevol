@@ -36,6 +36,7 @@ import numpy as np
 '''
 - lifetime: the lifetime of stars of a given mass
             1st col: initial mass of star Msolar
+            
             2nd col: lifetime in Gyrs, metallicity (Z) < 0.008
             3rd col: lifetime in Gyrs, Z >= 0.008
 
@@ -60,170 +61,71 @@ lifetime =  ((0.8, 15.0, 26.0),
             (85.0, 0.0031, 0.0028),
             (120.0, 0.0028, 0.0026))
 
-t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low','lifetime_high'),meta={'name': 'Lifetime'})
+t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low_metals','lifetime_high_metals'),meta={'name': 'Lifetime'})
 
 t_lifetime['mass'].unit = 'solMass'
-t_lifetime['lifetime_low'].unit = 'Gyr'
-t_lifetime['lifetime_high'].unit = 'Gyr'
+t_lifetime['lifetime_low_metals'].unit = 'Gyr'
+t_lifetime['lifetime_high_metals'].unit = 'Gyr'
 
 '''
-- mass_yields_001: ejected yield (all heavy elements) in Msolar
+- mass_yields: ejected yield (all heavy elements) in Msolar
             1st col: initial mass of star Msolar
-            2nd col: ejected yield Msolar from supernovae
-            3rd col: ejected yield Msolar from winds
-
+            
+            2nd col: ejected yield Msolar from supernovae Z=0.001
+            3rd col: ejected yield Msolar from winds Z=0.001
+            
+            4th col: ejected yield Msolar from supernovae Z=0.004
+            5th col: ejected yield Msolar from winds Z=0.004
+            
+            6th col: ejected yield Msolar from supernovae Z=0.008
+            7th col: ejected yield Msolar from winds Z=0.008
+            
+            8th col: ejected yield Msolar from supernovae Z=0.02
+            9th col: ejected yield Msolar from winds Z=0.02
+            
             M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
-            Z = 0.001
+            Z = 0.001 (used for Z < 0.008), Z = 0.02 (used for 0.008 =< Z < inf.)
             M < 9 Msolar: mp_Z from van den Hoek &
-            Groenewegen 1997 (A & AS 123 305) Z = 0.001
+            Groenewegen 1997 (A & AS 123 305) Z=0.001,0.004,0.008,0.02
 '''
-mass_yields_001 =((0.9, 0, 0.),
-             (1., 0, 0.),
-             (1.3, 0, 3.09e-3),
-             (1.5, 0, 3.53e-3),
-             (1.7, 0, 3.77e-3),
-             (2., 0, 5.29e-3),
-             (2.5, 0, 5.59e-3),
-             (3., 0, 5.35e-3),
-             (4., 0, 6.56e-3),
-             (5., 0, 7.72e-3),
-             (7., 0, 9.61e-3),
-             (8., 0, 8.78e-3),
-             (9., 0.27, 0.),
-             (12., 0.83, 0.),
-             (15., 1.53, 0.),
-             (20., 2.93, 0.),
-             (25., 4.45, 0.),
-             (40., 4.71, 0.),
-             (60., 17.1, 0.),
-             (85., 26.7, 0.),
-             (120., 41.6, 0.))
+mass_yields =((0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-3, 0, 6.83e-3),
+             (1.0, 0, 0, 0, 8.54e-4, 0, 1.12e-4, 0, 1.61e-4),
+             (1.3, 0, 3.09e-3, 0, 1.99e-3, 0, 1.70e-30, 0, 1.70e-3),
+             (1.5, 0, 3.53e-3, 0, 2.57e-3, 0, 3.06e-3, 0, 3.06e-3),
+             (1.7, 0, 3.77e-3, 0, 3.99e-3, 0, 3.51e-3, 0, 3.51e-3),
+             (2.0, 0, 5.29e-3, 0, 5.86e-3, 0, 5.43e-3, 0, 5.43e-3),
+             (2.5, 0, 5.59e-3, 0, 6.82e-3, 0, 6.58e-3, 0, 6.58e-3),
+             (3, 0, 5.35e-3, 0, 8.43e-3, 0, 7.98e-3, 0, 7.98e-3),
+             (4, 0, 6.56e-3, 0, 5.87e-3, 0, 5.44e-3, 0, 5.44e-3),
+             (5, 0, 7.72e-3, 0, 7.07e-3, 0, 6.59e-3, 0, 6.59e-3),
+             (7, 0, 9.61e-3, 0, 8.88e-3, 0, 8.35e-3, 0, 8.35e-3),
+             (8, 0, 8.78e-3, 0, 9.57e-3, 0, 1.02e-2, 0, 1.02e-2),
+             (9, 0.27, 0, 0.27, 0, 0.173, 0, 0.173, 0),
+             (12, 0.83, 0, 0.83, 0, 0.686, 0, 0.686, 0),
+             (15, 1.53, 0, 1.53, 0, 1.32, 0, 1.32, 0),
+             (20, 2.93, 0, 2.93, 0, 2.73, 0, 2.73, 0),
+             (25, 4.45, 0, 4.45, 0, 4.48, 0, 4.48, 0),
+             (40, 4.71, 0, 4.71, 0, 1.61, 6.4, 1.61, 6.4),
+             (60, 17.1, 0, 17.1, 0, 1.16, 8.69, 1.16, 8.69),
+             (85, 26.7, 0, 26.7, 0, 1.56, 17.75, 1.56, 17.75),
+             (120, 41.6, 0, 41.6, 0, 0.72, 9.39, 0.72, 9.39))
 
-t_yields_001 = Table(rows=mass_yields_001, names=('mass','yields_sn','yields_winds'),meta={'name': 'Yields Z=0.001'})
+t_yields = Table(rows=mass_yields, names=('mass','yields_sn_001','yields_winds_001', 
+                                         'yields_sn_004','yields_winds_004', 
+                                         'yields_sn_008','yields_winds_008', 
+                                         'yields_sn_02','yields_winds_02'),
+                                          meta={'name': 'Mass Yields'})
 
-t_yields_001['mass'].unit = 'solMass'
-t_yields_001['yields_sn'].unit = 'solMass'
-t_yields_001['yields_winds'].unit = 'solMass'
+t_yields['mass'].unit = 'solMass'
+t_yields['yields_sn_001'].unit = 'solMass'
+t_yields['yields_winds_001'].unit = 'solMass'
+t_yields['yields_sn_004'].unit = 'solMass'
+t_yields['yields_winds_004'].unit = 'solMass'
+t_yields['yields_sn_008'].unit = 'solMass'
+t_yields['yields_winds_008'].unit = 'solMass'
+t_yields['yields_sn_02'].unit = 'solMass'
+t_yields['yields_winds_02'].unit = 'solMass'
 
-
-'''
-- mass_yields_004: ejected yield (all heavy elements) in Msolar
-            1st col: initial mass of star Msolar
-            2nd col: ejected yield Msolar from supernovae
-            3rd col: ejected yield Msolar from winds
-
-            M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
-            Z = 0.001 (no other information available)
-            M < 9 Msolar: mp_Z from van den Hoek &
-            Groenewegen 1997 (A & AS 123 305) Z = 0.004
-'''
-
-mass_yields_004 =[(0.9, 0, 1.08e-5),
-                 (1., 0, 8.54e-4),
-                 (1.3, 0, 1.99e-3),
-                 (1.5, 0, 2.57e-3),
-                 (1.7, 0, 3.99e-3),
-                 (2., 0, 5.86e-3),
-                 (2.5, 0, 6.82e-3),
-                 (3., 0, 8.43e-3),
-                 (4., 0, 5.87e-3),
-                 (5., 0, 7.07e-3),
-                 (7., 0, 8.88e-3),
-                 (8., 0, 9.57e-3),
-                 (9., 0.27, 0.),
-                 (12., 0.83, 0.),
-                 (15., 1.53, 0.),
-                 (20., 2.93, 0.),
-                 (25., 4.45, 0.),
-                 (40., 4.71, 0.),
-                 (60., 17.1, 0.),
-                 (85., 26.7, 0.),
-                 (120., 41.6, 0.)]
-
-t_yields_004 = Table(rows=mass_yields_004, names=('mass','yields_sn','yields_winds'),meta={'name': 'Yields Z=0.004'})
-
-t_yields_004['mass'].unit = 'solMass'
-t_yields_004['yields_sn'].unit = 'solMass'
-t_yields_004['yields_winds'].unit = 'solMass'
-
-'''
-- mass_yields_008: ejected yield (all heavy elements) in Msolar
-            1st col: initial mass of star Msolar
-            2nd col: ejected yield Msolar from supernovae
-            3rd col: ejected yield Msolar from winds
-
-            M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
-            Z = 0.001 (no other information available)
-            M < 9 Msolar: mp_Z from van den Hoek &
-            Groenewegen 1997 (A & AS 123 305) Z = 0.008
-'''
-
-mass_yields_008 =((0.9, 0, 6.83e-5),
-                 (1.0, 0, 1.12e-4),
-                 (1.3, 0, 1.70e-3),
-                 (1.5, 0, 3.06e-3),
-                 (1.7, 0, 3.51e-3),
-                 (2., 0, 5.43e-3),
-                 (2.5, 0, 6.58e-3),
-                 (3., 0, 7.98e-3),
-                 (4., 0, 5.44e-3),
-                 (5., 0, 6.59e-3),
-                 (7., 0, 8.35e-3),
-                 (8., 0, 1.02e-2),
-                 (9., 0.27, 0.),
-                 (12., 0.83, 0.),
-                 (15., 1.53, 0.),
-                 (20., 2.93, 0.),
-                 (25., 4.45, 0.),
-                 (40., 4.71, 0.),
-                 (60., 17.1, 0.),
-                 (85., 26.7, 0.),
-                 (120., 41.6, 0.))
-
-t_yields_008 = Table(rows=mass_yields_008, names=('mass','yields_sn','yields_winds'),meta={'name': 'Yields Z=0.008'})
-
-t_yields_008['mass'].unit = 'solMass'
-t_yields_008['yields_sn'].unit = 'solMass'
-t_yields_008['yields_winds'].unit = 'solMass'
-
-'''
-- mass_yields_02: ejected yield (all heavy elements) in Msolar
-            1st col: initial mass of star Msolar
-            2nd col: ejected yield Msolar from supernovae
-            3rd col: ejected yield Msolar from winds
-
-            M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
-            Z = 0.02 (no other information available)
-            M < 9 Msolar: mp_Z from van den Hoek &
-            Groenewegen 1997 (A & AS 123 305) Z = 0.019
-'''
-mass_yields_02 =((0.9, 0, 0.),
-             (1., 0, 1.61e-3),
-             (1.3, 0, 3.03e-3),
-             (1.5, 0, 2.08e-3),
-             (1.7, 0, 2.36999e-3),
-             (2., 0, 3.94e-3),
-             (2.5, 0, 5.5999e-3),
-             (3., 0, 6.92e-3),
-             (4., 0, 6.24e-3),
-             (5., 0, 6.27999e-3),
-             (7., 0, 7.73999e-3),
-             (8., 0, 8.41e-3),
-             (9., 0.173, 0.),
-             (12., 0.686, 0.),
-             (15., 1.32, 0.),
-             (20., 2.73, 0.),
-             (25., 4.48, 0.),
-             (40., 1.61, 6.4),
-             (60., 1.16, 8.69),
-             (85., 1.56, 17.75),
-             (120., 0.72, 9.39))
-
-t_yields_02 = Table(rows=mass_yields_02, names=('mass','yields_sn','yields_winds'),meta={'name': 'Yields Z=0.019'})
-
-t_yields_02['mass'].unit = 'solMass'
-t_yields_02['yields_sn'].unit = 'solMass'
-t_yields_02['yields_winds'].unit = 'solMass'
 
 def find_nearest(lookup,value):
     '''

@@ -1,6 +1,6 @@
 import pytest
 from functions import remnant_mass, destruction_timescale, grow_timescale,metallicity
-from lookups import lifetime, mass_yields_001, mass_yields_004, mass_yields_008, mass_yields_02
+from lookups import lifetime, mass_yields
 
 class TestFunctions:
 
@@ -41,20 +41,12 @@ class TestTables:
         assert lifetime[15][2] == 0.0026        
 
     def test_yields_001(self):
-        assert mass_yields_001[1][1] == 0.
-        assert mass_yields_001[12][1] == 0.27   
-
-    def test_yields_004(self):
-        assert mass_yields_004[1][2] == 8.54e-4
-        assert mass_yields_004[20][1] == 41.6 
+        assert mass_yields[1][1] == 0.
+        assert mass_yields[12][1] == 0.27   
+        assert mass_yields[1][4] == 8.54e-4
+        assert mass_yields[20][3] == 41.6 
+        assert mass_yields[1][6] == 1.12e-4
+        assert mass_yields[20][6] == 9.39 
+        assert mass_yields[0][8] == 6.83e-3
+        assert mass_yields[19][8] == 17.75 
         
-    def test_yields_008(self):
-        assert mass_yields_008[1][2] == 1.12e-4
-        assert mass_yields_008[20][2] == 0. 
-    
-    def test_yields_002(self):
-        assert mass_yields_02[1][2] == 1.61e-3
-        assert mass_yields_02[19][2] == 17.75 
-
-
-            
