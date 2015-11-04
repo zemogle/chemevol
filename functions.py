@@ -30,19 +30,19 @@ import logging
 
 logger = logging.Logger('chem')
 
-def ejected_gas_mass_func(m, t, choice):
+def ejected_gas_mass(m, sfr, choice):
     '''
     Calculate the ejected mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
     age of system (tau(m)) -- 120 Msolar
     
-    e(t) = (m-m_R(m)) x SFR(t-tau(m)) x phi(m)
+    de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m) 
     '''
-    ej = (m - remnant_mass(m)) * sfr_t0(t) * initial_mass_function(choice, m)
-    return ej
+    dej = (m - remnant_mass(m)) * sfr * initial_mass_function(m, choice)
+    return dej
 
 '''    
-def ejected_metal_mass_func(m, t, choice):
+def ejected_metal_mass(m, t, choice):
     
     Calculate the ejected metal mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -52,7 +52,7 @@ def ejected_metal_mass_func(m, t, choice):
     when stars formed and now re-released when stars die
     Second term: new metals synthesized by stars released during mass loss
     
-    ej_metal = ((m - remnant_mass(m))*metals_old + mass_yields(m) ) * &
+    d ej_metal/dm = ((m - remnant_mass(m))*metals_old + mass_yields(m) ) * &
     & sfr_t0(t) *  initial_mass_function(choice, m)
     return ej_metal
 '''
@@ -130,14 +130,14 @@ def destruction_timescale(m,G,SN_rate):
     t_destroy = t_destroy*u.year
     return t_destroy
 
-def initial_mass_function(m, choice='salp'):
+def initial_mass_function(m, choice='Chab'):
     '''
     Returns the IMF for a given choice of function and mass range.
 
-    - "Chab" selects the Chabrier 2003 IMF (PASP 115 763)
-    - "TopChab" selects a top heavy Chabrier IMF with high mass slope -0.8
-    - "Kroup" selects the Kroupa & Weidner 2003 IMF (ApJ 598 1076)
-    - "Salp" selects the Salpeter 1955 IMF (ApJ 121 161)
+    - "Chab", "chab" or "c" selects the Chabrier 2003 IMF (PASP 115 763)
+    - "TopChab", "topchab", or "tc" selects a top heavy Chabrier IMF with high mass slope -0.8
+    - "Kroup", "kroup" r "k" selects the Kroupa & Weidner 2003 IMF (ApJ 598 1076)
+    - "Salp", "salp" or "s" selects the Salpeter 1955 IMF (ApJ 121 161)
 
     '''
 

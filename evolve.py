@@ -26,7 +26,7 @@ class ChemModel:
             self.sfh_file = self.SFH_file
             self.load_sfh()
         except KeyError:
-            logger.error('Provide initialisation the ChemModel instance')
+            logger.error('You must provide initial parameters')
 
     def load_sfh(self):
         try:
