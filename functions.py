@@ -36,20 +36,20 @@ def ejected_gas_mass(m, sfr, choice):
     Calculate the ejected mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
     age of system (tau(m)) -- 120 Msolar
-    
-    de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m) 
+
+    de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m)
     '''
-    dej = (m - remnant_mass(m)) * sfr * initial_mass_function(m, choice)
+    dej = (m - remnant_mass(m).value) * sfr * initial_mass_function(m, choice)
     return dej
 
 def metallicity(metalmass,gasmass):
     '''
     Calculates the metal mass fraction Z
-    
-    Z = M_Z/M_g  
+
+    Z = M_Z/M_g
     '''
     metals = metalmass/gasmass
-    return metals  
+    return metals
 
 def remnant_mass(m):
     '''
@@ -65,44 +65,44 @@ def remnant_mass(m):
         rem_mass = 1.5
     else:
         rem_mass = 0.61*m - 13.75
-        
+
     rem_mass = rem_mass*u.solMass
     return rem_mass
 
 def dust_masses(delta,m,yields):
     '''
     This function returns the dust mass ejected by a star
-    of initial mass m 
-    
-    For dust re-released ejecta from stars we multiply the yields 
-    by a dust condensation efficiency which ranges from 0.16-0.45 
-    in Morgan & Edmunds 2003 (MNRAS) 
-    
+    of initial mass m
+
+    For dust re-released ejecta from stars we multiply the yields
+    by a dust condensation efficiency which ranges from 0.16-0.45
+    in Morgan & Edmunds 2003 (MNRAS)
+
     For dust formed from newly processed metals we split into
     two categories: winds from LIMS and SN.
-    
-    LIMS: we multiply the metal yields by a dust condensation 
-    efficiency parameter  
+
+    LIMS: we multiply the metal yields by a dust condensation
+    efficiency parameter
     see Figure 3a in Rowlands et al 2014 (MNRAS 441, 1040)
-    
-    For high mass stars we use the SN yields of 
+
+    For high mass stars we use the SN yields of
     Todini & Ferrara 2001 (MNRAS 325 276)
     see Figure 3b in Rowlands et al 2014 (MNRAS 441, 1040)
-    
+
     m - mass of star
     delta - dust condensation efficiency for LIMS
     yields - metal yields by mass
     '''
-    if (m >= 1.0) & (m <= 8.0):       
+    if (m >= 1.0) & (m <= 8.0):
         dustmass = delta*yields
     elif (m >= 9.0) & (m <= 40.0):
         #find dust mass from TF01 in dust_mass_sn table
         dustmass = find_nearest(np.array(dust_mass_sn),m)
-    else: 
+    else:
         dustmass=0.
-    dustmass = dustmass*u.solMass 
+    dustmass = dustmass*u.solMass
     return dustmass
-    
+
 
 def grow_timescale(e,G,SFR,Z,D):
     '''
@@ -229,13 +229,12 @@ def validate_initial_dict(keysdict, data_dict):
                            (dummy == 'LIMS+SN') or (dummy == 'GG') or\
                            (dummy == 'ALL')):
                         raise ValueError("Oops double check %r:%r" % (run,k))
-            
+
             # check IMF_fn source options correct
                 if (k == 'IMF_fn'):
-                    dummy = data_dict[run][k]    
+                    dummy = data_dict[run][k]
                     if not ((dummy == 'Chab') or (dummy == 'chab') or (dummy == 'c') or  \
                             (dummy == 'TopChab') or (dummy == 'topchab') or (dummy == 'tc') or \
                             (dummy == 'Kroup') or (dummy == 'kroup') or (dummy == 'k') or \
                             (dummy == 'Salp') or (dummy == 'salp') or (dummy == 's')):
                         raise ValueError("Oops check %r in %r" % (k,run))
-            
