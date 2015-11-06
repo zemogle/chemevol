@@ -9,6 +9,7 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('chem')
 
+
 class ChemModel:
     def __init__(self, **inputs):
         #f.validate_initial_dict(inputs)
@@ -60,8 +61,8 @@ class ChemModel:
         mg = 0.
         while t <= t_end:
             t += 10.**(np.log10(t)+dlogt)
-            dmg = - self.sfr(t) + self.ejected_mass(t, choice)# + f.inflow(t) + f.outflow(f)
-            mg += dmg * 10**dlogt
+            dmg = - self.sfr(t) + self.ejected_mass(t, choice) + f.inflows(self.sfr(t), self.inflows) + f.outflows(self.sfr(t), self.outflows)
+            mg += dmg * 10.**dlogt
         return mg
 
 
