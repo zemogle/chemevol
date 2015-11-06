@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from astropy import units as u
 import numpy as np
 import logging
+from lookups import find_nearest, dust_mass_sn
 
 logger = logging.Logger('chem')
 
@@ -43,7 +44,7 @@ def ejected_gas_mass(m, sfr, choice):
 
 def metallicity(metalmass,gasmass):
     '''
-    Calculates the metal mass fraction 
+    Calculates the metal mass fraction Z
     
     Z = M_Z/M_g  
     '''
@@ -64,8 +65,44 @@ def remnant_mass(m):
         rem_mass = 1.5
     else:
         rem_mass = 0.61*m - 13.75
+        
     rem_mass = rem_mass*u.solMass
     return rem_mass
+
+def dust_masses(delta,m,yields):
+    '''
+    This function returns the dust mass ejected by a star
+    of initial mass m 
+    
+    For dust re-released ejecta from stars we multiply the yields 
+    by a dust condensation efficiency which ranges from 0.16-0.45 
+    in Morgan & Edmunds 2003 (MNRAS) 
+    
+    For dust formed from newly processed metals we split into
+    two categories: winds from LIMS and SN.
+    
+    LIMS: we multiply the metal yields by a dust condensation 
+    efficiency parameter  
+    see Figure 3a in Rowlands et al 2014 (MNRAS 441, 1040)
+    
+    For high mass stars we use the SN yields of 
+    Todini & Ferrara 2001 (MNRAS 325 276)
+    see Figure 3b in Rowlands et al 2014 (MNRAS 441, 1040)
+    
+    m - mass of star
+    delta - dust condensation efficiency for LIMS
+    yields - metal yields by mass
+    '''
+    if (m >= 1.0) & (m <= 8.0):       
+        dustmass = delta*yields
+    elif (m >= 9.0) & (m <= 40.0):
+        #find dust mass from TF01 in dust_mass_sn table
+        dustmass = find_nearest(np.array(dust_mass_sn),m)
+    else: 
+        dustmass=0.
+    dustmass = dustmass*u.solMass 
+    return dustmass
+    
 
 def grow_timescale(e,G,SFR,Z,D):
     '''

@@ -128,6 +128,26 @@ t_yields['yields_winds_008'].unit = 'solMass'
 t_yields['yields_sn_02'].unit = 'solMass'
 t_yields['yields_winds_02'].unit = 'solMass'
 
+'''
+dust_mass_sn: dust mass returned by supernovae
+            1st column: initial mass of star
+            2nd column: dust mass returned
+            
+            From Todinin & Ferrara 2001 (MNRAS 325 276)
+'''
+dust_mass_sn = ((9, 0.0), 
+                (12, 0.2),   
+                (15, 0.5),
+                (20, 0.5),
+                (22, 0.8),
+                (25, 1.0),
+                (30, 1.0),
+                (35, 0.6),
+                (40, 0.4))
+
+t_dustmass_sn = Table(rows=dust_mass_sn, names=('mass','dustmass'), meta={'name': 'Dust Mass SN'})
+t_dustmass_sn['mass'].unit = 'solMass'
+t_dustmass_sn['dustmass'].unit = 'solMass'
 
 def find_nearest(lookup,value):
     '''
