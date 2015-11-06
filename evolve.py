@@ -3,6 +3,7 @@ import functions as f
 import numpy as np
 from lookups import find_nearest
 import logging
+from lookups import t_lifetime
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -39,9 +40,30 @@ class ChemModel:
     def sfr(self, t):
         try:
             vals = find_nearest(self.sfh,t)
-            return vals
+            return vals[1]
         except:
             logger.error("No SFH yet")
+
+    def ejected_mass(self, t, choice):
+        mu = 120
+        m = 0.8
+        dm = 0.1
+        em = 0.
+        while m <= mu:
+            m += dm
+            em += f.ejected_gas_mass(m, self.sfr(t), choice) * dm
+        return em
+
+    def gas_mass(self, choice):
+        t = self.sfh[0][0]
+        t_end = self.sfh[-1][0]
+        dlogt=(np.log10(t_end)-np.log10(t))/100.
+        mg = 0.
+        while t <= t_end:
+            t += 10.**(np.log10(t)+dlogt)
+            dmg = - self.sfr(t) + self.ejected_mass(t, choice)# + f.inflow(t) + f.outflow(f)
+            mg += dmg * 10**dlogt
+        return mg
 
 
 
