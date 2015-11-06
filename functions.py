@@ -82,7 +82,7 @@ def dust_masses(delta,m,yields):
     two categories: winds from LIMS and SN.
     
     LIMS: we multiply the metal yields by a dust condensation 
-    efficiency parameter  
+    efficiency parameter assumed to be 0.45
     see Figure 3a in Rowlands et al 2014 (MNRAS 441, 1040)
     
     For high mass stars we use the SN yields of 
@@ -143,7 +143,7 @@ def destruction_timescale(m,G,SN_rate):
 
     SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
     t_destroy = G/(m*SN_rate_in_years)
-
+    
     t_destroy = t_destroy*u.year
     return t_destroy
 

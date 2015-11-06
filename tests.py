@@ -31,20 +31,20 @@ class TestFunctions:
         assert 0.019 < metals < 0.022
     
     def test_dustmass_low(self): 
-        mass = dust_masses(0.45, 1.0, 1.0).value
-        assert mass == 0.45
+        mass = dust_masses(0.45, 1.0, 1.0)
+        assert mass.value == 0.45
     
     def test_dustmass_outofbounds_low(self):
-        mass = dust_masses(0.45, 0.7, 1.0).value  
-        assert mass == 0.0  
+        mass = dust_masses(0.45, 0.7, 1.0)  
+        assert mass.value == 0.0  
     
     def test_dustmass_outofbounds_high(Self):
-        mass = dust_masses(0.45, 60.0, 1.0).value  
-        assert mass == 0.0 
+        mass = dust_masses(0.45, 60.0, 1.0) 
+        assert mass.value == 0.0 
     
     def test_dustmass_mid(Self):
-           mass = dust_masses(0.45, 25.0, 1.0).value  
-           assert mass == 1.0        
+           mass = dust_masses(0.45, 25.0, 1.0)
+           assert mass.value == 1.0        
 
 class TestTables:
     
