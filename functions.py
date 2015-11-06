@@ -76,7 +76,7 @@ def dust_masses(delta,m,yields):
 
     For dust re-released ejecta from stars we multiply the yields
     by a dust condensation efficiency which ranges from 0.16-0.45
-    in Morgan & Edmunds 2003 (MNRAS)
+    in Morgan & Edmunds 2003 (MNRAS, 343, 427)
 
     For dust formed from newly processed metals we split into
     two categories: winds from LIMS and SN.
@@ -115,14 +115,15 @@ def grow_timescale(e,G,SFR,Z,D):
     - D: dust mass in Msolar
     - Z: metallicity mass fraction
     - SFR: star formation rate in units of Msolar/Gyr
+    - f_c: fraction of gas in cold dense state for grain growth
 
     Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
-
+    f_c = 0.5
     SFR_in_years = SFR/1e9 # to convert from per Gyr to per yr
     t_grow = G/(e*Z*SFR_in_years)
-    t_grow = t_grow/(1-((D/G)/Z)) #to account for metals already locked up in grains
+    t_grow = f_c*t_grow/(1-((D/G)/Z)) #to account for metals already locked up in grains
 
     t_grow = t_grow*u.year
     return t_grow
@@ -134,16 +135,18 @@ def destruction_timescale(m,G,SN_rate):
 
     - SN_rate: supernova rate in N/Gyr
     - G: gas mass in Msolar
-    - m: the amount of gas cleared by each supernova event.
-    This is often 100 or 1000 Msolar, appropriate for SNe expanding
+    - m: the amount of gas cleared by each supernova event
+    - f_c: fraction of gas in cold dense state for grain growth
+    
+    m is often 100 or 1000 Msolar, appropriate for SNe expanding
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
 
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
     In dust evolution, dMd/dt is proportional to Md/t_destroy
     '''
-
+    f_c = 0.5
     SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
-    t_destroy = G/(m*SN_rate_in_years)
+    t_destroy = (1-f_c)*G/(m*SN_rate_in_years)
     
     t_destroy = t_destroy*u.year
     return t_destroy
@@ -187,11 +190,27 @@ def initial_mass_function(m, choice='Chab'):
     return imf
 
 def inflows(sfr,parameter):
+    '''
+    Define inflow rate, parameterised by N x SFR
+    See Rowlands et al 2014 (MNRAS 441 1040)
+    
+    -sfr: SFR at time t
+    -parameter: inflow parameter defined in dictionary
+    '''
     inflow_rate = sfr*parameter
+    inflow_rate = inflow_rate*u.solMass/u.Gyr
     return inflow_rate
     
 def outflows(sfr,parameter):
+    '''
+    Define outflow rate, parameterised by N x SFR
+    See Rowlands et al 2014 (MNRAS 441 1040)
+    
+    -sfr: SFR at time t
+    -parameter: outflow parameter defined in dictionary
+    '''
     outflow_rate = sfr*parameter
+    outflow_rate = outflow_rate*u.solMass/u.Gyr
     return outflow_rate
 
 def validate_initial_dict(keysdict, data_dict):

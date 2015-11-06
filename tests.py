@@ -1,5 +1,6 @@
 import pytest
-from functions import remnant_mass, destruction_timescale, grow_timescale,metallicity,dust_masses
+from functions import remnant_mass, destruction_timescale, \
+                    grow_timescale,metallicity, dust_masses, inflows, outflows
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest
 
 class TestFunctions:
@@ -19,12 +20,12 @@ class TestFunctions:
     def test_destruction(self):
         destroy = destruction_timescale(1000.,6e9,2.1e7)
         destroy = destroy/1e6 #in Myr
-        assert  280 < destroy.value < 290
+        assert  142.8 < destroy.value < 142.9
     
     def test_graingrowth(self):
         grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
         grow = grow/1e6 #in Myr
-        assert 80 < grow.value < 90 
+        assert 43.1 < grow.value < 43.2 
         
     def test_metallicity(self):
         metals = metallicity(8e8, 4e10)
@@ -43,8 +44,17 @@ class TestFunctions:
         assert mass.value == 0.0 
     
     def test_dustmass_mid(Self):
-           mass = dust_masses(0.45, 25.0, 1.0)
-           assert mass.value == 1.0        
+        mass = dust_masses(0.45, 25.0, 1.0)
+        assert mass.value == 1.0  
+    
+    def test_outflow_func(Self):       
+        gas_outflow = outflows(1.0,1.5)
+        assert gas_outflow.value == 1.5
+        
+    def test_inflow_func(Self):       
+       gas_inflow = inflows(1.0,1.5)
+       assert gas_inflow.value == 1.5
+       
 
 class TestTables:
     
