@@ -55,7 +55,6 @@ class TestFunctions:
        gas_inflow = inflows(1.0,1.5)
        assert gas_inflow.value == 1.5
        
-
 class TestTables:
     
     def test_lifetimes(self):
