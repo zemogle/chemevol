@@ -9,7 +9,6 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('chem')
 
-
 class ChemModel:
     def __init__(self, **inputs):
         #f.validate_initial_dict(inputs)

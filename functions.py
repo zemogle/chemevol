@@ -80,7 +80,6 @@ def dust_masses(delta,m,yields):
 
     For dust formed from newly processed metals we split into
     two categories: winds from LIMS and SN.
-
     
     LIMS: we multiply the metal yields by a dust condensation 
     efficiency parameter assumed to be 0.45
@@ -99,7 +98,7 @@ def dust_masses(delta,m,yields):
         dustmass = delta*yields
     elif (m >= 9.0) & (m <= 40.0):
         #find dust mass from TF01 in dust_mass_sn table
-        dustmass = find_nearest(np.array(dust_mass_sn),m)
+        dustmass = find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass=0.
     dustmass = dustmass*u.solMass
@@ -186,6 +185,14 @@ def initial_mass_function(m, choice='Chab'):
     if (choice == "Salp" or choice == "salp" or choice == "s"):
         imf = (0.17/0.990465)*(m**-1.35)/m
     return imf
+
+def inflows(sfr,parameter):
+    inflow_rate = sfr*parameter
+    return inflow_rate
+    
+def outflows(sfr,parameter):
+    outflow_rate = sfr*parameter
+    return outflow_rate
 
 def validate_initial_dict(keysdict, data_dict):
     '''
