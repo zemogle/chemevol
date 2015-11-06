@@ -15,10 +15,6 @@ class TestFunctions:
     def test_remnant_mass_high(self):
         mass = remnant_mass(40.)
         assert 10.6 < mass.value <10.65
-    
-    def test_remnant_mass_highest(self):
-        mass = remnant_mass(60.)
-        assert 59 < mass.value <61
 
     def test_destruction(self):
         destroy = destruction_timescale(1000.,6e9,2.1e7)

@@ -58,16 +58,12 @@ def remnant_mass(m):
     which in turn is based on Iben & Tsutukov 1984, Woosley & Weaver 1995.
     Stars with mass above m_bh don't eject material into the ISM
     '''
-    m_bh = 60.0
     if m <= 9.0:
         rem_mass = 0.106*m + 0.446
     elif (m > 9.0) & (m < 25.0):
         rem_mass = 1.5
-    elif (m >=25.0) & (m<m_bh):
+    else:
         rem_mass = 0.61*m - 13.75
-    elif (m >= m_bh):
-        rem_mass = m
-
     rem_mass = rem_mass*u.solMass
     return rem_mass
 
