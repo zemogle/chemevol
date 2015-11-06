@@ -25,5 +25,5 @@ inits = {
           'outflows':0
           }
 ch = ChemModel(**inits)
-ch.gas_mass(choice='chab')
+ch.gas_mass()
 ```

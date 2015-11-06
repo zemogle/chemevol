@@ -39,7 +39,10 @@ def ejected_gas_mass(m, sfr, choice):
 
     de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m)
     '''
-    dej = (m - remnant_mass(m).value) * sfr * initial_mass_function(m, choice)
+    if m > 120.0:
+        dej = 0.0
+    else:
+        dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
     return dej
 
 def metallicity(metalmass,gasmass):

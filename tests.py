@@ -1,6 +1,7 @@
 import pytest
 from functions import remnant_mass, destruction_timescale, \
-                    grow_timescale,metallicity, dust_masses, inflows, outflows
+                    grow_timescale,metallicity, dust_masses, \
+                    inflows, outflows, ejected_gas_mass
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest
 
 class TestFunctions:
@@ -16,6 +17,10 @@ class TestFunctions:
     def test_remnant_mass_high(self):
         mass = remnant_mass(40.)
         assert 10.6 < mass.value <10.65
+        
+    def test_ejected_gasmass_outofbounds(self):
+        mass = ejected_gas_mass(120.5,10.5,1)
+        assert mass == 0.
 
     def test_destruction(self):
         destroy = destruction_timescale(1000.,6e9,2.1e7)
@@ -54,7 +59,8 @@ class TestFunctions:
     def test_inflow_func(Self):       
        gas_inflow = inflows(1.0,1.5)
        assert gas_inflow.value == 1.5
-       
+    
+
 class TestTables:
     
     def test_lifetimes(self):
