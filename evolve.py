@@ -55,7 +55,7 @@ class ChemModel:
         return em
 
     def gas_mass(self, choice):
-        t = self.sfh[0][0]
+        t = self.sfh[0][0] + 0.001
         t_end = self.sfh[-1][0]
         dlogt=(np.log10(t_end)-np.log10(t))/100.
         mg = 0.
