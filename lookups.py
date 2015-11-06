@@ -38,7 +38,7 @@ import numpy as np
 '''
 - lifetime: the lifetime of stars of a given mass
             1st col: initial mass of star Msolar
-            
+
             2nd col: lifetime in Gyrs, metallicity (Z) < 0.008
             3rd col: lifetime in Gyrs, Z >= 0.008
 
@@ -72,19 +72,19 @@ t_lifetime['lifetime_high_metals'].unit = 'Gyr'
 '''
 - mass_yields: ejected yield (all heavy elements) in Msolar
             1st col: initial mass of star Msolar
-            
+
             2nd col: ejected yield Msolar from supernovae Z=0.001
             3rd col: ejected yield Msolar from winds Z=0.001
-            
+
             4th col: ejected yield Msolar from supernovae Z=0.004
             5th col: ejected yield Msolar from winds Z=0.004
-            
+
             6th col: ejected yield Msolar from supernovae Z=0.008
             7th col: ejected yield Msolar from winds Z=0.008
-            
+
             8th col: ejected yield Msolar from supernovae Z=0.02
             9th col: ejected yield Msolar from winds Z=0.02
-            
+
             M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
             Z = 0.001 (used for Z < 0.008), Z = 0.02 (used for 0.008 =< Z < inf.)
             M < 9 Msolar: mp_Z from van den Hoek &
@@ -112,9 +112,9 @@ mass_yields =((0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-3, 0, 6.83e-3),
              (85, 26.7, 0, 26.7, 0, 1.56, 17.75, 1.56, 17.75),
              (120, 41.6, 0, 41.6, 0, 0.72, 9.39, 0.72, 9.39))
 
-t_yields = Table(rows=mass_yields, names=('mass','yields_sn_001','yields_winds_001', 
-                                         'yields_sn_004','yields_winds_004', 
-                                         'yields_sn_008','yields_winds_008', 
+t_yields = Table(rows=mass_yields, names=('mass','yields_sn_001','yields_winds_001',
+                                         'yields_sn_004','yields_winds_004',
+                                         'yields_sn_008','yields_winds_008',
                                          'yields_sn_02','yields_winds_02'),
                                           meta={'name': 'Mass Yields'})
 
@@ -132,11 +132,11 @@ t_yields['yields_winds_02'].unit = 'solMass'
 dust_mass_sn: dust mass returned by supernovae
             1st column: initial mass of star
             2nd column: dust mass returned
-            
+
             From Todinin & Ferrara 2001 (MNRAS 325 276)
 '''
-dust_mass_sn = ((9, 0.0), 
-                (12, 0.2),   
+dust_mass_sn = ((9, 0.0),
+                (12, 0.2),
                 (15, 0.5),
                 (20, 0.5),
                 (22, 0.8),
@@ -154,5 +154,13 @@ def find_nearest(lookup,value):
     Take a 2D array and return pair of nearest neighbour values based on first column
     '''
     col1 = lookup[:,0]
+    idx = (np.abs(col1-value)).argmin()
+    return lookup[idx]
+
+def lifetime_lookup(lookup, column, value):
+    '''
+    Take a 2D lifetime table and return nearest neighbour based on either 2 or 3 col
+    '''
+    col1 = lookup[column]
     idx = (np.abs(col1-value)).argmin()
     return lookup[idx]

@@ -1,9 +1,8 @@
 from scipy.integrate import quad
 import functions as f
 import numpy as np
-from lookups import find_nearest
+from lookups import find_nearest, lifetime_lookup, t_lifetime
 import logging
-from lookups import t_lifetime
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -45,8 +44,8 @@ class ChemModel:
             logger.error("No SFH yet")
 
     def ejected_mass(self, t, choice):
-        mu = 120
-        m = 0.8
+        mu = t_lifetime[-1][0]
+        m = lifetime_lookup(t_lifetime,'lifetime_low_metals',t)
         dm = 0.1
         em = 0.
         while m <= mu:
@@ -64,10 +63,3 @@ class ChemModel:
             dmg = - self.sfr(t) + self.ejected_mass(t, choice) + f.inflows(self.sfr(t), self.inflows) + f.outflows(self.sfr(t), self.outflows)
             mg += dmg * 10.**dlogt
         return mg
-
-
-
-def ejected_mass_integral(t):
-    # integrate the ejected mass function
-
-    return ej
