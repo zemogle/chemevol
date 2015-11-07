@@ -57,7 +57,6 @@ class ChemModel:
     
     def extra_sfr(self):
         #to start integral at t_0 regardless of when SFH file starts 
-        
         t_0 = 1e-3 # we want it to start at 1e-3
         tend_sfh = self.sfh[1][0] # 1st time array after 0
         # work out difference between t_0 and [1] entry in SFH
@@ -65,16 +64,20 @@ class ChemModel:
         norm = self.sfh[1][1]*(1./np.exp(-1.*self.gamma*tend_sfh))
         sfr_extra = norm * np.exp(-1.*self.gamma*t_0)
         #initialise vales
-        sfr = sfr_extra
-        t = t_0
+        sfr_new = sfr_extra
+        t_new = t_0
         n = 0
-        #create new array 
-        while t <= tend_sfh:
-            t = 10.**(np.log10(t)+dlogt)
-            sfr = norm * np.exp(-1.*self.gamma*t)
+        newlist = []
+        #create new array between 1e-3Gyr and start of SFH data 
+        while t_new < tend_sfh:
+            t_new = 10.**(np.log10(t_new)+dlogt)
+            sfr_new = norm * np.exp(-1.*self.gamma*t_new)
             n += 1
-            print n, t, dlogt, sfr
-        return sfr
+            newlist.append([t_new,sfr_new])    
+        # [2:] entry to account for t[0],t[1] overlap in SFH       
+        final_sfh = newlist + (self.sfh.tolist()[2:])
+        
+        return final_sfh 
 
     def gas_mass(self):
         mg = self.gasmass_init
