@@ -56,6 +56,14 @@ class ChemModel:
         return em
     
     def extra_sfr(self):
+        '''
+        This extrapolates the SFH provided to start at 0.001Gyr
+        with 100 extra steps between 0.001Gyr and the first non-zero
+        entry in the SFH list.
+        
+        Returns a new SFH list made from joining the
+        extrapolated SFH in this routine to the original input SFH file
+        '''
         #to start integral at t_0 regardless of when SFH file starts 
         t_0 = 1e-3 # we want it to start at 1e-3
         tend_sfh = self.sfh[1][0] # 1st time array after 0
@@ -63,20 +71,19 @@ class ChemModel:
         dlogt = (np.log10(tend_sfh) - np.log10(t_0))/100
         norm = self.sfh[1][1]*(1./np.exp(-1.*self.gamma*tend_sfh))
         sfr_extra = norm * np.exp(-1.*self.gamma*t_0)
-        #initialise vales
         sfr_new = sfr_extra
         t_new = t_0
         n = 0
         newlist = []
-        #create new array between 1e-3Gyr and start of SFH data 
+        #create new array between 0.001 Gyr and start of SFH data 
         while t_new < tend_sfh:
             t_new = 10.**(np.log10(t_new)+dlogt)
             sfr_new = norm * np.exp(-1.*self.gamma*t_new)
             n += 1
             newlist.append([t_new,sfr_new])    
-        # [2:] entry to account for t[0],t[1] overlap in SFH       
+        # start from [2:] to account for t[0],t[1] repeated entries 
+        # when new and in old SFHs combined    
         final_sfh = newlist + (self.sfh.tolist()[2:])
-        
         return final_sfh 
 
     def gas_mass(self):
