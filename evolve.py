@@ -73,18 +73,21 @@ class ChemModel:
 #            print m, t, tdiff, em
         return em
 
-    def ejected_z_mass(self, t, metals):
+    def ejected_z_mass(self, t, metallicity):
         mu = t_lifetime[-1][0]
         # we pull out mass corresponding to age of system
         # to get lower limit of integral
         m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
         dm = 0.5
         ezm = 0.
-        zdiff = metals
         while m <= mu:
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
             taum = lookup_fn(t_lifetime,'mass',m)['lifetime_low_metals']
+            if t <= taum:
+                zdiff =0
+            else:
+                zdiff = metallicity #needs to be done properly t-taum d
             tdiff = t - taum
             if tdiff > 0:
                 ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
@@ -165,6 +168,7 @@ class ChemModel:
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time<20.]
+        z_lookup = []
         for item, t in enumerate(time):
             mg = gasmass[item]
             metallicity = metals/mg
@@ -173,13 +177,14 @@ class ChemModel:
                 outflow_metals = metallicity
             else:
                 outflow_metals = 0
-            dmetals = - metallicity*self.sfr(t) + self.ejected_z_mass(t,metallicity) + metals_i + \
+            dmetals = - metallicity*self.sfr(t) + self.ejected_z_mass(t, metallicity) + metals_i + \
                     self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value + \
                     outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             dt = t - prev_t
             prev_t = t
             metals += dmetals*dt
+            z_lookup.append([t,metallicity])
             metals_list.append(metals)
-            print t, mg/4.8e10, metals/mg
+            print t, metallicity #mg/4.8e10, metals/mg
         # Output time and gas mass as Numpy Arrays
-        return time, np.array(metals_list)
+        return time, np.array(metals_list,metallicity)
