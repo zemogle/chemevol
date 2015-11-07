@@ -94,11 +94,10 @@ class ChemModel:
 
     def gas_mass(self):
         mg = self.gasmass_init
-        print self.sfh[:,0]
         for t in self.sfh[:,0]:
             dmg = - self.sfr(t) + self.ejected_mass(t) + f.inflows(self.sfr(t), \
                 self.inflows).value + f.outflows(self.sfr(t), self.outflows).value
-            dt = self.sfh[:,0]-self.sfh[:,0]
+            dt = t-t
             mg += dmg*dt
             print t, mg, dt
         return mg   
