@@ -54,7 +54,7 @@ SFR, metals and stars over time
 '''
 
 initial_galaxy_params = {'run1': {
-							'gasmass_init':4e10,
+							'gasmass_init':4.8e10,
 							'SFH':'MilkyWay.sfh',
 							'gamma':0,
 							'IMF_fn':'Chab',
@@ -76,5 +76,3 @@ initial_galaxy_params = {'run1': {
 
 #Now we will test that the input parameters are A-OK:
 f.validate_initial_dict(init_keys, initial_galaxy_params)
-
-
