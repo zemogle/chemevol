@@ -15,7 +15,7 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 ```python
 from evolve import ChemModel
 inits = {
-          'gasmass_init':4e10,
+          'gasmass_init':4.8e10,
           'SFH':'MilkyWay.sfh',
           'gamma':0,
           'IMF_fn':'Chab',

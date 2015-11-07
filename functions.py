@@ -39,7 +39,7 @@ def ejected_gas_mass(m, sfr, choice):
 
     de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m)
     '''
-    if m > 120.0:
+    if m >= 120.0:
         dej = 0.0
     else:
         dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
@@ -83,8 +83,8 @@ def dust_masses(delta,m,yields):
 
     For dust formed from newly processed metals we split into
     two categories: winds from LIMS and SN.
-    
-    LIMS: we multiply the metal yields by a dust condensation 
+
+    LIMS: we multiply the metal yields by a dust condensation
     efficiency parameter assumed to be 0.45
 
     see Figure 3a in Rowlands et al 2014 (MNRAS 441, 1040)
@@ -140,7 +140,7 @@ def destruction_timescale(m,G,SN_rate):
     - G: gas mass in Msolar
     - m: the amount of gas cleared by each supernova event
     - f_c: fraction of gas in cold dense state for grain growth
-    
+
     m is often 100 or 1000 Msolar, appropriate for SNe expanding
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
 
@@ -150,7 +150,7 @@ def destruction_timescale(m,G,SN_rate):
     f_c = 0.5
     SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
     t_destroy = (1-f_c)*G/(m*SN_rate_in_years)
-    
+
     t_destroy = t_destroy*u.year
     return t_destroy
 
@@ -196,19 +196,19 @@ def inflows(sfr,parameter):
     '''
     Define inflow rate, parameterised by N x SFR
     See Rowlands et al 2014 (MNRAS 441 1040)
-    
+
     -sfr: SFR at time t
     -parameter: inflow parameter defined in dictionary
     '''
     inflow_rate = sfr*parameter
     inflow_rate = inflow_rate*u.solMass/u.Gyr
     return inflow_rate
-    
+
 def outflows(sfr,parameter):
     '''
     Define outflow rate, parameterised by N x SFR
     See Rowlands et al 2014 (MNRAS 441 1040)
-    
+
     -sfr: SFR at time t
     -parameter: outflow parameter defined in dictionary
     '''

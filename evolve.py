@@ -99,13 +99,18 @@ class ChemModel:
     def gas_mass(self):
         mg = self.gasmass_init
         prev_t = 1e-3
-        for t in self.sfh[:,0]:
+        mg_list = []
+        # Limit time to less than 20. Gyrs
+        time = self.sfh[:,0]
+        time = time[time<20.]
+        for t in time:
             dmg = - self.sfr(t) + self.ejected_mass(t) + f.inflows(self.sfr(t), \
                 self.inflows).value + f.outflows(self.sfr(t), self.outflows).value
             dt = t - prev_t
             prev_t = t
             mg += dmg*dt
-            print t, dt, mg/4.8e10,self.sfr(t)/1e9,self.ejected_mass(t)
-        return mg
+            mg_list.append(mg)
+        # Output time and gas mass as Numpy Arrays
+        return time, np.array(mg_list)
 
         #this doesnt work anymore -- need to edit for sfh file too
