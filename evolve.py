@@ -118,8 +118,22 @@ class ChemModel:
             prev_t = t
             mg += dmg*dt
             mg_list.append(mg)
-            print t, mg/4.8e10
         # Output time and gas mass as Numpy Arrays
         return time, np.array(mg_list)
 
-        #this doesnt work anymore -- need to edit for sfh file too
+    def stellar_mass(self):
+        mstars = 0.
+        prev_t = 1e-3
+        mstars_list = []
+        # Limit time to less than 20. Gyrs
+        time = self.sfh[:,0]
+        time = time[time<20.]
+        for t in time:
+            dmstars = self.sfr(t)
+            dt = t - prev_t
+            prev_t = t
+            mstars += dmstars*dt
+            mstars_list.append(mstars)
+            print t, mstars
+        # Output time and gas mass as Numpy Arrays
+        return time, np.array(mstars_list)
