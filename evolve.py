@@ -71,7 +71,7 @@ class ChemModel:
                 em += f.ejected_gas_mass(m, self.sfr(tdiff), self.imf_type) * dm
             m += dm
 #            print m, t, tdiff, em
-        return em
+        return em, tdiff
 
     def ejected_z_mass(self, t, metals):
         mu = t_lifetime[-1][0]
@@ -84,8 +84,8 @@ class ChemModel:
         while m <= mu:
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
-            taum = lookup_fn(t_lifetime,'mass',m)['lifetime_low_metals']
-            tdiff = t - taum
+            # taum = lookup_fn(t_lifetime,'mass',m)['lifetime_low_metals']
+            tdiff = f.find_nearest(self.tdiff,t)[1]
             if tdiff > 0:
                 ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
             m += dm
@@ -110,13 +110,11 @@ class ChemModel:
         sfr_extra = norm * np.exp(-1.*self.gamma*t_0)
         sfr_new = sfr_extra
         t_new = t_0
-        n = 0
         newlist = []
         #create new array between 0.001 Gyr and start of SFH data
         while t_new < tend_sfh:
             t_new = 10.**(np.log10(t_new)+dlogt)
             sfr_new = norm * np.exp(-1.*self.gamma*t_new)
-            n += 1
             newlist.append([t_new,sfr_new])
         # start from [2:] to account for t[0],t[1] repeated entries
         # when new and in old SFHs combined
@@ -130,13 +128,17 @@ class ChemModel:
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time<20.]
+        t_diff = []
         for t in time:
-            dmg = - self.sfr(t) + self.ejected_mass(t) + f.inflows(self.sfr(t), \
+            ej, tdiff = self.ejected_mass(t)
+            dmg = - self.sfr(t) + ej + f.inflows(self.sfr(t), \
                 self.inflows['xSFR']).value + f.outflows(self.sfr(t), self.outflows['xSFR']).value
             dt = t - prev_t
             prev_t = t
             mg += dmg*dt
             mg_list.append(mg)
+            t_diff.append([t,tdiff])
+        self.tdiff = np.array(t_diff)
         # Output time and gas mass as Numpy Arrays
         return time, np.array(mg_list)
 
