@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from astropy import units as u
 import numpy as np
 import logging
-from lookups import find_nearest, dust_mass_sn
+from lookups import find_nearest, dust_mass_sn, t_yields, lookup_fn
 
 logger = logging.Logger('chem')
 
@@ -43,6 +43,31 @@ def ejected_gas_mass(m, sfr, choice):
         dej = 0.0
     else:
         dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
+    return dej
+
+def ejected_metal_mass(m, sfr, zdiff, choice):
+    '''
+    Calculate the ejected metal mass from stars by mass loss/stellar death
+    at time t, needs to be integrated from mass corresponding to
+    age of system (tau(m)) -- 120 Msolar
+
+    metals for LIMS are from van Hoek
+    Massive stars are from Maeder 1992
+
+    de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m) + mp_z
+    '''
+    if m >= 120.0:
+        dej = 0.0
+    else:
+        massyields = lookup_fn(t_yields, 'mass', m)
+        #sum_mass = metals from winds and SN unless m>40
+        # where sum_mass = winds only
+        if m <= 40:
+            sum_mass = massyields['yields_sn_001']+massyields['yields_winds_001']
+        else:
+            sum_mass = massyields['yields_winds_001']
+        dej = ((m - (remnant_mass(m).value))*zdiff + sum_mass) * \
+                sfr * initial_mass_function(m, choice)
     return dej
 
 def metallicity(metalmass,gasmass):
@@ -219,18 +244,6 @@ def outflows(sfr,parameter):
 def validate_initial_dict(keysdict, data_dict):
     '''
     Validate the initial data
-
-    example
-    input = {
-			'gasmass_init':4e10,
-			'SFH':'MilkyWay.sfh',
-			'gamma':0,
-			'IMF_fn':'Chab',
-			'dust_source':'ALL',
-			'destroy':True,
-			'inflows':0,
-			'outflows':0
-			}
     '''
     for run,keys in data_dict.items():
         for k in keysdict:

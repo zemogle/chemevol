@@ -26,4 +26,5 @@ inits = {	'gasmass_init':4.8e10,
 ch = ChemModel(**inits)
 time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
+time, metalmass = ch.metal_mass(mgas)
 ```

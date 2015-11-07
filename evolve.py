@@ -1,7 +1,7 @@
 from scipy.integrate import quad
 import functions as f
 import numpy as np
-from lookups import find_nearest, lifetime_lookup, t_lifetime
+from lookups import find_nearest, lookup_fn, t_lifetime
 import logging
 
 FORMAT = '%(asctime)-15s %(message)s'
@@ -56,22 +56,41 @@ class ChemModel:
             logger.error("No SFH yet")
 
     def ejected_mass(self, t):
-        mu = t_lifetime[-1][0]
+        mu = t_lifetime[-1]['mass']
         # we pull out mass corresponding to age of system
         # to get lower limit of integral
-        m = lifetime_lookup(t_lifetime,'lifetime_low_metals',t)[0]
+        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
         dm = 0.5
         em = 0.
         while m <= mu:
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
-            taum = lifetime_lookup(t_lifetime,'mass',m)[1]
+            taum = lookup_fn(t_lifetime,'mass',m)['lifetime_low_metals']
             tdiff = t - taum
             if tdiff > 0:
                 em += f.ejected_gas_mass(m, self.sfr(tdiff), self.imf_type) * dm
             m += dm
 #            print m, t, tdiff, em
         return em
+
+    def ejected_z_mass(self, t, metals):
+        mu = t_lifetime[-1][0]
+        # we pull out mass corresponding to age of system
+        # to get lower limit of integral
+        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
+        dm = 0.5
+        ezm = 0.
+        zdiff = metals
+        while m <= mu:
+            # pull out lifetime of star of mass m so we can
+            # calculate SFR when star was born which is t-lifetime
+            taum = lookup_fn(t_lifetime,'mass',m)['lifetime_low_metals']
+            tdiff = t - taum
+            if tdiff > 0:
+                ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
+            m += dm
+#            print m, t, tdiff, em
+        return ezm
 
     def extra_sfh(self, sfh):
         '''
@@ -134,6 +153,33 @@ class ChemModel:
             prev_t = t
             mstars += dmstars*dt
             mstars_list.append(mstars)
-            print t, mstars
         # Output time and gas mass as Numpy Arrays
         return time, np.array(mstars_list)
+
+    def metal_mass(self,gasmass):
+        metals = 0.
+        prev_t = 1e-3
+        # in case of pre-enrichment
+        metals_i = 0.
+        metals_list = []
+        # Limit time to less than 20. Gyrs
+        time = self.sfh[:,0]
+        time = time[time<20.]
+        for item, t in enumerate(time):
+            mg = gasmass[item]
+            metallicity = metals/mg
+            # outflow metallicity read from input dictionary
+            if self.outflows['metals']:
+                outflow_metals = metallicity
+            else:
+                outflow_metals = 0
+            dmetals = - metallicity*self.sfr(t) + self.ejected_z_mass(t,metallicity) + metals_i + \
+                    self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value + \
+                    outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+            dt = t - prev_t
+            prev_t = t
+            metals += dmetals*dt
+            metals_list.append(metals)
+            print t, mg/4.8e10, metals/mg
+        # Output time and gas mass as Numpy Arrays
+        return time, np.array(metals_list)

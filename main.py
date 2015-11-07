@@ -79,6 +79,24 @@ initial_galaxy_params = {'run1': {
 							'inflows':{'metals': 1e-4, 'xSFR': 0},
 							'outflows':{'metals': False, 'xSFR': 0}
 							}
+							}
 
 #Now we will test that the input parameters are A-OK:
-f.validate_initial_dict(init_keys, initial_galaxy_params)
+#f.validate_initial_dict(init_keys, initial_galaxy_params)
+
+from evolve import ChemModel
+
+inits = {	'gasmass_init':4.8e10,
+							'SFH':'MilkyWay.sfh',
+							'gamma':0,
+							'IMF_fn':'Chab',
+							'dust_source':'ALL',
+							'destroy':True,
+							'inflows':{'metals': 0., 'xSFR': 0},
+							'outflows':{'metals': True, 'xSFR': 0},
+							}
+ch = ChemModel(**inits)
+time, mgas = ch.gas_mass()
+time, mstars = ch.stellar_mass()
+
+print time, mgas, mstars

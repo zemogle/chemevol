@@ -157,7 +157,7 @@ def find_nearest(lookup,value):
     idx = (np.abs(col1-value)).argmin()
     return lookup[idx]
 
-def lifetime_lookup(lookup, column, value):
+def lookup_fn(lookup, column, value):
     '''
     Take a 2D lifetime table and return nearest neighbour based on either 2 or 3 col
     '''
