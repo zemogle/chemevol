@@ -44,6 +44,12 @@ class ChemModel:
         except:
             logger.error("No SFH yet")
             
+    def final_sfr(self, t):
+        try:
+            vals = find_nearest(self.extra_sfr,t)
+            return vals[1]
+        except:
+            logger.error("No SFH yet")      
 
     def ejected_mass(self, t):
         mu = t_lifetime[-1][0]
@@ -84,23 +90,20 @@ class ChemModel:
         # start from [2:] to account for t[0],t[1] repeated entries 
         # when new and in old SFHs combined    
         final_sfh = newlist + (self.sfh.tolist()[2:])
-        return final_sfh 
+#        return final_sfh 
 
     def gas_mass(self):
         mg = self.gasmass_init
-        t = 0 
-        n = 0
-        t_end = self.sfh[-2][0]
-        print t_end
-        while t <= t_end:
-            dt = (self.sfh[n][0]) - t      
+        print self.sfh[:,0]
+        for t in self.sfh[:,0]:
             dmg = - self.sfr(t) + self.ejected_mass(t) + f.inflows(self.sfr(t), \
-                    self.inflows).value + f.outflows(self.sfr(t), self.outflows).value
-            mg += dmg * (dt) #scale back to yrs
-            n += 1
-            t += dt
-     #       print(t,self.sfr(t)/1e9,mg/4e10)
+                self.inflows).value + f.outflows(self.sfr(t), self.outflows).value
+            dt = self.sfh[:,0]-self.sfh[:,0]
+            mg += dmg*dt
+            print t, mg, dt
         return mg   
+        
+        #this doesnt work anymore -- need to edit for sfh file too
 
 
 
