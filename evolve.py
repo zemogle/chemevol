@@ -57,12 +57,20 @@ class ChemModel:
 
     def ejected_mass(self, t):
         mu = t_lifetime[-1][0]
+        # we pull out mass corresponding to age of system
+        # to get lower limit of integral
         m = lifetime_lookup(t_lifetime,'lifetime_low_metals',t)[0]
         dm = 0.5
         em = 0.
         while m <= mu:
-            em += f.ejected_gas_mass(m, self.sfr(t), self.imf_type) * dm
+            # pull out lifetime of star of mass m so we can
+            # calculate SFR when star was born which is t-lifetime
+            taum = lifetime_lookup(t_lifetime,'mass',m)[1]
+            tdiff = t - taum
+            if tdiff > 0:
+                em += f.ejected_gas_mass(m, self.sfr(tdiff), self.imf_type) * dm
             m += dm
+#            print m, t, tdiff, em
         return em
 
     def extra_sfh(self, sfh):
@@ -110,6 +118,7 @@ class ChemModel:
             prev_t = t
             mg += dmg*dt
             mg_list.append(mg)
+            print t, mg/4.8e10
         # Output time and gas mass as Numpy Arrays
         return time, np.array(mg_list)
 
