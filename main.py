@@ -45,8 +45,14 @@ initial_galaxy_params
 	GG: interstellar grain growth only
 	ALL: grain growth
 - destroy: add dust destruction from SN shocks True or False
-- inflows: add a number (parameterized by X * SFR)
-- outflows: add a number (parameterized by X * SFR)
+- inflows: there are two parameters
+ 			metals = metallicity of inflow: input a number
+			xSFR = inflow rate is X * SFR: input a number
+- outflows: athere are two parameters
+ 			metals = metallicity of inflow: input True or False
+					True = metallicity of system, False = 0
+			xSFR = inflow rate is X * SFR: input a number
+
 
 Each run will be used to generate the evolution of dust, gas,
 SFR, metals and stars over time
@@ -60,8 +66,8 @@ initial_galaxy_params = {'run1': {
 							'IMF_fn':'Chab',
 							'dust_source':'ALL',
 							'destroy':True,
-							'inflows':0,
-							'outflows':0
+							'inflows':{'metals': 0., 'xSFR': 0},
+							'outflows':{'metals': True, 'xSFR': 0},
 							},
 						'run2': {
 							'gasmass_init':4e10,
@@ -70,8 +76,8 @@ initial_galaxy_params = {'run1': {
 							'IMF_fn':'c',
 							'dust_source':'GG',
 							'destroy':True,
-							'inflows':0,
-							'outflows':0}
+							'inflows':{'metals': 1e-4, 'xSFR': 0},
+							'outflows':{'metals': False, 'xSFR': 0}
 							}
 
 #Now we will test that the input parameters are A-OK:

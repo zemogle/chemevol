@@ -14,16 +14,16 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 ## Running the code
 ```python
 from evolve import ChemModel
-inits = {
-          'gasmass_init':4.8e10,
-          'SFH':'MilkyWay.sfh',
-          'gamma':0,
-          'IMF_fn':'Chab',
-          'dust_source':'ALL',
-          'destroy':True,
-          'inflows':0,
-          'outflows':0
-          }
+inits = {	'gasmass_init':4.8e10,
+							'SFH':'MilkyWay.sfh',
+							'gamma':0,
+							'IMF_fn':'Chab',
+							'dust_source':'ALL',
+							'destroy':True,
+							'inflows':{'metals': 0., 'xSFR': 0},
+							'outflows':{'metals': True, 'xSFR': 0},
+							}
 ch = ChemModel(**inits)
-time, mg = ch.gas_mass()
+time, mgas = ch.gas_mass()
+time, mstars = ch.stellar_mass()
 ```

@@ -113,7 +113,7 @@ class ChemModel:
         time = time[time<20.]
         for t in time:
             dmg = - self.sfr(t) + self.ejected_mass(t) + f.inflows(self.sfr(t), \
-                self.inflows).value + f.outflows(self.sfr(t), self.outflows).value
+                self.inflows['xSFR']).value + f.outflows(self.sfr(t), self.outflows['xSFR']).value
             dt = t - prev_t
             prev_t = t
             mg += dmg*dt
