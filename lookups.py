@@ -46,7 +46,7 @@ import numpy as np
             this table allows us to call lifetime star but also
             mass of star that corresponds to age of system
 '''
-lifetime =  ((0.8, 15.0, 26.0),
+lifetime =  np.array([(0.8, 15.0, 26.0),
             (0.9, 9.5, 15.0),
             (1.0, 6.3, 10.0),
             (1.5, 1.8, 2.7),
@@ -61,7 +61,7 @@ lifetime =  ((0.8, 15.0, 26.0),
             (40.0, 0.0049, 0.0043),
             (60.0, 0.0037, 0.0034),
             (85.0, 0.0031, 0.0028),
-            (120.0, 0.0028, 0.0026))
+            (120.0, 0.0028, 0.0026)])
 
 t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low_metals','lifetime_high_metals'),meta={'name': 'Lifetime'})
 
@@ -90,7 +90,7 @@ t_lifetime['lifetime_high_metals'].unit = 'Gyr'
             M < 9 Msolar: mp_Z from van den Hoek &
             Groenewegen 1997 (A & AS 123 305) Z=0.001,0.004,0.008,0.02
 '''
-mass_yields =((0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-3, 0, 6.83e-3),
+mass_yields =np.array([(0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-3, 0, 6.83e-3),
              (1.0, 0, 0, 0, 8.54e-4, 0, 1.12e-4, 0, 1.61e-4),
              (1.3, 0, 3.09e-3, 0, 1.99e-3, 0, 1.70e-30, 0, 1.70e-3),
              (1.5, 0, 3.53e-3, 0, 2.57e-3, 0, 3.06e-3, 0, 3.06e-3),
@@ -110,12 +110,13 @@ mass_yields =((0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-3, 0, 6.83e-3),
              (40, 4.71, 0, 4.71, 0, 1.61, 6.4, 1.61, 6.4),
              (60, 17.1, 0, 17.1, 0, 1.16, 8.69, 1.16, 8.69),
              (85, 26.7, 0, 26.7, 0, 1.56, 17.75, 1.56, 17.75),
-             (120, 41.6, 0, 41.6, 0, 0.72, 9.39, 0.72, 9.39))
+             (120, 41.6, 0, 41.6, 0, 0.72, 9.39, 0.72, 9.39)])
+yield_names = ['mass','yields_sn_001','yields_winds_001',
+             'yields_sn_004','yields_winds_004',
+             'yields_sn_008','yields_winds_008',
+             'yields_sn_02','yields_winds_02']
 
-t_yields = Table(rows=mass_yields, names=('mass','yields_sn_001','yields_winds_001',
-                                         'yields_sn_004','yields_winds_004',
-                                         'yields_sn_008','yields_winds_008',
-                                         'yields_sn_02','yields_winds_02'),
+t_yields = Table(rows=mass_yields, names=yield_names,
                                           meta={'name': 'Mass Yields'})
 
 t_yields['mass'].unit = 'solMass'
@@ -164,3 +165,11 @@ def lookup_fn(lookup, column, value):
     col1 = lookup[column]
     idx = (np.abs(col1-value)).argmin()
     return lookup[idx]
+
+def lookup_taum(mass,colnum):
+    '''
+    Take a lifetime list and
+    '''
+    col1 = lifetime[:,1]
+    idx = (np.abs(col1-mass)).argmin()
+    return lifetime[idx][colnum]

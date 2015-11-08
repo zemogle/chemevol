@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from astropy import units as u
 import numpy as np
 import logging
-from lookups import find_nearest, dust_mass_sn, t_yields, lookup_fn
+from lookups import find_nearest, dust_mass_sn, t_yields, lookup_fn, mass_yields
+from lookups import yield_names as yn
 
 logger = logging.Logger('chem')
 
@@ -59,13 +60,13 @@ def ejected_metal_mass(m, sfr, zdiff, choice):
     if m >= 120.0:
         dej = 0.0
     else:
-        massyields = lookup_fn(t_yields, 'mass', m)
+        massyields = find_nearest(mass_yields, m)
         #sum_mass = metals from winds and SN unless m>40
         # where sum_mass = winds only
         if m <= 40:
-            sum_mass = massyields['yields_sn_001']+massyields['yields_winds_001']
+            sum_mass = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
         else:
-            sum_mass = massyields['yields_winds_001']
+            sum_mass = massyields[yn.index('yields_winds_001')]
         dej = ((m - (remnant_mass(m).value))*zdiff + sum_mass) * \
                 sfr * initial_mass_function(m, choice)
     return dej

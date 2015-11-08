@@ -1,8 +1,9 @@
 from scipy.integrate import quad
 import functions as f
 import numpy as np
-from lookups import find_nearest, lookup_fn, t_lifetime
+from lookups import find_nearest, lookup_fn, t_lifetime, lookup_taum
 import logging
+from datetime import datetime
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -62,18 +63,19 @@ class ChemModel:
         m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
         dm = 0.5
         em = 0.
+        lifetime_cols = { 'low_metals':0, 'high_metals':1}
         while m <= mu:
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
-            taum = lookup_fn(t_lifetime,'mass',m)['lifetime_low_metals']
+            taum = lookup_taum(m,lifetime_cols['low_metals'])
             tdiff = t - taum
             if tdiff > 0:
                 em += f.ejected_gas_mass(m, self.sfr(tdiff), self.imf_type) * dm
             m += dm
-#            print m, t, tdiff, em
         return em, tdiff
 
     def ejected_z_mass(self, t, metallicity):
+        now = datetime.now()
         mu = t_lifetime[-1][0]
         # we pull out mass corresponding to age of system
         # to get lower limit of integral
@@ -83,7 +85,7 @@ class ChemModel:
         while m <= mu:
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
-            tdiff = f.find_nearest(self.tdiff,t)[1]
+            tdiff = find_nearest(self.tdiff,t)[1]
             if tdiff <= 0:
                 zdiff =0
             else:
@@ -93,6 +95,7 @@ class ChemModel:
                 ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
             m += dm
 #            print m, t, tdiff, em
+        # print("Metal mass interior loop %s" % str(datetime.now()-now))
         return ezm
 
     def extra_sfh(self, sfh):
@@ -132,6 +135,7 @@ class ChemModel:
         time = self.sfh[:,0]
         time = time[time<20.]
         t_diff = []
+        now = datetime.now()
         for t in time:
             ej, tdiff = self.ejected_mass(t)
             dmg = - self.sfr(t) + ej + f.inflows(self.sfr(t), \
@@ -142,6 +146,7 @@ class ChemModel:
             mg_list.append(mg)
             t_diff.append([t,tdiff])
         self.tdiff = np.array(t_diff)
+        print("Gas mass exterior loop %s" % str(datetime.now()-now))
         # Output time and gas mass as Numpy Arrays
         return time, np.array(mg_list)
 
@@ -171,6 +176,7 @@ class ChemModel:
         time = self.sfh[:,0]
         time = time[time<20.]
         z_lookup = []
+        now = datetime.now()
         for item, t in enumerate(time):
             mg = gasmass[item]
             metallicity = metals/mg
@@ -187,6 +193,7 @@ class ChemModel:
             metals += dmetals*dt
             z_lookup.append([t,metallicity])
             metals_list.append(metals)
-            print t, metallicity #mg/4.8e10, metals/mg
+            # print t, metallicity #mg/4.8e10, metals/mg
         # Output time and gas mass as Numpy Arrays
+        print("Metal mass exterior loop %s" % str(datetime.now()-now))
         return time, np.array(metals_list,metallicity)
