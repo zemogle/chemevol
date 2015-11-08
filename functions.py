@@ -102,6 +102,17 @@ def ejected_gas_mass(m, sfr, choice):
         dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
     return dej
 
+def SN_rate(m, sfrdiff, choice):
+    '''
+    Calculate the SN rate at time t for a given SFR
+    '''
+    if m >= 9 & m <= 40:
+        dSN_rate =  sfrdiff * initial_mass_function(m, choice)
+    else:
+        dSN_rate = 0.
+    return dSN_rate
+
+
 def ejected_metal_mass(m, sfr, zdiff, choice):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
@@ -211,7 +222,7 @@ def grow_timescale(e,G,SFR,Z,D):
     t_grow = t_grow*u.year
     return t_grow
 
-def destruction_timescale(m,G,SN_rate):
+def destruction_timescale(m,G,sfr):
     '''
     Calculates the dust destruction timescale in years.
 
@@ -226,7 +237,7 @@ def destruction_timescale(m,G,SN_rate):
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
     In dust evolution, dMd/dt is proportional to Md/t_destroy
     '''
-    SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
+    SN_rate_in_years = SN_rate(sfr)/1e9 # to convert from per Gyr to per yr
     t_destroy = G/(m*SN_rate_in_years)
 
     t_destroy = t_destroy*u.year
