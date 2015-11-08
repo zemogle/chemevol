@@ -32,54 +32,6 @@ from lookups import yield_names as yn
 
 logger = logging.Logger('chem')
 
-def ejected_gas_mass(m, sfr, choice):
-    '''
-    Calculate the ejected mass from stars by mass loss/stellar death
-    at time t, needs to be integrated from mass corresponding to
-    age of system (tau(m)) -- 120 Msolar
-
-    de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m)
-    '''
-    if m >= 120.0:
-        dej = 0.0
-    else:
-        dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
-    return dej
-
-def ejected_metal_mass(m, sfr, zdiff, choice):
-    '''
-    Calculate the ejected metal mass from stars by mass loss/stellar death
-    at time t, needs to be integrated from mass corresponding to
-    age of system (tau(m)) -- 120 Msolar
-
-    metals for LIMS are from van Hoek
-    Massive stars are from Maeder 1992
-
-    de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m) + mp_z
-    '''
-    if m >= 120.0:
-        dej = 0.0
-    else:
-        massyields = find_nearest(mass_yields, m)
-        #sum_mass = metals from winds and SN unless m>40
-        # where sum_mass = winds only
-        if m <= 40:
-            sum_mass = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
-        else:
-            sum_mass = massyields[yn.index('yields_winds_001')]
-        dej = ((m - (remnant_mass(m).value))*zdiff + sum_mass) * \
-                sfr * initial_mass_function(m, choice)
-    return dej
-
-def metallicity(metalmass,gasmass):
-    '''
-    Calculates the metal mass fraction Z
-
-    Z = M_Z/M_g
-    '''
-    metals = metalmass/gasmass
-    return metals
-
 def remnant_mass(m):
     '''
     Calculates the remnant mass of a star of mass m.
@@ -97,88 +49,6 @@ def remnant_mass(m):
 
     rem_mass = rem_mass*u.solMass
     return rem_mass
-
-def dust_masses(delta,m,yields):
-    '''
-    This function returns the dust mass ejected by a star
-    of initial mass m
-
-    For dust re-released ejecta from stars we multiply the yields
-    by a dust condensation efficiency which ranges from 0.16-0.45
-    in Morgan & Edmunds 2003 (MNRAS, 343, 427)
-
-    For dust formed from newly processed metals we split into
-    two categories: winds from LIMS and SN.
-
-    LIMS: we multiply the metal yields by a dust condensation
-    efficiency parameter assumed to be 0.45
-
-    see Figure 3a in Rowlands et al 2014 (MNRAS 441, 1040)
-
-    For high mass stars we use the SN yields of
-    Todini & Ferrara 2001 (MNRAS 325 276)
-    see Figure 3b in Rowlands et al 2014 (MNRAS 441, 1040)
-
-    m - mass of star
-    delta - dust condensation efficiency for LIMS
-    yields - metal yields by mass
-    '''
-    if (m >= 1.0) & (m <= 8.0):
-        dustmass = delta*yields
-    elif (m >= 9.0) & (m <= 40.0):
-        #find dust mass from TF01 in dust_mass_sn table
-        dustmass = find_nearest(np.array(dust_mass_sn),m)[1]
-    else:
-        dustmass=0.
-    dustmass = dustmass*u.solMass
-    return dustmass
-
-
-def grow_timescale(e,G,SFR,Z,D):
-    '''
-    Calculates the grain growth timescale in years.
-
-    - e: free parameter with MW value set to ~500.
-         e = 2e4 would result in timescales of 1Myr and below.
-    - G: gas mass in Msolar
-    - D: dust mass in Msolar
-    - Z: metallicity mass fraction
-    - SFR: star formation rate in units of Msolar/Gyr
-    - f_c: fraction of gas in cold dense state for grain growth
-
-    Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
-    In dust evolution, dMd/dt is proportional to Md/t_grow
-    '''
-    f_c = 0.5
-    SFR_in_years = SFR/1e9 # to convert from per Gyr to per yr
-    t_grow = G/(e*Z*SFR_in_years)
-    t_grow = f_c*t_grow/(1-((D/G)/Z)) #to account for metals already locked up in grains
-
-    t_grow = t_grow*u.year
-    return t_grow
-
-def destruction_timescale(m,G,SN_rate):
-    '''
-    Calculates the dust destruction timescale in years.
-
-
-    - SN_rate: supernova rate in N/Gyr
-    - G: gas mass in Msolar
-    - m: the amount of gas cleared by each supernova event
-    - f_c: fraction of gas in cold dense state for grain growth
-
-    m is often 100 or 1000 Msolar, appropriate for SNe expanding
-    into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
-
-    Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
-    In dust evolution, dMd/dt is proportional to Md/t_destroy
-    '''
-    f_c = 0.5
-    SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
-    t_destroy = (1-f_c)*G/(m*SN_rate_in_years)
-
-    t_destroy = t_destroy*u.year
-    return t_destroy
 
 def initial_mass_function(m, choice='Chab'):
     '''
@@ -217,6 +87,150 @@ def initial_mass_function(m, choice='Chab'):
     if (choice == "Salp" or choice == "salp" or choice == "s"):
         imf = (0.17/0.990465)*(m**-1.35)/m
     return imf
+
+def ejected_gas_mass(m, sfr, choice):
+    '''
+    Calculate the ejected mass from stars by mass loss/stellar death
+    at time t, needs to be integrated from mass corresponding to
+    age of system (tau(m)) -- 120 Msolar
+
+    de/dm = (m-m_R(m)) x SFR(t-tau(m)) x phi(m)
+    '''
+    if m >= 120.0:
+        dej = 0.0
+    else:
+        dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
+    return dej
+
+def ejected_metal_mass(m, sfr, zdiff, choice):
+    '''
+    Calculate the ejected metal mass from stars by mass loss/stellar death
+    at time t, needs to be integrated from mass corresponding to
+    age of system (tau(m)) -- 120 Msolar
+
+    metals for LIMS are from van Hoek
+    Massive stars are from Maeder 1992
+
+    de/dm = (m-m_R(m)*Z(t-taum) + mp_z) x SFR(t-taum x phi(m)
+    '''
+    if m >= 120.0:
+        dej = 0.0
+    else:
+        massyields = find_nearest(mass_yields, m)
+        #sum_mass = metals from winds and SN unless m>40
+        # where sum_mass = winds only
+        if m <= 40:
+            sum_mass = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
+        else:
+            sum_mass = massyields[yn.index('yields_winds_001')]
+        dej = ((m - (remnant_mass(m).value))*zdiff + sum_mass) * \
+                sfr * initial_mass_function(m, choice)
+    return dej
+
+def ejected_dust_mass(m, sfr, zdiff, choice):
+    '''
+    Calculate the ejected dust mass from stars by mass loss/stellar death
+    at time t, needs to be integrated from mass corresponding to
+    age of system (tau(m)) -- 120 Msolar
+
+    Re-released dust for LIMS d_LIMS are 0.45 x yields from van den Hoek & Groenewegen
+    New dust from fresh heavy elements returned in dust_masses function where
+    dust from massive stars (in SN only) are from Todini & Ferrara 2001 (TF01)
+    DELTA = fraction of new metals in LIMS (0.45) and SN (from TF01)
+
+    de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + mp_z*DELTA) x SFR(t-taum x phi(m)
+    '''
+
+    delta_LIMS = 0.45
+    # no dust from stars with m>40Msun.
+    if m >= 40.:
+        dej = 0.0
+    else:
+        massyields = lookup_fn(t_yields, 'mass', m)
+        # sum mass gets dust mass ejected from new elements from SN and winds
+        sum_mass = dust_masses(m,massyields).value
+        dej = ((m - (remnant_mass(m).value))*zdiff*delta_LIMS + sum_mass) * \
+                sfr * initial_mass_function(m, choice)
+    return dej
+
+def dust_masses(m,yields):
+    '''
+    This function returns the dust mass ejected by a star
+    of initial mass m
+
+    For dust re-released ejecta from stars we multiply the yields
+    by a dust condensation efficiency which ranges from 0.16-0.45
+    in Morgan & Edmunds 2003 (MNRAS, 343, 427)
+
+    For dust formed from newly processed metals we split into
+    two categories: winds from LIMS and SN.
+
+    LIMS: we multiply the metal yields by a dust condensation
+    efficiency parameter assumed to be 0.45
+
+    see Figure 3a in Rowlands et al 2014 (MNRAS 441, 1040)
+
+    For high mass stars we use the SN yields of
+    Todini & Ferrara 2001 (MNRAS 325 276)
+    see Figure 3b in Rowlands et al 2014 (MNRAS 441, 1040)
+
+    m - mass of star
+    delta - dust condensation efficiency for LIMS =0.45
+    yields - metal yields by mass
+    '''
+    delta_new_LIMS = 0.45
+    if (m <= 8.0):
+        dustmass = delta_new_LIMS*yields
+    elif (m >= 9.0) & (m <= 40.0):
+        #find dust mass from TF01 in dust_mass_sn table
+        dustmass = find_nearest(np.array(dust_mass_sn),m)[1]
+    else:
+        dustmass = 0.
+    dustmass = dustmass*u.solMass
+    return dustmass
+
+def grow_timescale(e,G,SFR,Z,D):
+    '''
+    Calculates the grain growth timescale in years.
+
+    - e: free parameter with MW value set to ~500.
+         e = 2e4 would result in timescales of 1Myr and below.
+    - G: gas mass in Msolar
+    - D: dust mass in Msolar
+    - Z: metallicity mass fraction
+    - SFR: star formation rate in units of Msolar/Gyr
+    - f_c: fraction of gas in cold dense state for grain growth
+
+    Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
+    In dust evolution, dMd/dt is proportional to Md/t_grow
+    '''
+    SFR_in_years = SFR/1e9 # to convert from per Gyr to per yr
+    t_grow = G/(e*Z*SFR_in_years)
+    t_grow = t_grow/(1-((D/G)/Z)) #to account for metals already locked up in grains
+
+    t_grow = t_grow*u.year
+    return t_grow
+
+def destruction_timescale(m,G,SN_rate):
+    '''
+    Calculates the dust destruction timescale in years.
+
+    - SN_rate: supernova rate in N/Gyr
+    - G: gas mass in Msolar
+    - m: the amount of gas cleared by each supernova event
+    - f_c: fraction of gas in cold dense state for grain growth
+
+    m is often 100 or 1000 Msolar, appropriate for SNe expanding
+    into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
+
+    Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
+    In dust evolution, dMd/dt is proportional to Md/t_destroy
+    '''
+    SN_rate_in_years = SN_rate/1e9 # to convert from per Gyr to per yr
+    t_destroy = G/(m*SN_rate_in_years)
+
+    t_destroy = t_destroy*u.year
+    return t_destroy
 
 def inflows(sfr,parameter):
     '''
