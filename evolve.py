@@ -21,6 +21,8 @@ class ChemModel:
             self.inflows = inputs['inflows']
             self.outflows = inputs['outflows']
             self.SFH_file = inputs['SFH']
+            self.coldfraction = inputs['cold_gas_fraction']
+            self.epsilon = inputs['epsilon_grain']
             if not self.SFH_file:
                 self.SFH_file = 'Milkyway.sfh'
             self.sfh_file = self.SFH_file
@@ -187,6 +189,35 @@ class ChemModel:
             metals += dmetals*dt
             z_lookup.append([t,metallicity])
             metals_list.append(metals)
-            print t, metallicity #mg/4.8e10, metals/mg
+        #     print t, metallicity #mg/4.8e10, metals/mg
         # Output time and gas mass as Numpy Arrays
         return time, np.array(metals_list,metallicity)
+
+    def dust_mass(self,gasmass,metallicity):
+        md = 0.
+        prev_t = 1e-3
+        # in case of pre-enrichment
+        dust_list = []
+        # Limit time to less than 20. Gyrs
+        time = self.sfh[:,0]
+        time = time[time<20.]
+        for item, t in enumerate(time):
+            mg = gasmass[item]
+            Z = metallicity[item]
+            # outflow dust options read from input dictionary
+            if self.outflows['dust']:
+                outflow_dust = md/mg
+            else:
+                outflow_dust = 0
+            ddust = -(md/mg)*self.sfr(t) + self.ejected_dust_mass(t, metallicity) - \
+                    (1-self.coldfraction)*(md/destruction_timescale(md,mg,SN_rate).value) + \
+                    (self.coldfraction*md)/grow_timescale(self.epsilon,mg,self.sfr(t),metallicity,md).value + \
+                    self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value + \
+                    outflow_dust*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+            dt = t - prev_t
+            prev_t = t
+            md += ddust*dt
+            dust_list.append(md)
+            print t, mg/4.8e10, metallicity, (md/mg)/metallicity #mg/4.8e10, metals/mg
+        # Output time and gas mass as Numpy Arrays
+        return time, np.array(dust_list)
