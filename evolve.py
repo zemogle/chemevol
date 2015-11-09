@@ -243,17 +243,22 @@ class ChemModel:
                 outflow_dust = 0.
             tdiff_now = find_nearest(self.tdiff, t)
             zdiff = find_nearest(z_time, tdiff_now[1])[1]
+            gg = f.grow_timescale(self.epsilon,mg,self.sfr(t),z,md).value
+            if gg <= 0:
+                mdust_gg = 0.
+            else:
+                mdust_gg = (self.coldfraction*md)/gg
             ddust = -(md/mg)*self.sfr(t) \
                     + self.ejected_d_mass(t, zdiff) \
                     + self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value \
                     - (outflow_dust/mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value \
-                    + (self.coldfraction*md)/f.grow_timescale(self.epsilon,mg,self.sfr(t)*1e9,z,md).value \
-                    # - (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,self.sfr(t),0.).value) \
+                    + mdust_gg #\
+                #    - (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,self.sfr(t),0.).value) \
 
             dt = t - prev_t
             prev_t = t
             md += ddust*dt
             dust_list.append(md)
-            print t, mg/4.8e10, f.grow_timescale(self.epsilon,mg,self.sfr(t)*1e9,z,md).value#,z, (md/mg)/z #mg/4.8e10, metals/mg
+            print t, mg/4.8e10,z, (md/mg)/z #mg/4.8e10, metals/mg
         # Output time and gas mass as Numpy Arrays
     #    return time, np.array(dust_list)

@@ -205,7 +205,7 @@ def dust_masses(m,yields):
     dustmass = dustmass*u.solMass
     return dustmass
 
-def grow_timescale(e,G,SFR,Z,D):
+def grow_timescale(e,g,sfr,z,d):
     '''
     Calculates the grain growth timescale in years.
 
@@ -220,10 +220,12 @@ def grow_timescale(e,G,SFR,Z,D):
     Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
-    SFR_in_years = SFR/1e9 # to convert from per Gyr to per yr
-    t_grow = G/(e*Z*SFR_in_years)
-    t_grow = t_grow/(1-((D/G)/Z)) #to account for metals already locked up in grains
-
+    sfr_in_years = sfr/1e9 # to convert from per Gyr to per yr
+    if z <= 0.:
+        t_grow = 0
+    else:
+        t_grow = g/(e*z*sfr_in_years)
+        t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
     t_grow = t_grow*u.year
     return t_grow
 
