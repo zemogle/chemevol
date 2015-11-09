@@ -157,10 +157,12 @@ def ejected_dust_mass(m, sfr, zdiff, choice):
     if m >= 40.:
         dej = 0.0
     else:
-        mass_yields = lookup_fn(t_yields, 'mass', m)
-        lowyields = mass_yields['yields_sn_001']
-        highyields = mass_yields['yields_winds_001']
-        sum_yields = lowyields + highyields
+        massyields = find_nearest(mass_yields, m)
+        sum_yields = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
+        # mass_yields = lookup_fn(t_yields, 'mass', m)
+        # lowyields = mass_yields['yields_sn_001']
+        # highyields = mass_yields['yields_winds_001']
+        # sum_yields = lowyields + highyields
         # sum mass gets dust mass ejected from new elements from SN and winds
         sum_mass = dust_masses(m, sum_yields).value
         dej = ((m - (remnant_mass(m).value))*zdiff*delta_LIMS + sum_mass) * \
