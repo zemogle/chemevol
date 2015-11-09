@@ -92,7 +92,6 @@ class ChemModel:
                 zdiff =0
             else:
                 zdiff = metallicity #needs to be done properly t-taum d
-
             if tdiff > 0:
                 ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
             m += dm
@@ -199,28 +198,33 @@ class ChemModel:
         for item, t in enumerate(time):
             mg = gasmass[item]
             metallicity = metals/mg
+            # print(metals, mg)
+            z_lookup.append([t,metallicity])
             # outflow metallicity read from input dictionary
             if self.outflows['metals']:
                 outflow_metals = metallicity
             else:
                 outflow_metals = 0
-            dmetals = -metallicity*self.sfr(t) \
-                      + self.ejected_z_mass(t, metallicity) \
+            tdiff_now = find_nearest(self.tdiff, t)
+            zdiff = find_nearest(np.array(z_lookup), tdiff_now[1])[1]
+            dmetals = - metallicity*self.sfr(t) \
+                      + self.ejected_z_mass(t, zdiff) \
                       + metals_i \
-                      + self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value  \
-                      - outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+                      + self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value \
+                      + outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+
             dt = t - prev_t
             prev_t = t
             metals += dmetals*dt
-            z_lookup.append([t,metallicity])
             metals_list.append(metals)
             # print t, metallicity #mg/4.8e10, metals/mg
-        # Output time and gas mass as Numpy Arrays
+        # zip array to make metallicity array containing time + Z
         Z = zip(*z_lookup)
         print("Metal mass exterior loop %s" % str(datetime.now()-now))
+        # np.array(Z[1]) is the metallicity
         return time, np.array(metals_list), np.array(Z[1])
 
-    def dust_mass(self,gasmass,metals):
+    def dust_mass(self,gasmass,metallicity):
         md = 0.
         prev_t = 1e-3
         # in case of pre-enrichment
@@ -228,24 +232,28 @@ class ChemModel:
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time<20.]
+        z_time = np.array(zip(time, metallicity))
         for item, t in enumerate(time):
             mg = gasmass[item]
-            metallicity = metals[item]
+            z = metallicity[item]
             # outflow dust options read from input dictionary
             if self.outflows['dust']:
                 outflow_dust = md
             else:
                 outflow_dust = 0.
+            tdiff_now = find_nearest(self.tdiff, t)
+            zdiff = find_nearest(z_time, tdiff_now[1])[1]
             ddust = -(md/mg)*self.sfr(t) \
-                    + self.ejected_d_mass(t, metallicity) \
-                    - (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,self.sfr(t),0.).value) \
-                    + (self.coldfraction*md)/f.grow_timescale(self.epsilon,mg,self.sfr(t),metallicity,md).value \
+                    + self.ejected_d_mass(t, zdiff) \
                     + self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value \
                     - (outflow_dust/mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+                    # - (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,self.sfr(t),0.).value) \
+                    # + (self.coldfraction*md)/f.grow_timescale(self.epsilon,mg,self.sfr(t),z,md).value \
+
             dt = t - prev_t
             prev_t = t
             md += ddust*dt
             dust_list.append(md)
-            print t, mg/4.8e10, metallicity, (md/mg)/metallicity #mg/4.8e10, metals/mg
+            print t, mg/4.8e10, z, (md/mg)/z #mg/4.8e10, metals/mg
         # Output time and gas mass as Numpy Arrays
-        return time, np.array(dust_list)
+    #    return time, np.array(dust_list)
