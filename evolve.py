@@ -109,16 +109,8 @@ class ChemModel:
         dm = 0.5
         edm = 0.
         while m <= mu:
-            # pull out lifetime of star of mass m so we can
-            # calculate SFR when star was born which is t-lifetime
-            tdiff = find_nearest(self.tdiff,t)[1]
-            if tdiff <= 0:
-                zdiff =0
-            else:
-                zdiff = metallicity #needs to be done properly t-taum d
-
-            if tdiff > 0:
-                edm += f.ejected_dust_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
+            # need to change this for sfr(tdiff) and zdiff when fixed
+            edm += f.ejected_dust_mass(m, self.sfr(t), metallicity, self.imf_type) * dm
             m += dm
 #            print m, t, tdiff, em
         # print("Metal mass interior loop %s" % str(datetime.now()-now))
@@ -212,9 +204,11 @@ class ChemModel:
                 outflow_metals = metallicity
             else:
                 outflow_metals = 0
-            dmetals = - metallicity*self.sfr(t) + self.ejected_z_mass(t, metallicity) + metals_i + \
-                    self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value + \
-                    outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+            dmetals = -metallicity*self.sfr(t) \
+                      + self.ejected_z_mass(t, metallicity) \
+                      + metals_i \
+                      + self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value  \
+                      - outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             dt = t - prev_t
             prev_t = t
             metals += dmetals*dt
@@ -222,10 +216,11 @@ class ChemModel:
             metals_list.append(metals)
             # print t, metallicity #mg/4.8e10, metals/mg
         # Output time and gas mass as Numpy Arrays
+        Z = zip(*z_lookup)
         print("Metal mass exterior loop %s" % str(datetime.now()-now))
-        return time, np.array(metals_list,metallicity)
+        return time, np.array(metals_list), np.array(Z[1])
 
-    def dust_mass(self,gasmass,metallicity):
+    def dust_mass(self,gasmass,metals):
         md = 0.
         prev_t = 1e-3
         # in case of pre-enrichment
@@ -235,16 +230,18 @@ class ChemModel:
         time = time[time<20.]
         for item, t in enumerate(time):
             mg = gasmass[item]
+            metallicity = metals[item]
             # outflow dust options read from input dictionary
             if self.outflows['dust']:
-                outflow_dust = md/mg
+                outflow_dust = md
             else:
-                outflow_dust = 0
-            ddust = -(md/mg)*self.sfr(t) + self.ejected_d_mass(t, metallicity) - \
-                    (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,SN_rate).value) + \
-                    (self.coldfraction*md)/f.grow_timescale(self.epsilon,mg,self.sfr(t),metallicity,md).value + \
-                    self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value + \
-                    outflow_dust*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+                outflow_dust = 0.
+            ddust = -(md/mg)*self.sfr(t) \
+                    + self.ejected_d_mass(t, metallicity) \
+                    - (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,self.sfr(t),0.).value) \
+                    + (self.coldfraction*md)/f.grow_timescale(self.epsilon,mg,self.sfr(t),metallicity,md).value \
+                    + self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value \
+                    - (outflow_dust/mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             dt = t - prev_t
             prev_t = t
             md += ddust*dt

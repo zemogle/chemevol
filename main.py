@@ -112,7 +112,7 @@ inits = {
 ch = ChemModel(**inits)
 time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
-time, m_metals = ch.metal_mass(mgas)
-time, mdust = ch.dust_mass(mgas,m_metals/gas)
+time, metalmass, metallicity = ch.metal_mass(mgas)
+time, mdust = ch.dust_mass(mgas,m_metals[1])
 
 print time, mgas, mstars

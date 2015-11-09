@@ -222,7 +222,7 @@ def grow_timescale(e,G,SFR,Z,D):
     t_grow = t_grow*u.year
     return t_grow
 
-def destruction_timescale(m,G,sfr):
+def destruction_timescale(m,G,sfr,SN_rate):
     '''
     Calculates the dust destruction timescale in years.
 
@@ -237,8 +237,8 @@ def destruction_timescale(m,G,sfr):
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
     In dust evolution, dMd/dt is proportional to Md/t_destroy
     '''
-    SN_rate_in_years = SN_rate(sfr)/1e9 # to convert from per Gyr to per yr
-    t_destroy = G/(m*SN_rate_in_years)
+    SN_rate = SN_rate/1e9 # to convert from per Gyr to per yr
+    t_destroy = G/(m*SN_rate)
 
     t_destroy = t_destroy*u.year
     return t_destroy
