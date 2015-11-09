@@ -99,6 +99,31 @@ class ChemModel:
         # print("Metal mass interior loop %s" % str(datetime.now()-now))
         return ezm
 
+    def ejected_d_mass(self, t, metallicity):
+        now = datetime.now()
+        mu = t_lifetime[-1][0]
+        # we pull out mass corresponding to age of system
+        # to get lower limit of integral
+        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
+        dm = 0.5
+        edm = 0.
+        while m <= mu:
+            # pull out lifetime of star of mass m so we can
+            # calculate SFR when star was born which is t-lifetime
+            tdiff = find_nearest(self.tdiff,t)[1]
+            if tdiff <= 0:
+                zdiff =0
+            else:
+                zdiff = metallicity #needs to be done properly t-taum d
+
+            if tdiff > 0:
+                edm += f.ejected_dust_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
+            m += dm
+#            print m, t, tdiff, em
+        # print("Metal mass interior loop %s" % str(datetime.now()-now))
+        return edm
+
+
     def extra_sfh(self, sfh):
         '''
         This extrapolates the SFH provided to start at 0.001Gyr
@@ -212,15 +237,14 @@ class ChemModel:
         time = time[time<20.]
         for item, t in enumerate(time):
             mg = gasmass[item]
-            Z = metallicity[item]
             # outflow dust options read from input dictionary
             if self.outflows['dust']:
                 outflow_dust = md/mg
             else:
                 outflow_dust = 0
-            ddust = -(md/mg)*self.sfr(t) + self.ejected_dust_mass(t, metallicity) - \
-                    (1-self.coldfraction)*(md/destruction_timescale(md,mg,SN_rate).value) + \
-                    (self.coldfraction*md)/grow_timescale(self.epsilon,mg,self.sfr(t),metallicity,md).value + \
+            ddust = -(md/mg)*self.sfr(t) + self.ejected_d_mass(t, metallicity) - \
+                    (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,SN_rate).value) + \
+                    (self.coldfraction*md)/f.grow_timescale(self.epsilon,mg,self.sfr(t),metallicity,md).value + \
                     self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value + \
                     outflow_dust*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             dt = t - prev_t
