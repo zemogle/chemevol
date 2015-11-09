@@ -22,9 +22,11 @@ inits = {	'gasmass_init':4.8e10,
 							'destroy':True,
 							'inflows':{'metals': 0., 'xSFR': 0},
 							'outflows':{'metals': True, 'xSFR': 0},
+              'cold_gas_fraction': 0.5,
+              'epsilon_grain': 500.
 							}
 ch = ChemModel(**inits)
 time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
-time, metalmass = ch.metal_mass(mgas)
+time, metalmass, metallicity = ch.metal_mass(mgas)
 ```
