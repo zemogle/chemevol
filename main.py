@@ -59,6 +59,7 @@ initial_galaxy_params
 					  	typically 0.5-0.9 for high z systems, default is 0.5
 - epsilon_grain = 		grain growth parameter from Mattsson & Andersen 2012
 						default is 500 for t_grow ~ 10Myr.
+- destruct = 			amount of material destroyed by each SN (typically 1000 or 100Msun)
 
 
 Each run will be used to generate the evolution of dust, gas,
@@ -76,7 +77,8 @@ initial_galaxy_params = {'run1': {
 							'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
 							'outflows':{'metals': True, 'xSFR': 0, 'dust': False},
 							'cold_gas_fraction': 0.5,
-							'epsilon_grain': 500.
+							'epsilon_grain': 500.,
+							'destruct': 1000.
 							},
 						'run2': {
 							'gasmass_init':4e10,
@@ -88,7 +90,8 @@ initial_galaxy_params = {'run1': {
 							'inflows':{'metals': 1e-4, 'xSFR': 0, 'dust': 0},
 							'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 							'cold_gas_fraction':0.,
-							'epsilon_grain': 500.
+							'epsilon_grain': 500.,
+							'destruct': 100.
 							}
 							}
 
@@ -113,6 +116,6 @@ ch = ChemModel(**inits)
 time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
 time, metalmass, metallicity = ch.metal_mass(mgas)
-time, mdust = ch.dust_mass(mgas,m_metals[1])
+time, mdust = ch.dust_mass(mgas,metallicity)
 
 print time, mgas, mstars

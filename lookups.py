@@ -166,10 +166,11 @@ def lookup_fn(lookup, column, value):
     idx = (np.abs(col1-value)).argmin()
     return lookup[idx]
 
-def lookup_taum(mass,colnum):
-    '''
-    Take a lifetime list and
-    '''
-    col1 = lifetime[:,1]
+def lookup_taum(mass, colnum):
+#    '''
+#    Take a lifetime list
+#    '''
+    col1 = lifetime[:,0]
     idx = (np.abs(col1-mass)).argmin()
+    #print mass, col1, lifetime[idx][colnum]
     return lifetime[idx][colnum]

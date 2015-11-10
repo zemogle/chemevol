@@ -102,17 +102,6 @@ def ejected_gas_mass(m, sfr, choice):
         dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
     return dej
 
-def SN_rate(m, sfrdiff, choice):
-    '''
-    Calculate the SN rate at time t for a given SFR
-    '''
-    if m >= 9 & m <= 40:
-        dSN_rate =  sfrdiff * initial_mass_function(m, choice)
-    else:
-        dSN_rate = 0.
-    return dSN_rate
-
-
 def ejected_metal_mass(m, sfr, zdiff, choice):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
@@ -130,7 +119,7 @@ def ejected_metal_mass(m, sfr, zdiff, choice):
         massyields = find_nearest(mass_yields, m)
         #sum_mass = metals from winds and SN unless m>40
         # where sum_mass = winds only
-        if m <= 40:
+        if m <= 40.0:
             sum_mass = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
         else:
             sum_mass = massyields[yn.index('yields_winds_001')]
@@ -159,10 +148,6 @@ def ejected_dust_mass(m, sfr, zdiff, choice):
     else:
         massyields = find_nearest(mass_yields, m)
         sum_yields = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
-        # mass_yields = lookup_fn(t_yields, 'mass', m)
-        # lowyields = mass_yields['yields_sn_001']
-        # highyields = mass_yields['yields_winds_001']
-        # sum_yields = lowyields + highyields
         # sum mass gets dust mass ejected from new elements from SN and winds
         sum_mass = dust_masses(m, sum_yields).value
         dej = ((m - (remnant_mass(m).value))*zdiff*delta_LIMS + sum_mass) * \
@@ -229,7 +214,8 @@ def grow_timescale(e,g,sfr,z,d):
     t_grow = t_grow*u.year
     return t_grow
 
-def destruction_timescale(m,G,sfr,SN_rate):
+
+def destruction_timescale(destruct,g,sfr,supernova_rate):
     '''
     Calculates the dust destruction timescale in years.
 
@@ -244,9 +230,9 @@ def destruction_timescale(m,G,sfr,SN_rate):
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
     In dust evolution, dMd/dt is proportional to Md/t_destroy
     '''
-    SN_rate = SN_rate/1e9 # to convert from per Gyr to per yr
-    t_destroy = G/(m*SN_rate)
 
+    # to convert from per Gyr to per yr
+    t_destroy = g/(destruct*supernova_rate)
     t_destroy = t_destroy*u.year
     return t_destroy
 

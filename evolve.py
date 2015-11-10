@@ -24,6 +24,7 @@ class ChemModel:
             self.SFH_file = inputs['SFH']
             self.coldfraction = inputs['cold_gas_fraction']
             self.epsilon = inputs['epsilon_grain']
+            self.destroy_ism = inputs['destruct']
             if not self.SFH_file:
                 self.SFH_file = 'Milkyway.sfh'
             self.sfh_file = self.SFH_file
@@ -47,6 +48,7 @@ class ChemModel:
     def sfr(self, t):
         try:
             vals = find_nearest(self.sfh,t)
+
             return vals[1]
         except:
             logger.error("No SFH yet")
@@ -57,80 +59,6 @@ class ChemModel:
             return vals[1]
         except:
             logger.error("No SFH yet")
-
-    def ejected_mass(self, t):
-        '''
-        Calculates the ejected gas mass from stars em (t)
-        for gas mass integral where:
-        dmg/dt = -SFR(t) + int em*dm + inflows - outflows
-        '''
-        mu = t_lifetime[-1]['mass']
-        # we pull out mass corresponding to age of system
-        # to get lower limit of integral
-        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
-        dm = 0.5
-        em = 0.
-        lifetime_cols = { 'low_metals':0, 'high_metals':1}
-        while m <= mu:
-            # pull out lifetime of star of mass m so we can
-            # calculate SFR when star was born which is t-lifetime
-            taum = lookup_taum(m,lifetime_cols['low_metals'])
-            tdiff = t - taum
-            if tdiff > 0:
-                em += f.ejected_gas_mass(m, self.sfr(tdiff), self.imf_type) * dm
-            m += dm
-        return em, tdiff
-
-    def ejected_z_mass(self, t, metallicity):
-        '''
-        Calculates the ejected metal mass from stars ezm (t)
-        for metal mass integral where:
-        dmz/dt = -Z* SFR(t) + int ezm*dm + Z,inflows - Z,outflows + Z_i
-        '''
-        now = datetime.now()
-        mu = t_lifetime[-1][0]
-        # we pull out mass corresponding to age of system
-        # to get lower limit of integral
-        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
-        dm = 0.5
-        ezm = 0.
-        while m <= mu:
-            # pull out lifetime of star of mass m so we can
-            # calculate SFR when star was born which is t-lifetime
-            tdiff = find_nearest(self.tdiff,t)[1]
-            if tdiff <= 0:
-                zdiff =0
-            else:
-                zdiff = metallicity #needs to be done properly t-taum d
-            if tdiff > 0:
-                ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
-            m += dm
-#            print m, t, tdiff, em
-        # print("Metal mass interior loop %s" % str(datetime.now()-now))
-        return ezm
-
-    def ejected_d_mass(self, t, metallicity):
-        '''
-        Calculates the ejected dust mass from stars edm (t)
-        for dust mass integral where:
-        dmd/dt = - md/mg * SFR(t) + int edm*dm + md/mg,inflows - md/mg,outflows
-                 + md_graingrowth - md_destroy
-        '''
-        now = datetime.now()
-        mu = t_lifetime[-1][0]
-        # we pull out mass corresponding to age of system
-        # to get lower limit of integral
-        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
-        dm = 0.5
-        edm = 0.
-        while m <= mu:
-            # need to change this for sfr(tdiff) and zdiff when fixed
-            edm += f.ejected_dust_mass(m, self.sfr(t), metallicity, self.imf_type) * dm
-            m += dm
-#            print m, t, tdiff, em
-        # print("Metal mass interior loop %s" % str(datetime.now()-now))
-        return edm
-
 
     def extra_sfh(self, sfh):
         '''
@@ -161,6 +89,103 @@ class ChemModel:
         final_sfh = newlist + (sfh.tolist()[2:])
         return final_sfh
 
+
+    def ejected_mass(self, t):
+        '''
+        Calculates the ejected gas mass from stars em (t)
+        for gas mass integral where:
+
+        dmg/dt = -SFR(t) + int em(t)*dm + inflows - outflows
+
+        mass is only ejected after stars die ie when
+        t - taum (lifetime of star) > 0
+        '''
+        #initialize
+        mu = t_lifetime[-1]['mass']
+        dm = 0.5
+        em = 0.
+        t_0 = 1e-3
+        # we pull out mass corresponding to age of system
+        # to get lower limit of integral
+        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+        # to make taum lookup faster
+        lifetime_cols = {'low_metals':1, 'high_metals':2}
+        while m <= mu:
+            # pull out lifetime of star of mass m so we can
+            # calculate SFR when star was born which is t-lifetime
+            taum =  taum = lookup_taum(m,lifetime_cols['low_metals'])
+            tdiff = t - taum
+            # only release metals (ejected_gas_mass) after stars die 
+            if tdiff < 0:
+                sfr = 0.
+            else:
+                sfr = self.sfr(tdiff)
+            # integral calculation
+            em += f.ejected_gas_mass(m, sfr, self.imf_type) * dm
+            m += dm
+        return em, tdiff
+
+    def ejected_z_mass(self, t, metallicity):
+        '''
+        Calculates the ejected metal mass from stars ezm (t)
+        for metal mass integral where:
+        dmz/dt = -Z * SFR(t) + int ezm*dm + Z,inflows - Z,outflows + Z_i
+        '''
+        # initialize
+        dm = 0.5
+        ezm = 0.
+        now = datetime.now()
+        mu = t_lifetime[-1][0]
+        # we pull out mass corresponding to age of system
+        # to get lower limit of integral
+        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+        # to make taum lookup faster
+        lifetime_cols = {'low_metals':1, 'high_metals':2}
+        while m <= mu:
+            # pull out lifetime of star of mass m so we can
+            # calculate SFR when star was born which is t-lifetime
+            taum =  taum = lookup_taum(m,lifetime_cols['low_metals'])
+            tdiff = t - taum
+            # ???????
+            tdiff = find_nearest(self.tdiff,t)[1]
+            if tdiff <= 0.:
+                zdiff = 0.
+            else:
+                zdiff = metallicity
+            if tdiff > 0:
+                ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
+            m += dm
+        #    print m, t, tdiff, metallicity, zdiff, ezm
+        return ezm
+
+    def ejected_d_mass(self, t, metallicity):
+        '''
+        Calculates the ejected dust mass from stars edm (t)
+        for dust mass integral where:
+        dmd/dt = - md/mg * SFR(t) + int edm*dm + md/mg,inflows - md/mg,outflows
+                 + md_graingrowth - md_destroy
+        '''
+        # initialize
+        dm = 0.5
+        edm = 0.
+        now = datetime.now()
+        mu = t_lifetime[-1][0]
+        # we pull out mass corresponding to age of system
+        # to get lower limit of integral
+        m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
+        #to make taum lookup faster
+        lifetime_cols = {'low_metals':1, 'high_metals':2}
+        while m <= mu:
+            # pull out lifetime of star of mass m so we can
+            # calculate SFR when star was born which is t-lifetime
+            taum =  taum = lookup_taum(m,lifetime_cols['low_metals'])
+            tdiff = t - taum
+            # need to change z for for zdiff when fixed
+            edm += f.ejected_dust_mass(m, self.sfr(tdiff), metallicity, self.imf_type) * dm
+            m += dm
+#            print m, t, tdiff, em
+        return edm
+
     def gas_mass(self):
         '''
         Calculates the gas mass at time t: mg
@@ -174,7 +199,7 @@ class ChemModel:
     # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time<20.]
-    # set up t-taum
+    # set up t-taum array
         t_diff = []
         now = datetime.now()
         for t in time:
@@ -187,11 +212,12 @@ class ChemModel:
         # set up gas outflows using dictionary inputs
             gas_out = f.outflows(self.sfr(t), self.outflows['xSFR']).value
 
-            # set up ejected gas mass from stars for t-taum
-            ej, tdiff = self.ejected_mass(t)
+        # call ejected gas mass and t-taum
+            gas_ej, tdiff = self.ejected_mass(t)
 
+        # do the integral
             dmg = - gas_ast \
-                  + ej \
+                  + gas_ej \
                   + gas_inf \
                   - gas_out
 
@@ -200,9 +226,9 @@ class ChemModel:
             mg += dmg*dt
             mg_list.append(mg)
             t_diff.append([t,tdiff])
+            print t, gas_ast, gas_ej
         self.tdiff = np.array(t_diff)
         print("Gas mass exterior loop %s" % str(datetime.now()-now))
-        # Output time and gas mass as Numpy Arrays
         return time, np.array(mg_list)
 
     def stellar_mass(self):
@@ -275,14 +301,13 @@ class ChemModel:
             prev_t = t
             metals += dmetals*dt
             metals_list.append(metals)
-            print t, metallicity #mg/4.8e10, metals/mg
         # zip array to make metallicity array containing time + Z
         Z = zip(*z_lookup)
-        print("Metal mass exterior loop %s" % str(datetime.now()-now))
         # np.array(Z[1]) is the metallicity
+        print("Metal mass exterior loop %s" % str(datetime.now()-now))
         return time, np.array(metals_list), np.array(Z[1])
 
-    def dust_mass(self,gasmass,metallicity):
+    def dust_mass(self,gasmass,metallicity,SN_rate):
         '''
         Calculates the dust mass at time t: md
         for dust mass integral where:
@@ -297,9 +322,11 @@ class ChemModel:
         time = self.sfh[:,0]
         time = time[time<20.]
         z_time = np.array(zip(time, metallicity))
+        now = datetime.now()
         for item, t in enumerate(time):
             mg = gasmass[item]
             z = metallicity[item]
+            r_sn = SN_rate[item]
         # set up time, z(t-taum) array for use in ejected dust mass integral
             tdiff_now = find_nearest(self.tdiff, t)
             zdiff = find_nearest(z_time, tdiff_now[1])[1]
@@ -328,8 +355,8 @@ class ChemModel:
                 mdust_gg = md*self.coldfraction/gg
 
         #set up removal of dust via destruction parameter
-            #des = 1e-9*f.destruction_timescale(md,mg,self.sfr(t),0.).value
-            #mdust_des = md*(1-self.coldfraction)/des
+        #    des = 1e-9*f.destruction_timescale(self.destroy_ism,mg,self.sfr(t),r_sn).value
+        #    mdust_des = md*(1-self.coldfraction)/des
 
         # integral of dust mass equation with time
         # set dust mass to zero if metallicity = zero
@@ -338,7 +365,7 @@ class ChemModel:
                     + mdust_inf \
                     - mdust_out \
                     + mdust_gg \
-                    - 0.#mdust_des
+                    - 0. #mdust_des
 
             dt = t - prev_t
             prev_t = t
@@ -348,8 +375,8 @@ class ChemModel:
                 dust_to_metals = 0.
             else:
                 dust_to_metals = (md/mg)/z
+        #    print t, mg/4.8e10, z, des
             dz_ratio_list.append(dust_to_metals)
-        #    print t, mg/4.8e10, z, (md/mg)/z,  #mg/4.8e10, metals/mg
-
+        print("Dust mass exterior loop %s" % str(datetime.now()-now))
         # Output time and gas mass as Numpy Arrays
     #    return time, np.array(dust_list), np.array(dz_ratio_list)

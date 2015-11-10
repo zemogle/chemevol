@@ -24,7 +24,8 @@ inits = {
 							'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
   							'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 							'cold_gas_fraction': 0.5,
-							'epsilon_grain': 500.
+							'epsilon_grain': 500.,
+              'destruct': 1000.
 							}
 ch = ChemModel(**inits)
 time, mgas = ch.gas_mass()
