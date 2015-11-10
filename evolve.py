@@ -219,8 +219,7 @@ class ChemModel:
         '''
         metals = 0.
         prev_t = 1e-3
-        # in case of pre-enrichment
-        metals_i = 0.
+        metals_pre = 0. # in case of pre-enrichment needed
         metals_list = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
@@ -230,26 +229,38 @@ class ChemModel:
         for item, t in enumerate(time):
             mg = gasmass[item]
             metallicity = metals/mg
-            # print(metals, mg)
+        # set up time, z(t-taum array)
             z_lookup.append([t,metallicity])
-            # outflow metallicity read from input dictionary
-            if self.outflows['metals']:
-                outflow_metals = metallicity
-            else:
-                outflow_metals = 0
             tdiff_now = find_nearest(self.tdiff, t)
             zdiff = find_nearest(np.array(z_lookup), tdiff_now[1])[1]
-            dmetals = - metallicity*self.sfr(t) \
-                      + self.ejected_z_mass(t, zdiff) \
-                      + metals_i \
-                      + self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value \
-                      + outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+
+        # set up metals lost due to astration
+            metals_ast = metallicity*self.sfr(t)
+
+        #set up metals ejected by LIMS + SNe
+            metals_stars = self.ejected_z_mass(t, zdiff)
+            
+        # set up metals lost in outflows with outflow metallicity read from input dictionary
+            if self.outflows['metals']:
+                outflow_metals = metallicity
+                metals_out = outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+            else:
+                metals_out = 0.
+
+        # set up inflows of metals with inflow metallicity from dictionary
+            metals_inf = self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR']).value
+
+            dmetals = - metals_ast \
+                      + metals_stars \
+                      + metals_pre \
+                      + metals_inf \
+                      + metals_out
 
             dt = t - prev_t
             prev_t = t
             metals += dmetals*dt
             metals_list.append(metals)
-            # print t, metallicity #mg/4.8e10, metals/mg
+            print t, metallicity #mg/4.8e10, metals/mg
         # zip array to make metallicity array containing time + Z
         Z = zip(*z_lookup)
         print("Metal mass exterior loop %s" % str(datetime.now()-now))
@@ -266,6 +277,7 @@ class ChemModel:
         md = 0.
         prev_t = 1e-3
         dust_list = []
+        dz_ratio_list = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time<20.]
@@ -279,7 +291,7 @@ class ChemModel:
 
         #set up dust mass from stars (recycled(LIMS) + new (SN+LIMS))
             mdust_stars = self.ejected_d_mass(t, zdiff)
-            
+
         # set up inflow contribution to dust mass (read from dictionary)
             mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value
 
@@ -306,19 +318,23 @@ class ChemModel:
 
         # integral of dust mass equation with time
         # set dust mass to zero if metallicity = zero
-            if z <= 0.:
-                ddust = 0.
-            else:
-                ddust = - mdust_ast \
-                        + mdust_stars \
-                        + mdust_inf \
-                        - mdust_out \
-                        + mdust_gg \
-                        - mdust_des
+            ddust = - mdust_ast \
+                    + mdust_stars \
+                    + mdust_inf \
+                    - mdust_out \
+                    + mdust_gg \
+                    - 0.#mdust_des
+
             dt = t - prev_t
             prev_t = t
             md += ddust*dt
             dust_list.append(md)
-            print t, mg/4.8e10, z, (md/mg)/z #mg/4.8e10, metals/mg
+            if z <= 0.:
+                dust_to_metals = 0.
+            else:
+                dust_to_metals = (md/mg)/z
+            dz_ratio_list.append(dust_to_metals)
+        #    print t, mg/4.8e10, z, (md/mg)/z,  #mg/4.8e10, metals/mg
+
         # Output time and gas mass as Numpy Arrays
-    #    return time, np.array(dust_list)
+    #    return time, np.array(dust_list), np.array(dz_ratio_list)
