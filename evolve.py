@@ -171,15 +171,30 @@ class ChemModel:
         mg = self.gasmass_init
         prev_t = 1e-3
         mg_list = []
-        # Limit time to less than 20. Gyrs
+    # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time<20.]
+    # set up t-taum
         t_diff = []
         now = datetime.now()
         for t in time:
+        # set up gas lost due to star formation
+            gas_ast = self.sfr(t)
+
+        # set up gas inflows using dictionary inputs
+            gas_inf = f.inflows(self.sfr(t), self.inflows['xSFR']).value
+
+        # set up gas outflows using dictionary inputs
+            gas_out = f.outflows(self.sfr(t), self.outflows['xSFR']).value
+
+            # set up ejected gas mass from stars for t-taum
             ej, tdiff = self.ejected_mass(t)
-            dmg = - self.sfr(t) + ej + f.inflows(self.sfr(t), \
-                self.inflows['xSFR']).value + f.outflows(self.sfr(t), self.outflows['xSFR']).value
+
+            dmg = - gas_ast \
+                  + ej \
+                  + gas_inf \
+                  - gas_out
+
             dt = t - prev_t
             prev_t = t
             mg += dmg*dt
@@ -239,7 +254,7 @@ class ChemModel:
 
         #set up metals ejected by LIMS + SNe
             metals_stars = self.ejected_z_mass(t, zdiff)
-            
+
         # set up metals lost in outflows with outflow metallicity read from input dictionary
             if self.outflows['metals']:
                 outflow_metals = metallicity
