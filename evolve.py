@@ -273,38 +273,48 @@ class ChemModel:
         for item, t in enumerate(time):
             mg = gasmass[item]
             z = metallicity[item]
+        # set up time, z(t-taum) array for use in ejected dust mass integral
+            tdiff_now = find_nearest(self.tdiff, t)
+            zdiff = find_nearest(z_time, tdiff_now[1])[1]
+
+        #set up dust mass from stars (recycled(LIMS) + new (SN+LIMS))
+            mdust_stars = self.ejected_d_mass(t, zdiff)
+            
         # set up inflow contribution to dust mass (read from dictionary)
             mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value
+
         # set up outflow contribution to dust mass (read from input dictionary)
             if self.outflows['dust']:
                 outflow_dust = md
                 mdust_out = (outflow_dust/mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             else:
                 mdust_out = 0.
-        # set up time, z(t-taum) array for use in ejected dust mass integral
-            tdiff_now = find_nearest(self.tdiff, t)
-            zdiff = find_nearest(z_time, tdiff_now[1])[1]
+
+        #set up removal of dust mass via astration
+            mdust_ast = (md/mg)*self.sfr(t)
+
         #set up contribution of grain growth to dust mass
             gg = 1e-9*f.grow_timescale(self.epsilon,mg,self.sfr(t),z,md).value #in Gyrs
             if gg <= 0:
                 mdust_gg = 0.
             else:
                 mdust_gg = md*self.coldfraction/gg
+
         #set up removal of dust via destruction parameter
             #des = 1e-9*f.destruction_timescale(md,mg,self.sfr(t),0.).value
             #mdust_des = md*(1-self.coldfraction)/des
+
+        # integral of dust mass equation with time
         # set dust mass to zero if metallicity = zero
             if z <= 0.:
                 ddust = 0.
             else:
-        # integral of dust mass equation with time
-                ddust = -(md/mg)*self.sfr(t) \
-                        + self.ejected_d_mass(t, zdiff) \
+                ddust = - mdust_ast \
+                        + mdust_stars \
                         + mdust_inf \
                         - mdust_out \
-                        + mdust_gg #\
-                        #   - mdust_des \
-
+                        + mdust_gg \
+                        - mdust_des
             dt = t - prev_t
             prev_t = t
             md += ddust*dt
