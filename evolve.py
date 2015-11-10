@@ -59,6 +59,11 @@ class ChemModel:
             logger.error("No SFH yet")
 
     def ejected_mass(self, t):
+        '''
+        Calculates the ejected gas mass from stars em (t)
+        for gas mass integral where:
+        dmg/dt = -SFR(t) + int em*dm + inflows - outflows
+        '''
         mu = t_lifetime[-1]['mass']
         # we pull out mass corresponding to age of system
         # to get lower limit of integral
@@ -77,6 +82,11 @@ class ChemModel:
         return em, tdiff
 
     def ejected_z_mass(self, t, metallicity):
+        '''
+        Calculates the ejected metal mass from stars ezm (t)
+        for metal mass integral where:
+        dmz/dt = -Z* SFR(t) + int ezm*dm + Z,inflows - Z,outflows + Z_i
+        '''
         now = datetime.now()
         mu = t_lifetime[-1][0]
         # we pull out mass corresponding to age of system
@@ -100,6 +110,12 @@ class ChemModel:
         return ezm
 
     def ejected_d_mass(self, t, metallicity):
+        '''
+        Calculates the ejected dust mass from stars edm (t)
+        for dust mass integral where:
+        dmd/dt = - md/mg * SFR(t) + int edm*dm + md/mg,inflows - md/mg,outflows
+                 + md_graingrowth - md_destroy
+        '''
         now = datetime.now()
         mu = t_lifetime[-1][0]
         # we pull out mass corresponding to age of system
@@ -146,6 +162,12 @@ class ChemModel:
         return final_sfh
 
     def gas_mass(self):
+        '''
+        Calculates the gas mass at time t: mg
+
+        for gas mass integral where:
+        dmg/dt = -SFR(t) + int em*dm + inflows - outflows
+        '''
         mg = self.gasmass_init
         prev_t = 1e-3
         mg_list = []
@@ -169,6 +191,11 @@ class ChemModel:
         return time, np.array(mg_list)
 
     def stellar_mass(self):
+        '''
+        Calculates the stellar mass at time t where integral
+
+        dmstars/dt = - SFR(t)
+        '''
         mstars = 0.
         prev_t = 1e-3
         mstars_list = []
@@ -185,6 +212,11 @@ class ChemModel:
         return time, np.array(mstars_list)
 
     def metal_mass(self,gasmass):
+        '''
+        Calculates the metal mass at time t: Mz
+        for metal mass integral where:
+        dmz/dt = -Z* SFR(t) + int ezm*dm + Z,inflows - Z,outflows + Z_i
+        '''
         metals = 0.
         prev_t = 1e-3
         # in case of pre-enrichment
@@ -225,9 +257,14 @@ class ChemModel:
         return time, np.array(metals_list), np.array(Z[1])
 
     def dust_mass(self,gasmass,metallicity):
+        '''
+        Calculates the dust mass at time t: md
+        for dust mass integral where:
+        dmd/dt = - md/mg * SFR(t) + int edm*dm + md/mg,inflows - md/mg,outflows
+                 + md_graingrowth - md_destroy
+        '''
         md = 0.
         prev_t = 1e-3
-        # in case of pre-enrichment
         dust_list = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
@@ -236,29 +273,42 @@ class ChemModel:
         for item, t in enumerate(time):
             mg = gasmass[item]
             z = metallicity[item]
-            # outflow dust options read from input dictionary
+        # set up inflow contribution to dust mass (read from dictionary)
+            mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value
+        # set up outflow contribution to dust mass (read from input dictionary)
             if self.outflows['dust']:
                 outflow_dust = md
+                mdust_out = (outflow_dust/mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             else:
-                outflow_dust = 0.
+                mdust_out = 0.
+        # set up time, z(t-taum) array for use in ejected dust mass integral
             tdiff_now = find_nearest(self.tdiff, t)
             zdiff = find_nearest(z_time, tdiff_now[1])[1]
-            gg = f.grow_timescale(self.epsilon,mg,self.sfr(t),z,md).value
+        #set up contribution of grain growth to dust mass
+            gg = 1e-9*f.grow_timescale(self.epsilon,mg,self.sfr(t),z,md).value #in Gyrs
             if gg <= 0:
                 mdust_gg = 0.
             else:
-                mdust_gg = (self.coldfraction*md)/gg
-            ddust = -(md/mg)*self.sfr(t) \
-                    + self.ejected_d_mass(t, zdiff) \
-                    + self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value \
-                    - (outflow_dust/mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value \
-                    + mdust_gg #\
-                #    - (1-self.coldfraction)*(md/f.destruction_timescale(md,mg,self.sfr(t),0.).value) \
+                mdust_gg = md*self.coldfraction/gg
+        #set up removal of dust via destruction parameter
+            #des = 1e-9*f.destruction_timescale(md,mg,self.sfr(t),0.).value
+            #mdust_des = md*(1-self.coldfraction)/des
+        # set dust mass to zero if metallicity = zero
+            if z <= 0.:
+                ddust = 0.
+            else:
+        # integral of dust mass equation with time
+                ddust = -(md/mg)*self.sfr(t) \
+                        + self.ejected_d_mass(t, zdiff) \
+                        + mdust_inf \
+                        - mdust_out \
+                        + mdust_gg #\
+                        #   - mdust_des \
 
             dt = t - prev_t
             prev_t = t
             md += ddust*dt
             dust_list.append(md)
-            print t, mg/4.8e10,z, (md/mg)/z #mg/4.8e10, metals/mg
+            print t, mg/4.8e10, z, (md/mg)/z #mg/4.8e10, metals/mg
         # Output time and gas mass as Numpy Arrays
     #    return time, np.array(dust_list)

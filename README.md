@@ -22,13 +22,15 @@ inits = {
 							'dust_source': 'ALL',
 							'destroy': True,
 							'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
-							'outflows':{'metals': True, 'xSFR': 0, 'dust': False},
+  							'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 							'cold_gas_fraction': 0.5,
-							'epsilon_grain': 500.
+							'epsilon_grain': 100.
 							}
 ch = ChemModel(**inits)
 time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
 time, metalmass, metallicity = ch.metal_mass(mgas)
+
+ch.dust_mass(mgas,metallicity)
 
 ```

@@ -23,7 +23,7 @@ class TestFunctions:
         assert mass == 0.
 
     def test_destruction(self):
-        destroy = destruction_timescale(1000.,6e9,2.1e7)
+        destroy = destruction_timescale(1000.,6e9,2.1e7, X)
         destroy = destroy/1e6 #in Myr
         assert  285.5 < destroy.value < 285.9
 
@@ -31,22 +31,6 @@ class TestFunctions:
         grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
         grow = grow/1e6 #in Myr
         assert 86.3 < grow.value < 86.4
-
-    def test_dustmass_low(self):
-        mass = dust_masses(0.45, 1.0, 1.0)
-        assert mass.value == 0.45
-
-    def test_dustmass_outofbounds_low(self):
-        mass = dust_masses(0.45, 0.7, 1.0)
-        assert mass.value == 0.0
-
-    def test_dustmass_outofbounds_high(Self):
-        mass = dust_masses(0.45, 60.0, 1.0)
-        assert mass.value == 0.0
-
-    def test_dustmass_mid(Self):
-        mass = dust_masses(0.45, 25.0, 1.0)
-        assert mass.value == 1.0
 
     def test_outflow_func(Self):
         gas_outflow = outflows(1.0,1.5)
