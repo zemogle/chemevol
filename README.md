@@ -19,7 +19,7 @@ The code requires a dictionary of parameters to feed in, these are set in main.p
 The code can be run using the following example along with a SFH file.  
 
 ```python
-from plots import p
+import plots as p
 from evolve import ChemModel
 inits = {
 							'gasmass_init': 4.8e10,
@@ -41,5 +41,7 @@ time, metalmass, metallicity = ch.metal_mass(mgas)
 snrate = ch.supernova_rate()
 time, mdust, dust_metals = ch.dust_mass(mgas,metallicity,snrate)
 
-p.figure(time,mgas,mstars,metalmass,mdust)
+gasfraction = mgas/(mgas+mstars)
+
+p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction)
 ```

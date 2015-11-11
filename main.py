@@ -112,4 +112,4 @@ time, mdust, dust_to_metals = ch.dust_mass(mgas,metallicity,snrate)
 gasfraction = mgas/(mgas+mstars)
 
 # Quick look plots:
-p.figure(time,mgas,mstars)
+p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals)

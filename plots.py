@@ -2,7 +2,7 @@
 make some quick look up figures
 '''
 import matplotlib.pyplot as plt
-def figure(time,gas,stars,metals,dust):
+def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction):
     plt.figure(figsize = (15,10))
     f1 = plt.subplot(2,3,1)
     f1.semilogy(time,gas,color='black',linestyle='-',linewidth=2,label='Gas')
@@ -15,9 +15,9 @@ def figure(time,gas,stars,metals,dust):
 
     f2 = plt.subplot(2,3,2)
     f2.semilogy(time,metals,color='black',linewidth=2,label='Metals')
-    f2.semilogy(time,dust[:,0],color='purple',linestyle='-',linewidth=2,label='Dust')
-    f2.semilogy(time,dust[:,1],color='purple',linestyle='--',linewidth=2,label='Stars')
-    f2.semilogy(time,dust[:,2],color='purple',linestyle='-.',linewidth=2,label='ISM')
+    f2.semilogy(time,dust[:,0],color='purple',linestyle='-',linewidth=2,label='Dust All')
+    f2.semilogy(time,dust[:,1],color='purple',linestyle='--',linewidth=2,label='Dust Stars')
+    f2.semilogy(time,dust[:,2],color='purple',linestyle='-.',linewidth=2,label='Dust ISM')
     f2.legend(frameon=False,loc='lower right',fontsize='11')
     f2.set_xlim(0.01,20)
     f2.set_ylim(5e5,5e9)
@@ -34,4 +34,20 @@ def figure(time,gas,stars,metals,dust):
     f3.set_ylim(1e2,1e9)
     f3.set_ylabel("Mass (Msun)", fontsize='16')
     f3.set_xlabel("Time (Gyrs)", fontsize='16')
+
+    f4 = plt.subplot(2,3,4)
+    f4.loglog(gasfraction,metallicity,color='black',linewidth=2,label='Metallicity')
+    f4.legend(frameon=False, loc='lower right', fontsize='11')
+    f4.set_xlim(1.0,0.1)
+    f4.set_ylim(1e-5,0.1)
+    f4.set_ylabel("Fraction", fontsize='16')
+    f4.set_xlabel("Gas Fraction", fontsize='16')
+
+    f5 = plt.subplot(2,3,5)
+    f5.loglog(gasfraction,dust_metals_ratio,color='purple',linestyle='-',linewidth=2,label='Dust to Metals')
+    f5.legend(frameon=False, loc='lower right', fontsize='11')
+    f5.set_xlim(1.0,0.1)
+    f5.set_ylim(0.1,1.5)
+    f5.set_ylabel("Fraction", fontsize='16')
+    f5.set_xlabel("Gas Fraction", fontsize='16')
     plt.show()
