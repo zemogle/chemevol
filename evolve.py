@@ -1,4 +1,3 @@
-from scipy.integrate import quad
 import functions as f
 import numpy as np
 from lookups import find_nearest, lookup_fn, t_lifetime, lookup_taum
@@ -39,7 +38,7 @@ class ChemModel:
     #        self.sfh = vals*scale
             sfh = vals*scale
             # extrapolates SFH back to 0.001Gyr using SFH file
-            final_sfh = self.extra_sfh(sfh)
+            final_sfh = f.extra_sfh(sfh, self.gamma)
             self.sfh = np.array(final_sfh)
         except:
             logger.error("File '%s' will not parse" % self.SFH_file)
@@ -59,36 +58,6 @@ class ChemModel:
             return vals[1]
         except:
             logger.error("No SFH yet")
-
-    def extra_sfh(self, sfh):
-        '''
-        This extrapolates the SFH provided to start at 0.001Gyr
-        with 100 extra steps between 0.001Gyr and the first non-zero
-        entry in the SFH list.
-
-        Returns a new SFH list made from joining the
-        extrapolated SFH in this routine to the original input SFH file
-        '''
-        #to start integral at t_0 regardless of when SFH file starts
-        t_0 = 1e-3 # we want it to start at 1e-3
-        tend_sfh = sfh[1][0] # 1st time array after 0
-        # work out difference between t_0 and [1] entry in SFH
-        dlogt = (np.log10(tend_sfh) - np.log10(t_0))/100
-        norm = sfh[1][1]*(1./np.exp(-1.*self.gamma*tend_sfh))
-        sfr_extra = norm * np.exp(-1.*self.gamma*t_0)
-        sfr_new = sfr_extra
-        t_new = t_0
-        newlist = []
-        #create new array between 0.001 Gyr and start of SFH data
-        while t_new < tend_sfh:
-            t_new = 10.**(np.log10(t_new)+dlogt)
-            sfr_new = norm * np.exp(-1.*self.gamma*t_new)
-            newlist.append([t_new,sfr_new])
-        # start from [2:] to account for t[0],t[1] repeated entries
-        # when new and in old SFHs combined
-        final_sfh = newlist + (sfh.tolist()[2:])
-        return final_sfh
-
 
     def ejected_mass(self, t):
         '''
