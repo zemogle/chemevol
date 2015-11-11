@@ -226,6 +226,7 @@ def grow_timescale(e,g,sfr,z,d):
         t_grow = g/(e*z*sfr_in_years)
         t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
     t_grow = t_grow*u.year
+    print SFR_in_years, t_grow
     return t_grow
 
 
