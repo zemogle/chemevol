@@ -1,10 +1,16 @@
 import pytest
+import numpy as np
+from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, \
                     grow_timescale, dust_masses, \
                     inflows, outflows, ejected_gas_mass
-from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest
+from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
+                    lookup_taum, lookup_fn
 
 class TestFunctions:
+    '''
+    Test all the function values
+    '''
 
     def test_remnant_mass_mid(self):
         mass = remnant_mass(10.)
@@ -40,8 +46,10 @@ class TestFunctions:
        gas_inflow = inflows(1.0,1.5)
        assert gas_inflow.value == 1.5
 
-
 class TestTables:
+    '''
+    Tests the table entries in lookups haven't changed!
+    '''
 
     def test_lifetimes(self):
         assert lifetime[1][1] == 9.5
@@ -56,3 +64,16 @@ class TestTables:
         assert mass_yields[20][6] == 9.39
         assert mass_yields[0][8] == 6.83e-3
         assert mass_yields[19][8] == 17.75
+
+class Testlookups:
+    '''
+    Test the lookup functions
+    '''
+    def test_stellarlifetime_lookup(self):
+        lifetime_cols = {'low_metals':1, 'high_metals':2}
+        taum =  lookup_taum(41.,lifetime_cols['low_metals'])
+        assert taum == 0.0048999999999999998
+
+    def test_minmass_lookup(self):
+        minimum_mass = lookup_fn(t_lifetime,'lifetime_low_metals',0.0049)[0]
+        assert minimum_mass == 41.0

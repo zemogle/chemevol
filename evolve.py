@@ -115,8 +115,8 @@ class ChemModel:
             # calculate SFR when star was born which is t-lifetime
             taum =  taum = lookup_taum(m,lifetime_cols['low_metals'])
             tdiff = t - taum
-            # only release metals (ejected_gas_mass) after stars die 
-            if tdiff < 0:
+            # only release metals (ejected_gas_mass) after stars die
+            if tdiff <= 0:
                 sfr = 0.
             else:
                 sfr = self.sfr(tdiff)
@@ -150,10 +150,11 @@ class ChemModel:
             tdiff = find_nearest(self.tdiff,t)[1]
             if tdiff <= 0.:
                 zdiff = 0.
+                sfr = 0.
             else:
                 zdiff = metallicity
-            if tdiff > 0:
-                ezm += f.ejected_metal_mass(m, self.sfr(tdiff), zdiff, self.imf_type) * dm
+                sfr = self.sfr(tdiff)
+            ezm += f.ejected_metal_mass(m, sfr, zdiff, self.imf_type) * dm
             m += dm
         #    print m, t, tdiff, metallicity, zdiff, ezm
         return ezm
@@ -178,13 +179,42 @@ class ChemModel:
         while m <= mu:
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
-            taum =  taum = lookup_taum(m,lifetime_cols['low_metals'])
+            taum =  lookup_taum(m,lifetime_cols['low_metals'])
             tdiff = t - taum
             # need to change z for for zdiff when fixed
             edm += f.ejected_dust_mass(m, self.sfr(tdiff), metallicity, self.imf_type) * dm
             m += dm
 #            print m, t, tdiff, em
         return edm
+
+    def supernova_rate(self):
+        '''
+        Calculates the SN rate at time t by integrating over mass m
+        '''
+        sn_rate = 0.
+        sn_rate_list = []
+        dm =0.5
+        mmax = 40.
+        prev_t = 1e-3
+        time = self.sfh[:,0]
+        time = time[time<20.]
+        lifetime_cols = {'low_metals':1, 'high_metals':2}
+        now = datetime.now()
+        for t in time:
+            m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
+            taum =  lookup_taum(m,lifetime_cols['low_metals'])
+            tdiff = t - taum
+            if m < mmax:
+                dsn_rate = self.sfr(tdiff)*f.initial_mass_function(m, self.imf_type)
+            else:
+                dsn_rate = 0.
+            sn_rate += dsn_rate*dm
+            m += dm
+            dt = t- prev_t
+            prev_t = t
+            sn_rate_list.append(sn_rate)
+        print("SN rate exterior loop %s" % str(datetime.now()-now))
+        return np.array(sn_rate_list)
 
     def gas_mass(self):
         '''
@@ -226,7 +256,7 @@ class ChemModel:
             mg += dmg*dt
             mg_list.append(mg)
             t_diff.append([t,tdiff])
-            print t, gas_ast, gas_ej
+        #    print t, gas_ast, gas_ej
         self.tdiff = np.array(t_diff)
         print("Gas mass exterior loop %s" % str(datetime.now()-now))
         return time, np.array(mg_list)
@@ -307,7 +337,7 @@ class ChemModel:
         print("Metal mass exterior loop %s" % str(datetime.now()-now))
         return time, np.array(metals_list), np.array(Z[1])
 
-    def dust_mass(self,gasmass,metallicity,SN_rate):
+    def dust_mass(self,gasmass,metallicity,snrate):
         '''
         Calculates the dust mass at time t: md
         for dust mass integral where:
@@ -326,7 +356,7 @@ class ChemModel:
         for item, t in enumerate(time):
             mg = gasmass[item]
             z = metallicity[item]
-            r_sn = SN_rate[item]
+            r_sn = snrate[item]
         # set up time, z(t-taum) array for use in ejected dust mass integral
             tdiff_now = find_nearest(self.tdiff, t)
             zdiff = find_nearest(z_time, tdiff_now[1])[1]
@@ -355,8 +385,11 @@ class ChemModel:
                 mdust_gg = md*self.coldfraction/gg
 
         #set up removal of dust via destruction parameter
-        #    des = 1e-9*f.destruction_timescale(self.destroy_ism,mg,self.sfr(t),r_sn).value
-        #    mdust_des = md*(1-self.coldfraction)/des
+            des = 1e-9*f.destruction_timescale(self.destroy_ism,mg,r_sn).value
+    #        if des <= 0:
+    #            mdust_des = 0
+    #        else:
+    #            mdust_des = md*(1-self.coldfraction)/des
 
         # integral of dust mass equation with time
         # set dust mass to zero if metallicity = zero
@@ -365,7 +398,7 @@ class ChemModel:
                     + mdust_inf \
                     - mdust_out \
                     + mdust_gg \
-                    - 0. #mdust_des
+                    + 0. #mdust_des
 
             dt = t - prev_t
             prev_t = t
@@ -375,7 +408,7 @@ class ChemModel:
                 dust_to_metals = 0.
             else:
                 dust_to_metals = (md/mg)/z
-        #    print t, mg/4.8e10, z, des
+            print t, mg/4.8e10, z, gg*1e9, des*1e9 #mdust_ast, mdust_stars, des
             dz_ratio_list.append(dust_to_metals)
         print("Dust mass exterior loop %s" % str(datetime.now()-now))
         # Output time and gas mass as Numpy Arrays

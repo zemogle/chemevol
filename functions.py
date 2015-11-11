@@ -215,16 +215,15 @@ def grow_timescale(e,g,sfr,z,d):
     return t_grow
 
 
-def destruction_timescale(destruct,g,sfr,supernova_rate):
+def destruction_timescale(destruct,g,supernova_rate):
     '''
     Calculates the dust destruction timescale in years.
 
-    - SN_rate: supernova rate in N/Gyr
-    - G: gas mass in Msolar
-    - m: the amount of gas cleared by each supernova event
-    - f_c: fraction of gas in cold dense state for grain growth
+    - sn_rate: supernova rate in N/Gyr
+    - g: gas mass in Msolar
+    - destruct: the amount of gas mass cleared by each supernova event
 
-    m is often 100 or 1000 Msolar, appropriate for SNe expanding
+    destruct is often 100 or 1000 Msolar, appropriate for SNe expanding
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
 
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
@@ -232,6 +231,7 @@ def destruction_timescale(destruct,g,sfr,supernova_rate):
     '''
 
     # to convert from per Gyr to per yr
+    supernova_rate = supernova_rate/1e9
     t_destroy = g/(destruct*supernova_rate)
     t_destroy = t_destroy*u.year
     return t_destroy
