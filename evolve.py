@@ -191,28 +191,30 @@ class ChemModel:
         '''
         Calculates the SN rate at time t by integrating over mass m
         '''
-        sn_rate = 0.
+        # initialize
         sn_rate_list = []
-        dm =0.5
-        mmax = 40.
+        dm = 0.5
         prev_t = 1e-3
+        # define time array
         time = self.sfh[:,0]
         time = time[time<20.]
-        lifetime_cols = {'low_metals':1, 'high_metals':2}
         now = datetime.now()
         for t in time:
-            m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
-            taum =  lookup_taum(m,lifetime_cols['low_metals'])
-            tdiff = t - taum
-            if m < mmax:
-                dsn_rate = self.sfr(tdiff)*f.initial_mass_function(m, self.imf_type)
+            # need to clear the sn_rates as we don't want them adding up
+            sn_rate = 0.
+            dsn_rate = 0.
+            if t < 0.049:
+                m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
             else:
-                dsn_rate = 0.
-            sn_rate += dsn_rate*dm
-            m += dm
-            dt = t- prev_t
+                m = 9.
+            while m < 40.:
+                sn_rate += f.initial_mass_function(m, self.imf_type)*dm
+                m += dm
+            r_sn = self.sfr(t)*sn_rate # units in N per Gyr
+            dt = t - prev_t
             prev_t = t
-            sn_rate_list.append(sn_rate)
+        #    print t, r_sn
+            sn_rate_list.append(r_sn)
         print("SN rate exterior loop %s" % str(datetime.now()-now))
         return np.array(sn_rate_list)
 
@@ -385,7 +387,7 @@ class ChemModel:
                 mdust_gg = md*self.coldfraction/gg
 
         #set up removal of dust via destruction parameter
-            des = 1e-9*f.destruction_timescale(self.destroy_ism,mg,r_sn).value
+            des = 1e-9*f.destruction_timescale(self.destroy_ism,mg,r_sn).value #in Gyrs
     #        if des <= 0:
     #            mdust_des = 0
     #        else:
@@ -397,8 +399,8 @@ class ChemModel:
                     + mdust_stars \
                     + mdust_inf \
                     - mdust_out \
-                    + mdust_gg \
-                    + 0. #mdust_des
+                    + mdust_gg #\
+        #            - mdust_des
 
             dt = t - prev_t
             prev_t = t
@@ -408,8 +410,8 @@ class ChemModel:
                 dust_to_metals = 0.
             else:
                 dust_to_metals = (md/mg)/z
-            print t, mg/4.8e10, z, gg*1e9, des*1e9 #mdust_ast, mdust_stars, des
+            print t, mg/4.8e10, z, r_sn/1e9, des*1e9/1e6 #, mdust_des #mdust_ast, mdust_stars, des
             dz_ratio_list.append(dust_to_metals)
         print("Dust mass exterior loop %s" % str(datetime.now()-now))
         # Output time and gas mass as Numpy Arrays
-    #    return time, np.array(dust_list), np.array(dz_ratio_list)
+        return time, np.array(dust_list), np.array(dz_ratio_list)

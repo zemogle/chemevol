@@ -50,7 +50,7 @@ def remnant_mass(m):
     rem_mass = rem_mass*u.solMass
     return rem_mass
 
-def initial_mass_function(m, choice='Chab'):
+def initial_mass_function(m, choice):
     '''
     Returns the IMF for a given choice of function and mass range.
 
@@ -87,6 +87,20 @@ def initial_mass_function(m, choice='Chab'):
     if (choice == "Salp" or choice == "salp" or choice == "s"):
         imf = (0.17/0.990465)*(m**-1.35)/m
     return imf
+
+def initial_mass_function_integral(choice):
+    '''
+    Calculates the sum of IMF integral from 0.8 to 120Msun.
+    '''
+    # initialize
+    dm = 0.5
+    mmax = 120.
+    imf_norm = 0.
+    m = 0.8
+    while m < mmax:
+        imf_norm += initial_mass_function(m, choice)
+        m += dm
+    return imf_norm
 
 def ejected_gas_mass(m, sfr, choice):
     '''
@@ -229,10 +243,12 @@ def destruction_timescale(destruct,g,supernova_rate):
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
     In dust evolution, dMd/dt is proportional to Md/t_destroy
     '''
-
-    # to convert from per Gyr to per yr
-    supernova_rate = supernova_rate/1e9
-    t_destroy = g/(destruct*supernova_rate)
+    if supernova_rate <= 0:
+        t_destroy = 0.
+    else:
+        # to convert from per Gyr to per yr
+        supernova_rate = supernova_rate/1e9
+        t_destroy = g/(destruct*supernova_rate)
     t_destroy = t_destroy*u.year
     return t_destroy
 
