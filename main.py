@@ -24,9 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
 import functions as f
-
-init_keys = (['gasmass_init','SFH','inflows','outflows','dust_source','destroy',\
-			'IMF_fn','gamma'])
+import plots as p
+import matplotlib.pyplot as plt
 
 '''------------------------------------------------------------------------
 First set up initial parameters for galaxy model by editing the dictionary
@@ -67,13 +66,16 @@ SFR, metals and stars over time
 ---------------------------------------------------------------------------
 '''
 
+init_keys = (['gasmass_init','SFH','inflows','outflows','dust_source','destroy',\
+			'IMF_fn','gamma','epsilon_grain','destruct'])
+
 initial_galaxy_params = {'run1': {
 							'gasmass_init': 4.8e10,
 							'SFH': 'MilkyWay.sfh',
 							'gamma': 0,
 							'IMF_fn': 'Chab',
 							'dust_source': 'ALL',
-							'destroy': True,
+							'destroy':True,
 							'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
 							'outflows':{'metals': True, 'xSFR': 0, 'dust': False},
 							'cold_gas_fraction': 0.5,
@@ -99,10 +101,15 @@ initial_galaxy_params = {'run1': {
 #f.validate_initial_dict(init_keys, initial_galaxy_params)
 
 from evolve import ChemModel
-
 ch = ChemModel(**inits)
+
 time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
 time, metalmass, metallicity = ch.metal_mass(mgas)
 snrate = ch.supernova_rate()
-time, mdust = ch.dust_mass(mgas,metallicity,snrate)
+time, mdust, dust_to_metals = ch.dust_mass(mgas,metallicity,snrate)
+
+gasfraction = mgas/(mgas+mstars)
+
+# Quick look plots:
+p.figure(time,mgas,mstars)

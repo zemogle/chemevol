@@ -7,12 +7,19 @@ Chemical evolution python package
 - numpy
 - astropy
 - logger
+- matplotlib
 
 ## input files needed
-The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form time (yr), SFR (Msolar/yr).    An example is provided `MilkyWay_yin.sfh` based on Yin et al 2009 (A & A, 505, 497).
+The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form time (yr), SFR (Msolar/yr).    An example is provided `MilkyWay.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
+
+## input data needed
+The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit.
 
 ## Running the code
+The code can be run using the following example along with a SFH file.  
+
 ```python
+from plots import p
 from evolve import ChemModel
 inits = {
 							'gasmass_init': 4.8e10,
@@ -34,6 +41,5 @@ time, metalmass, metallicity = ch.metal_mass(mgas)
 snrate = ch.supernova_rate()
 time, mdust, dust_metals = ch.dust_mass(mgas,metallicity,snrate)
 
-ch.dust_mass(mgas,metallicity)
-
+p.figure(time,mgas,mstars,metalmass,mdust)
 ```

@@ -312,22 +312,33 @@ class ChemModel:
         '''
         Calculates the dust mass at time t: md
         for dust mass integral where:
+
         dmd/dt = - md/mg * SFR(t) + int edm*dm + md/mg,inflows - md/mg,outflows
                  + md_graingrowth - md_destroy
+
+        Returns 3 arrays:
+         -- time (Gyrs)
+         -- dust_list (Msolar): 3 columns - total Md, Md_stars only, Md_gg only
+         -- dz_ratio_list: dust to metal ratio
         '''
-        md = 0.
+        # initialize
+        md_all = 0.
+        md_stars = 0.
+        md_ism = 0.
         prev_t = 1e-3
         dust_list = []
         dz_ratio_list = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time<20.]
+        # sort out zdiff
         z_time = np.array(zip(time, metallicity))
         now = datetime.now()
         for item, t in enumerate(time):
             mg = gasmass[item]
             z = metallicity[item]
             r_sn = snrate[item]
+
         # set up time, z(t-taum) array for use in ejected dust mass integral
             tdiff_now = find_nearest(self.tdiff, t)
             zdiff = find_nearest(z_time, tdiff_now[1])[1]
@@ -338,48 +349,47 @@ class ChemModel:
         # set up inflow contribution to dust mass (read from dictionary)
             mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR']).value
 
-        # set up outflow contribution to dust mass (read from input dictionary)
             if self.outflows['dust']:
-                outflow_dust = md
-                mdust_out = (outflow_dust/mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value
+                mdust_out = (1./mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             else:
                 mdust_out = 0.
 
-        #set up removal of dust mass via astration
-            mdust_ast = (md/mg)*self.sfr(t)
-
-        #set up contribution of grain growth to dust mass
-            gg = 1e-9*f.grow_timescale(self.epsilon,mg,self.sfr(t),z,md).value #in Gyrs
-            if gg <= 0:
-                mdust_gg = 0.
-            else:
-                mdust_gg = md*self.coldfraction/gg
-
         #set up removal of dust via destruction parameter
-            des = 1e-9*f.destruction_timescale(self.destroy_ism,mg,r_sn).value #in Gyrs
+    #        des = 1e-9*f.destruction_timescale(self.destroy_ism,mg,r_sn).value #in Gyrs
     #        if des <= 0:
     #            mdust_des = 0
     #        else:
     #            mdust_des = md*(1-self.coldfraction)/des
 
-        # integral of dust mass equation with time
-        # set dust mass to zero if metallicity = zero
-            ddust = - mdust_ast \
-                    + mdust_stars \
-                    + mdust_inf \
-                    - mdust_out \
-                    + mdust_gg #\
-        #            - mdust_des
-
+        # Integrate dust mass equation with time - want to do this for separate
+        # dust sources to plot later
+        # Total dust mass
+            ddust_all = - md_all*f.astration(mg,self.sfr(t)) \
+                        + mdust_stars \
+                        + mdust_inf \
+                        - mdust_out*md_all \
+                        + f.graingrowth(self.epsilon,mg,self.sfr(t),z,md_all,self.coldfraction)  # - mdust_des
+        # Dust mass with stars only
+            ddust_stars = - md_stars*f.astration(mg,self.sfr(t)) \
+                          + mdust_stars \
+                          + mdust_inf \
+                          - mdust_out*md_stars  #- mdust_des
+        # Dust mass with grain growth only
+            ddust_ism = - md_ism*f.astration(mg,self.sfr(t)) \
+                        + mdust_inf \
+                        - mdust_out*md_ism \
+                        + f.graingrowth(self.epsilon,mg,self.sfr(t),z,md_ism,self.coldfraction) # - mdust_des
             dt = t - prev_t
             prev_t = t
-            md += ddust*dt
-            dust_list.append(md)
+            md_all += ddust_all*dt
+            md_stars += ddust_stars*dt
+            md_ism += ddust_ism*dt
+            dust_list.append((md_all,md_stars,md_ism))
             if z <= 0.:
                 dust_to_metals = 0.
             else:
-                dust_to_metals = (md/mg)/z
-            print t, mg/4.8e10, z, r_sn/1e9, des*1e9/1e6 #, mdust_des #mdust_ast, mdust_stars, des
+                dust_to_metals = (md_all/mg)/z
+            #print t, md_all # mg/4.8e10, z, r_sn/1e9#, des*1e9/1e6 #, mdust_des #mdust_ast, mdust_stars, des
             dz_ratio_list.append(dust_to_metals)
         print("Dust mass exterior loop %s" % str(datetime.now()-now))
         # Output time and gas mass as Numpy Arrays

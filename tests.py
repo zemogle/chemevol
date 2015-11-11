@@ -3,7 +3,7 @@ import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, \
                     grow_timescale, dust_masses, \
-                    inflows, outflows, ejected_gas_mass
+                    inflows, outflows, ejected_gas_mass, astration
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
@@ -32,6 +32,13 @@ class TestFunctions:
         destroy = destruction_timescale(1000.,6e9,2.1e7, X)
         destroy = destroy/1e6 #in Myr
         assert  285.5 < destroy.value < 285.9
+
+    def test_astration(Self):
+        gasmass = 1e10
+        sfr = 10
+        ast = astration(gasmass, sfr)
+        assert ast == 1e-9
+
 
     def test_graingrowth(self):
         grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
@@ -73,7 +80,3 @@ class Testlookups:
         lifetime_cols = {'low_metals':1, 'high_metals':2}
         taum =  lookup_taum(41.,lifetime_cols['low_metals'])
         assert taum == 0.0048999999999999998
-
-    def test_minmass_lookup(self):
-        minimum_mass = lookup_fn(t_lifetime,'lifetime_low_metals',0.0049)[0]
-        assert minimum_mass == 41.0

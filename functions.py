@@ -61,6 +61,10 @@ def extra_sfh(sfh, gamma):
     final_sfh = newlist + (sfh.tolist()[2:])
     return final_sfh
 
+def astration(gasmass,sfr):
+        mdust_astration = (1./gasmass)*sfr
+        return mdust_astration
+
 def remnant_mass(m):
     '''
     Calculates the remnant mass of a star of mass m.
@@ -255,9 +259,15 @@ def grow_timescale(e,g,sfr,z,d):
         t_grow = g/(e*z*sfr_in_years)
         t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
     t_grow = t_grow*u.year
-    print SFR_in_years, t_grow
     return t_grow
 
+def graingrowth(e,g,sfr,z,md,f_c):
+        gg = 1e-9*grow_timescale(e,g,sfr,z,md).value #in Gyrs
+        if gg <= 0:
+            mdust_gg = 0.
+        else:
+            mdust_gg = md*f_c/gg
+        return mdust_gg
 
 def destruction_timescale(destruct,g,supernova_rate):
     '''
