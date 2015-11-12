@@ -72,7 +72,7 @@ class ChemModel:
         '''
         #initialize
         mu = t_lifetime[-1]['mass']
-        dm = 0.5
+        dm = 0.05
         em = 0.
         t_0 = 1e-3
         # we pull out mass corresponding to age of system
