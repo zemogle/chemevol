@@ -32,7 +32,7 @@ inits = {
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 1000.,
+				'epsilon_grain': 1e5,
         'destruct': 1000.
               }
 ch = ChemModel(**inits)
@@ -44,5 +44,5 @@ time, mdust, dust_sources, dust_metals, timescales = ch.dust_mass(mgas,metallici
 
 gasfraction = mgas/(mgas+mstars)
 
-p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources)
+p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources,timescales)
 ```

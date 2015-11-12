@@ -391,8 +391,8 @@ class ChemModel:
             md_stars += mdust_stars*dt
             dust_list.append(md)
             dust_list_sources.append((md_all, md_stars, md_gg))
-            # save timescales for grain growth and destruction in years
-            timescales.append((t_des*1e9,t_gg*1e9))
+            # save timescales for grain growth and destruction in Gyr
+            timescales.append((t_des,t_gg))
             if z <= 0.:
                 dust_to_metals = 0.
             else:
