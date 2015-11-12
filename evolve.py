@@ -72,7 +72,7 @@ class ChemModel:
         '''
         #initialize
         mu = t_lifetime[-1]['mass']
-        dm = 0.5
+        dm = 0.01
         em = 0.
         t_0 = 1e-3
         # we pull out mass corresponding to age of system
@@ -81,6 +81,8 @@ class ChemModel:
         m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
         lifetime_cols = {'low_metals':1, 'high_metals':2}
         while m <= mu:
+            if m > 10.:
+                dm = 0.5
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
             taum = lookup_taum(m,lifetime_cols['low_metals'])
@@ -102,7 +104,7 @@ class ChemModel:
         dmz/dt = -Z * SFR(t) + int ezm*dm + Z,inflows - Z,outflows + Z_i
         '''
         # initialize
-        dm = 0.5
+        dm = 0.01
         ezm = 0.
         now = datetime.now()
         mu = t_lifetime[-1][0]
@@ -117,6 +119,8 @@ class ChemModel:
         else:
             col_choice = lifetime_cols['high_metals']
         while m <= mu:
+            if m > 10.:
+                dm = 0.5
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
             taum =  taum = lookup_taum(m,col_choice)
@@ -140,7 +144,7 @@ class ChemModel:
                  + md_graingrowth - md_destroy
         '''
         # initialize
-        dm = 0.5
+        dm = 0.01
         edm = 0.
         now = datetime.now()
         mu = t_lifetime[-1][0]
@@ -154,6 +158,8 @@ class ChemModel:
         else:
             col_choice = lifetime_cols['high_metals']
         while m <= mu:
+            if m > 10.:
+                dm = 0.5
             # pull out lifetime of star of mass m so we can
             # calculate SFR when star was born which is t-lifetime
             taum =  lookup_taum(m,col_choice)
@@ -175,7 +181,7 @@ class ChemModel:
         '''
         # initialize
         sn_rate_list = []
-        dm = 0.5
+        dm = 0.01
         prev_t = 1e-3
         # define time array
         time = self.sfh[:,0]
@@ -190,6 +196,8 @@ class ChemModel:
             else:
                 m = 9.
             while m < 40.:
+                if m > 10.:
+                    dm = 0.5
                 sn_rate += f.initial_mass_function(m, self.imf_type)*dm
                 m += dm
             r_sn = self.sfr(t)*sn_rate # units in N per Gyr
