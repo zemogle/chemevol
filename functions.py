@@ -94,7 +94,7 @@ def initial_mass_function(m, choice):
     '''
 
     if (choice == "Chab" or choice == "chab" or choice == "c"):
-        if m <= 0.5:
+        if m <= 1.0:
             imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
             imf = (0.85*imf)/((2.*0.69**2.))/m
         else:
@@ -126,12 +126,13 @@ def initial_mass_function_integral(choice):
     Calculates the sum of IMF integral from 0.8 to 120Msun.
     '''
     # initialize
-    dm = 0.5
+    # only works if dm < 0.005!
+    dm = 0.002
     mmax = 120.
     imf_norm = 0.
-    m = 0.8
+    m = 0.1
     while m < mmax:
-        imf_norm += initial_mass_function(m, choice)*dm
+        imf_norm += m*initial_mass_function(m, choice)*dm
         m += dm
     return imf_norm
 

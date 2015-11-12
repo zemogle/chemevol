@@ -24,6 +24,7 @@ from evolve import ChemModel
 inits = {
 							'gasmass_init': 4.8e10,
 							'SFH': 'MilkyWay.sfh',
+              't_end': 20.,
 							'gamma': 0,
 							'IMF_fn': 'Chab',
 							'dust_source': 'ALL',

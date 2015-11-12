@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, \
-                    grow_timescale, dust_masses, \
+                    grow_timescale, dust_masses, initial_mass_function_integral, \
                     inflows, outflows, ejected_gas_mass, astration
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
@@ -39,7 +39,6 @@ class TestFunctions:
         ast = astration(gasmass, sfr)
         assert ast == 1e-9
 
-
     def test_graingrowth(self):
         grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
         grow = grow/1e6 #in Myr
@@ -52,6 +51,22 @@ class TestFunctions:
     def test_inflow_func(Self):
        gas_inflow = inflows(1.0,1.5)
        assert gas_inflow.value == 1.5
+
+    def test_imf_integral_chab(self):
+        unity = initial_mass_function_integral('Chab')
+        assert 0.99 < unity < 1.09
+
+    def test_imf_integral_kroup(self):
+        unity = initial_mass_function_integral('Kroup')
+        assert 0.99 < unity < 1.09
+
+    def test_imf_integral_salp(self):
+        unity = initial_mass_function_integral('Salp')
+        assert 0.99 < unity < 1.09
+
+    def test_imf_integral_topchab(self):
+        unity = initial_mass_function_integral('TopChab')
+        assert 0.99 < unity < 1.09
 
 class TestTables:
     '''

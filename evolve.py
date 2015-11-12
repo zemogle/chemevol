@@ -15,6 +15,7 @@ class ChemModel:
         try:
             self.gasmass_init = inputs['gasmass_init']
             self.gamma = inputs['gamma']
+            self.tend = inputs['t_end']
             self.imf_type = inputs['IMF_fn']
             self.dust_source = inputs['dust_source']
             self.destroy = inputs['destroy']
@@ -169,7 +170,7 @@ class ChemModel:
         prev_t = 1e-3
         # define time array
         time = self.sfh[:,0]
-        time = time[time<20.]
+        time = time[time < self.tend]
         now = datetime.now()
         for t in time:
             # need to clear the sn_rates as we don't want them adding up
@@ -202,7 +203,7 @@ class ChemModel:
         mg_list = []
     # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
-        time = time[time<20.]
+        time = time[time < self.tend]
     # set up t-taum array
         now = datetime.now()
         for t in time:
@@ -243,7 +244,7 @@ class ChemModel:
         mstars_list = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
-        time = time[time<20.]
+        time = time[time < self.tend]
         for t in time:
             dmstars = self.sfr(t)
             dt = t - prev_t
@@ -265,7 +266,7 @@ class ChemModel:
         metals_list = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
-        time = time[time<20.]
+        time = time[time < self.tend]
         z_lookup = []
         now = datetime.now()
         for item, t in enumerate(time):
@@ -327,7 +328,7 @@ class ChemModel:
         dz_ratio_list = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
-        time = time[time<20.]
+        time = time[time < self.tend]
         # sort out zdiff
         now = datetime.now()
         for item, t in enumerate(time):
