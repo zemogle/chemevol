@@ -150,29 +150,61 @@ def ejected_gas_mass(m, sfr, choice):
         dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
     return dej
 
-def ejected_metal_mass(m, sfr, zdiff, choice):
+def fresh_metals(m, metallicity):
     '''
-    Calculate the ejected metal mass from stars by mass loss/stellar death
-    at time t, needs to be integrated from mass corresponding to
-    age of system (tau(m)) -- 120 Msolar
+    Function to return the fresh new elements made by stars
+    These are metallicity dependent and calls mass_yields table
+    in lookups.py
 
     metals for LIMS are from van Hoek
     Massive stars are from Maeder 1992
 
-    de/dm = (m-m_R(m)*Z(t-taum) + mp_z) x SFR(t-taum x phi(m)
+    For m > 40, then only winds contribute to ejected metals
+    For m < 40, winds + SNe contribute
+    '''
+    massyields = find_nearest(mass_yields, m)
+
+    if metallicity <= 0.0025:
+        if m < 40:
+            sum_yields = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
+        else:
+            sum_yields = massyields[yn.index('yields_winds_001')]
+    elif metallicity <= 0.006:
+        if m < 40:
+            sum_yields = massyields[yn.index('yields_sn_004')]+massyields[yn.index('yields_winds_004')]
+        else:
+            sum_yields = massyields[yn.index('yields_winds_004')]
+    elif metallicity <= 0.01:
+        if m < 40:
+            sum_yields = massyields[yn.index('yields_sn_008')]+massyields[yn.index('yields_winds_008')]
+        else:
+            sum_yields = massyields[yn.index('yields_winds_008')]
+    else:
+        if m < 40:
+            sum_yields = massyields[yn.index('yields_sn_02')]+massyields[yn.index('yields_winds_02')]
+        else:
+            sum_yields = massyields[yn.index('yields_winds_02')]
+    return sum_yields
+
+def ejected_metal_mass(m, sfr, zdiff, metallicity, choice):
+    '''
+    Calculate the ejected metal mass from stars by mass loss/stellar death
+    at time t, needs to be integrated from mass corresponding to
+    age of system (tau(m)) -- 120 Msolar.
+
+    It calls function fresh_metals to find correct mass of new
+    heavy elements ejected by stars of mass m (metallicity dependent)
+
+    de (m,t) = (m-m_R(m)*Z(t-taum) + mp(m,Z)) x SFR(t-taum x phi(m)
     '''
     if m >= 120.0:
         dej = 0.0
     else:
-        massyields = find_nearest(mass_yields, m)
-        #sum_mass = metals from winds and SN unless m>40
-        # where sum_mass = winds only
-        if m <= 40.0:
-            sum_mass = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
-        else:
-            sum_mass = massyields[yn.index('yields_winds_001')]
-        dej = ((m - (remnant_mass(m).value))*zdiff + sum_mass) * \
+        dej = ((m - (remnant_mass(m).value))*zdiff + fresh_metals(m, metallicity)) * \
                 sfr * initial_mass_function(m, choice)
+
+    if metallicity < 0.0025:
+        print m, metallicity, fresh_metals(m, metallicity)
     return dej
 
 def ejected_dust_mass(m, sfr, zdiff, choice):

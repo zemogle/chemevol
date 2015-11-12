@@ -3,7 +3,7 @@ import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, \
                     grow_timescale, dust_masses, initial_mass_function_integral, \
-                    inflows, outflows, ejected_gas_mass, astration
+                    inflows, outflows, ejected_gas_mass, astration, fresh_metals
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
@@ -68,6 +68,39 @@ class TestFunctions:
         unity = initial_mass_function_integral('TopChab')
         assert 0.99 < unity < 1.09
 
+    def test_fresh_metals_lowmassa_lowmetals(self):
+        mass_yields = fresh_metals(1.,0.001)
+        assert mass_yields == 0
+
+    def test_fresh_metals_lowmassb_lowmetals(self):
+        mass_yields = fresh_metals(2.,0.001)
+        assert mass_yields == 0.00529
+
+    def test_fresh_metals_midmass_lowmetals(self):
+        mass_yields = fresh_metals(30.,0.001)
+        assert mass_yields == 4.45
+
+    def test_fresh_metals_highmass_lowmetals(self):
+        mass_yields = fresh_metals(119,0.001)
+        assert mass_yields == 0
+
+    def test_fresh_metals_lowmassa_highmetals(self):
+        mass_yields = fresh_metals(1.,0.02)
+        assert mass_yields == 1.61e-4
+
+    def test_fresh_metals_lowmassb_highmetals(self):
+        mass_yields = fresh_metals(2.,0.02)
+        assert mass_yields == 0.00543
+
+    def test_fresh_metals_midmass_highmetals(self):
+        mass_yields = fresh_metals(30.,0.02)
+        assert mass_yields == 4.48
+
+    def test_fresh_metals_highmass_highmetals(self):
+        mass_yields = fresh_metals(119,0.02)
+        assert mass_yields == 9.39
+
+
 class TestTables:
     '''
     Tests the table entries in lookups haven't changed!
@@ -77,7 +110,7 @@ class TestTables:
         assert lifetime[1][1] == 9.5
         assert lifetime[15][2] == 0.0026
 
-    def test_yields_001(self):
+    def test_yields_return_by_mass(self):
         assert mass_yields[1][1] == 0.
         assert mass_yields[12][1] == 0.27
         assert mass_yields[1][4] == 8.54e-4

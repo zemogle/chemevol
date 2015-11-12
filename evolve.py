@@ -131,7 +131,7 @@ class ChemModel:
             else:
                 zdiff = metallicity #needs to be z(t-taum)
                 sfr_diff = self.sfr(tdiff)
-            ezm += f.ejected_metal_mass(m, sfr_diff, zdiff, self.imf_type) * dm
+            ezm += f.ejected_metal_mass(m, sfr_diff, zdiff, metallicity, self.imf_type) * dm
             m += dm
         #    print m, t, tdiff, metallicity, zdiff, ezm
         return ezm
