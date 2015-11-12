@@ -95,8 +95,8 @@ def initial_mass_function(m, choice):
 
     if (choice == "Chab" or choice == "chab" or choice == "c"):
         if m <= 1.0:
-            imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
-            imf = (0.85*imf)/((2.*0.69**2.))/m
+            imf = np.exp(-1.*(np.log10(m)+1.1023729) * (np.log10(m)+1.1023729))
+            imf = (0.85*imf)/0.952199/m
         else:
             imf = 0.24*(m**-1.3)/m
 
@@ -107,7 +107,7 @@ def initial_mass_function(m, choice):
             imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
             imf = imf*(0.85/2.21896)/((2.*0.69**2.))/m
         else:
-            imf = (0.24/2.21896)*(m**-0.8)/m
+            imf = 0.1081587*(m**-0.8)/m
 
     if (choice == "Kroup" or choice == "kroup" or choice == "k"):
         if m <= 0.5:
