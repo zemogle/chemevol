@@ -21,8 +21,7 @@ The code can be run using the following example along with a SFH file.
 ```python
 import plots as p
 from evolve import ChemModel
-inits = {
-							'gasmass_init': 4.8e10,
+inits = {	'gasmass_init': 4.8e10,
 							'SFH': 'MilkyWay.sfh',
               't_end': 20.,
 							'gamma': 0,
@@ -33,8 +32,7 @@ inits = {
   							'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 							'cold_gas_fraction': 0.5,
 							'epsilon_grain': 500.,
-              'destruct': 1000.
-							}
+              'destruct': 1000.	}
 ch = ChemModel(**inits)
 time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
