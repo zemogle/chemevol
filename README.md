@@ -40,9 +40,9 @@ time, mgas = ch.gas_mass()
 time, mstars = ch.stellar_mass()
 time, metalmass, metallicity = ch.metal_mass(mgas)
 snrate = ch.supernova_rate()
-time, mdust, dust_metals = ch.dust_mass(mgas,metallicity,snrate)
+time, mdust, dust_sources, dust_metals = ch.dust_mass(mgas,metallicity,snrate)
 
 gasfraction = mgas/(mgas+mstars)
 
-p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction)
+p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources)
 ```
