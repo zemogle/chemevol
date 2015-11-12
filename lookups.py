@@ -135,8 +135,12 @@ dust_mass_sn: dust mass returned by supernovae
             2nd column: dust mass returned
 
             From Todinin & Ferrara 2001 (MNRAS 325 276)
+            As TF01 only have SN masses for m_i > 12Msun
+            (ie no 9Msun entry), we add dust for 9Msun progenitor
+            by assuming similar dust/metals
+            ratio for 12-20Msun stars
 '''
-dust_mass_sn = ((9, 0.0),
+dust_mass_sn = ((9, 0.17),
                 (12, 0.2),
                 (15, 0.5),
                 (20, 0.5),

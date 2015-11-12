@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, \
-                    grow_timescale, dust_masses, initial_mass_function_integral, \
+                    grow_timescale, dust_masses_fresh, initial_mass_function_integral, \
                     inflows, outflows, ejected_gas_mass, astration, fresh_metals
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
@@ -100,6 +100,37 @@ class TestFunctions:
         mass_yields = fresh_metals(119,0.02)
         assert mass_yields == 9.39
 
+    def test_fresh_dust_mass_lowmass_lowmetals(self):
+        dust_mass = dust_masses_fresh(1.0,0.001).value
+        assert dust_mass == 0
+
+    def test_fresh_dust_mass_midmass_lowmetals(self):
+        dust_mass = dust_masses_fresh(5.0,0.001).value
+        assert 0.00346 < dust_mass < 0.00348
+
+    def test_fresh_dust_mass_highmass_lowmetals(self):
+        dust_mass = dust_masses_fresh(30.0,0.001).value
+        assert dust_mass == 1.0
+
+    def test_fresh_dust_mass_highermass_lowmetals(self):
+        dust_mass = dust_masses_fresh(40.0,0.001).value
+        assert dust_mass == 0.4
+
+    def test_fresh_dust_mass_lowmass_highmetals(self):
+        dust_mass = dust_masses_fresh(1.0,0.02).value
+        assert  0.000070 < dust_mass < 0.000073
+
+    def test_fresh_dust_mass_midmass_highmetals(self):
+        dust_mass = dust_masses_fresh(2.0,0.02).value
+        assert 2.442e-3 < dust_mass < 2.446e-3
+
+    def test_fresh_dust_mass_highmass_highmetals(self):
+        dust_mass = dust_masses_fresh(30.0,0.02).value
+        assert dust_mass == 1.0
+
+    def test_fresh_dust_mass_highermass_highmetals(self):
+        dust_mass = dust_masses_fresh(40.0,0.02).value
+        assert dust_mass == 0.4
 
 class TestTables:
     '''

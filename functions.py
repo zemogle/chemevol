@@ -202,46 +202,42 @@ def ejected_metal_mass(m, sfr, zdiff, metallicity, choice):
     else:
         dej = ((m - (remnant_mass(m).value))*zdiff + fresh_metals(m, metallicity)) * \
                 sfr * initial_mass_function(m, choice)
-
-    if metallicity < 0.0025:
-        print m, metallicity, fresh_metals(m, metallicity)
     return dej
 
-def ejected_dust_mass(m, sfr, zdiff, choice):
+def ejected_dust_mass(m, sfr, zdiff, metallicity, choice):
     '''
     Calculate the ejected dust mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
     age of system (tau(m)) -- 120 Msolar
 
-    Re-released dust for LIMS d_LIMS are 0.45 x yields from van den Hoek & Groenewegen
-    New dust from fresh heavy elements returned in dust_masses function where
-    dust from massive stars (in SN only) are from Todini & Ferrara 2001 (TF01)
-    DELTA = fraction of new metals in LIMS (0.45) and SN (from TF01)
+    1st term: dust re-released by stars
+              Calculated by ejected gas mass * Z(t-taum) * dust condensation efficiency (delta_LIMS)
+              delta_LIMS ranges from 0.16-0.45 in Morgan & Edmunds 2003 (MNRAS, 343, 427)
 
-    de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + mp_z*DELTA) x SFR(t-taum x phi(m)
+    2nd term: new dust from fresh heavy elements returned in dust_masses function where
+              dust from massive stars (in SN only) are from Todini & Ferrara 2001 (TF01) and dust
+              from Van den Hoek & Groenewegen:
+              DELTA = fraction of new metals in LIMS (0.45) and SN (from TF01)
+
+    de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + mp*DELTA) x SFR(t-taum x phi(m)
     '''
-
+    # read in dust mass from freshly formed metals as function m and Z
+    sum_mass_dust = dust_masses_fresh(m, metallicity).value
+    # condensation efficiency of LIMS
     delta_LIMS = 0.45
     # no dust from stars with m>40Msun.
     if m >= 40.:
         dej = 0.0
     else:
-        massyields = find_nearest(mass_yields, m)
-        sum_yields = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
-        # sum mass gets dust mass ejected from new elements from SN and winds
-        sum_mass = dust_masses(m, sum_yields).value
-        dej = ((m - (remnant_mass(m).value))*zdiff*delta_LIMS + sum_mass) * \
-                sfr * initial_mass_function(m, choice)
+        dej = ((m - (remnant_mass(m).value))*zdiff*delta_LIMS \
+                + sum_mass_dust) \
+                * sfr * initial_mass_function(m, choice)
     return dej
 
-def dust_masses(m,yields):
+def dust_masses_fresh(m, metallicity):
     '''
     This function returns the dust mass ejected by a star
-    of initial mass m
-
-    For dust re-released ejecta from stars we multiply the yields
-    by a dust condensation efficiency which ranges from 0.16-0.45
-    in Morgan & Edmunds 2003 (MNRAS, 343, 427)
+    of initial mass m made from freshly synthesised elements
 
     For dust formed from newly processed metals we split into
     two categories: winds from LIMS and SN.
@@ -260,10 +256,11 @@ def dust_masses(m,yields):
     yields - metal yields by mass
     '''
     delta_new_LIMS = 0.45
-    if (m <= 8.0):
-        dustmass = delta_new_LIMS*yields
+    if (m < 9.0):
+        dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
     elif (m >= 9.0) & (m <= 40.0):
-        #find dust mass from TF01 in dust_mass_sn table
+        # find dust mass from TF01 in dust_mass_sn table
+        # assume massive star winds don't form dust
         dustmass = find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass = 0.
