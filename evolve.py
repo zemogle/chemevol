@@ -203,7 +203,6 @@ class ChemModel:
             r_sn = self.sfr(t)*sn_rate # units in N per Gyr
             dt = t - prev_t
             prev_t = t
-        #    print t, r_sn
             sn_rate_list.append(r_sn)
         print("SN rate exterior loop %s" % str(datetime.now()-now))
         return np.array(sn_rate_list)
@@ -349,6 +348,7 @@ class ChemModel:
         dust_list = []
         dust_list_sources = []
         dz_ratio_list = []
+        timescales = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time < self.tend]
@@ -369,17 +369,19 @@ class ChemModel:
                 mdust_out = (1./mg)*f.outflows(self.sfr(t), self.outflows['xSFR']).value
             else:
                 mdust_out = 0.
-            mdust_gg = f.graingrowth(self.epsilon,mg,self.sfr(t),z,md,self.coldfraction)
 
-        # Integrate dust mass equation with time - want to do this for separate
-        # Total dust mass
+            # destruction timescales + dust mass from grain growth and destruction
+        #    t_des = 1e-6*f.destruction_timescale(self.destroy_ism,mg,r_sn).value
+            mdust_gg, t_gg = f.graingrowth(self.epsilon,mg,self.sfr(t),z,md,self.coldfraction)
+            mdust_des, t_des = f.destroy_dust(self.destroy_ism,mg,r_sn,md,self.coldfraction)
+        # Integrate dust mass equation with time
             ddust = - md*f.astration(mg,self.sfr(t)) \
                         + mdust_stars \
                         + mdust_inf \
-                        - mdust_out*md \
-                        + mdust_gg
-                         # - mdust_des
-            # to plot dust sources
+                        - md*mdust_out \
+                        + mdust_gg \
+                        - mdust_des
+            # to plot dust sources (these are dust in rather than dust mass at any time)
             dust_source_all = mdust_stars + mdust_gg
             dt = t - prev_t
             prev_t = t
@@ -389,12 +391,15 @@ class ChemModel:
             md_stars += mdust_stars*dt
             dust_list.append(md)
             dust_list_sources.append((md_all, md_stars, md_gg))
+            # save timescales for grain growth and destruction in years
+            timescales.append((t_des*1e9,t_gg*1e9))
             if z <= 0.:
                 dust_to_metals = 0.
             else:
                 dust_to_metals = (md/mg)/z
-        #    print t,  # mg/4.8e10, z, r_sn/1e9#, des*1e9/1e6 #, mdust_des #mdust_ast, mdust_stars, des
+        #    print t, mg/4.8e10, z, mdust_des, t_des, t_gg #mdust_ast, mdust_stars, des
             dz_ratio_list.append(dust_to_metals)
         print("Dust mass exterior loop %s" % str(datetime.now()-now))
         # Output time and gas mass as Numpy Arrays
-        return time, np.array(dust_list), np.array(dust_list_sources), np.array(dz_ratio_list)
+        return time, np.array(dust_list), np.array(dust_list_sources), \
+               np.array(dz_ratio_list), np.array(timescales)

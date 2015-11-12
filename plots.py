@@ -18,7 +18,7 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f2.semilogy(time,dust,color='purple',linestyle='-',linewidth=2,label='Dust All')
     f2.legend(frameon=False,loc='lower right',fontsize='11')
     f2.set_xlim(0.01,20)
-    f2.set_ylim(5e5,5e9)
+    f2.set_ylim(1e6,5e9)
     f2.set_ylabel("Mass (Msun)", fontsize='16')
     f2.set_xlabel("Time (Gyrs)", fontsize='16')
 
@@ -53,7 +53,7 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f6.semilogy(gasfraction,dust_metals_ratio,color='purple',linestyle='-',linewidth=2,label='Dust to Metals')
     f6.legend(frameon=False, loc='lower right', fontsize='11')
     f6.set_xlim(1.0,0.1)
-    f6.set_ylim(0.1,1.5)
+    f6.set_ylim(0.06,1.5)
     f6.set_ylabel("Fraction", fontsize='16')
     f6.set_xlabel("Gas Fraction", fontsize='16')
     plt.show()
