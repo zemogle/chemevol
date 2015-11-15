@@ -83,6 +83,37 @@ def remnant_mass(m):
     rem_mass = rem_mass#*u.solMass
     return rem_mass
 
+def imf_chab(m):
+    if m <= 1.0:
+        imf = np.exp(-1.*(np.log10(m)+1.1023729) * (np.log10(m)+1.1023729))
+        imf = (0.85*imf)/0.952199/m
+    else:
+        imf = 0.24*(m**-1.3)/m
+    return imf
+
+def imf_topchab(m):
+    # If you want to do -0.5 slope, need to change norm factor by
+    # 4.72424
+    if m <= 1.0:
+        imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
+        imf = imf*(0.85/2.21896)/((2.*0.69**2.))/m
+    else:
+        imf = 0.1081587*(m**-0.8)/m
+    return imf
+
+def imf_kroup(m):
+    if m <= 0.5:
+        imf = 0.58*(m**-0.30)/m
+    elif (m > 0.5) & (m <= 1.0):
+        imf = 0.31*(m**-1.20)/m
+    else:
+        imf = 0.31*(m**-1.70)/m
+    return imf
+
+def imf_salp(m):
+    imf = (0.17/0.990465)*(m**-1.35)/m
+    return imf
+
 def initial_mass_function(m, choice):
     '''
     Returns the IMF for a given choice of function and mass range.
@@ -94,31 +125,16 @@ def initial_mass_function(m, choice):
     '''
 
     if (choice == "Chab" or choice == "chab" or choice == "c"):
-        if m <= 1.0:
-            imf = np.exp(-1.*(np.log10(m)+1.1023729) * (np.log10(m)+1.1023729))
-            imf = (0.85*imf)/0.952199/m
-        else:
-            imf = 0.24*(m**-1.3)/m
+        imf = imf_chab(m)
 
-    if (choice == "TopChab" or choice == 'topchab' or choice == "tc"):
-        # If you want to do -0.5 slope, need to change norm factor by
-        # 4.72424
-        if m <= 1.0:
-            imf = np.exp(-1.*(np.log10(m)-np.log10(0.079))**2.)
-            imf = imf*(0.85/2.21896)/((2.*0.69**2.))/m
-        else:
-            imf = 0.1081587*(m**-0.8)/m
+    elif (choice == "TopChab" or choice == 'topchab' or choice == "tc"):
+        imf = imf_topchab(m)
 
-    if (choice == "Kroup" or choice == "kroup" or choice == "k"):
-        if m <= 0.5:
-            imf = 0.58*(m**-0.30)/m
-        elif (m > 0.5) & (m <= 1.0):
-            imf = 0.31*(m**-1.20)/m
-        else:
-            imf = 0.31*(m**-1.70)/m
+    elif (choice == "Kroup" or choice == "kroup" or choice == "k"):
+        imf = imf_kroup(m)
 
-    if (choice == "Salp" or choice == "salp" or choice == "s"):
-        imf = (0.17/0.990465)*(m**-1.35)/m
+    elif (choice == "Salp" or choice == "salp" or choice == "s"):
+        imf = imf_salp(m)
     return imf
 
 def initial_mass_function_integral(choice):
@@ -136,7 +152,7 @@ def initial_mass_function_integral(choice):
         m += dm
     return imf_norm
 
-def ejected_gas_mass(m, sfr, choice):
+def ejected_gas_mass(m, sfr, imf):
     '''
     Calculate the ejected mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -147,7 +163,7 @@ def ejected_gas_mass(m, sfr, choice):
     if m >= 120.0:
         dej = 0.0
     else:
-        dej = (m - (remnant_mass(m))) * sfr * initial_mass_function(m, choice)
+        dej = (m - (remnant_mass(m))) * sfr * imf(m)
     return dej
 
 def fresh_metals(m, metallicity):
@@ -186,7 +202,7 @@ def fresh_metals(m, metallicity):
             sum_yields = massyields[yn.index('yields_winds_02')]
     return sum_yields
 
-def ejected_metal_mass(m, sfr, zdiff, metallicity, choice):
+def ejected_metal_mass(m, sfr, zdiff, metallicity, imf):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -201,10 +217,10 @@ def ejected_metal_mass(m, sfr, zdiff, metallicity, choice):
         dej = 0.0
     else:
         dej = ((m - (remnant_mass(m)))*zdiff + fresh_metals(m, metallicity)) * \
-                sfr * initial_mass_function(m, choice)
+                sfr * imf(m)
     return dej
 
-def ejected_dust_mass(m, sfr, zdiff, metallicity, choice):
+def ejected_dust_mass(m, sfr, zdiff, metallicity, imf):
     '''
     Calculate the ejected dust mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -231,7 +247,7 @@ def ejected_dust_mass(m, sfr, zdiff, metallicity, choice):
     else:
         dej = ((m - (remnant_mass(m)))*zdiff*delta_LIMS \
                 + sum_mass_dust) \
-                * sfr * initial_mass_function(m, choice)
+                * sfr * imf(m)
     return dej
 
 def dust_masses_fresh(m, metallicity):

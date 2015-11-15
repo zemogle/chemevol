@@ -31,6 +31,15 @@ class ChemModel:
             self.load_sfh()
         except KeyError:
             logger.error('You must provide initial parameters')
+        # Set up IMF Function
+        if (self.imf_type == "Chab" or self.imf_type == "chab" or self.imf_type == "c"):
+            self.imf = f.imf_chab
+        elif (self.imf_type == "TopChab" or self.imf_type == 'topchab' or self.imf_type == "tc"):
+            self.imf = f.imf_topchab
+        elif (self.imf_type == "Kroup" or self.imf_type == "kroup" or self.imf_type == "k"):
+            self.imf = f.imf_kroup
+        elif (self.imf_type == "Salp" or self.imf_type == "salp" or self.imf_type == "s"):
+            self.imf = f.imf_salp
 
     def load_sfh(self):
         try:
@@ -157,9 +166,9 @@ class ChemModel:
                     sfr_diff = self.sfr(tdiff)
                     # get nearest Z which corresponds to Z at time=t-taum
                     zdiff = find_nearest(z_lookup,tdiff)[1]
-                ezm += f.ejected_metal_mass(m, sfr_diff, zdiff, metallicity, self.imf_type) * dm
-                em += f.ejected_gas_mass(m, sfr_diff, self.imf_type) * dm
-                edm += f.ejected_dust_mass(m, sfr_diff, zdiff, metallicity, self.imf_type) * dm
+                ezm += f.ejected_metal_mass(m, sfr_diff, zdiff, metallicity, self.imf) * dm
+                em += f.ejected_gas_mass(m, sfr_diff, self.imf) * dm
+                edm += f.ejected_dust_mass(m, sfr_diff, zdiff, metallicity, self.imf) * dm
                 m += dm
 
             gas_ej = em
