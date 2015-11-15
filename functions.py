@@ -222,7 +222,7 @@ def ejected_dust_mass(m, sfr, zdiff, metallicity, choice):
     de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + mp*DELTA) x SFR(t-taum x phi(m)
     '''
     # read in dust mass from freshly formed metals as function m and Z
-    sum_mass_dust = dust_masses_fresh(m, metallicity)#.value
+    sum_mass_dust = dust_masses_fresh(m, metallicity)
     # condensation efficiency of LIMS
     delta_LIMS = 0.45
     # no dust from stars with m>40Msun.
@@ -291,7 +291,7 @@ def grow_timescale(e,g,sfr,z,d):
     return t_grow
 
 def graingrowth(e,g,sfr,z,md,f_c):
-        time_gg = 1e-9*grow_timescale(e,g,sfr,z,md)#.value #in Gyrs
+        time_gg = 1e-9*grow_timescale(e,g,sfr,z,md)
         if time_gg <= 0:
             mdust_gg = 0.
         else:
@@ -327,7 +327,7 @@ def destroy_dust(destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)#.value
+    t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
     if t_des <= 0:
         mdust_des = 0
     else:

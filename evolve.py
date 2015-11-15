@@ -98,26 +98,26 @@ class ChemModel:
             # GAS
             # astration, inflows, outflows
             gas_ast = self.sfr(t)
-            gas_inf = f.inflows(self.sfr(t), self.inflows['xSFR'])#.value
-            gas_out = f.outflows(self.sfr(t), self.outflows['xSFR'])#.value
+            gas_inf = f.inflows(self.sfr(t), self.inflows['xSFR'])
+            gas_out = f.outflows(self.sfr(t), self.outflows['xSFR'])
 
             # METALS
             # astration, inflows, outflows
             metals_ast = metallicity*self.sfr(t)
-            metals_inf = self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR'])#.value
+            metals_inf = self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR'])
             if self.outflows['metals']:
                 outflow_metals = metallicity
-                metals_out = outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR'])#.value
+                metals_out = outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 metals_out = 0.
 
             # DUST
             # astration, inflows, outflows, grain growth, destruction
             mdust_ast = md*f.astration(mg,self.sfr(t))
-            mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR'])#.value
+            mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR'])
 
             if self.outflows['dust']:
-                mdust_out = (1./mg)*f.outflows(self.sfr(t), self.outflows['xSFR'])#.value
+                mdust_out = (1./mg)*f.outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 mdust_out = 0.
 
@@ -229,7 +229,7 @@ class ChemModel:
             sn_rate = 0.
             dsn_rate = 0.
             if t < 0.049:
-                m = lookup_fn(t_lifetime,'lifetime_low_metals',t)[0]
+                m = lookup_fn(t_lifetime,'lifetime_high_metals',t)[0]
             else:
                 m = 9.
             while m < 40.:
