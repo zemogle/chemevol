@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
 
-from astropy import units as u
+#from astropy import units as u
 import numpy as np
 import logging
 from lookups import find_nearest, dust_mass_sn, t_yields, lookup_fn, mass_yields
@@ -80,7 +80,7 @@ def remnant_mass(m):
     else:
         rem_mass = 0.61*m - 13.75
 
-    rem_mass = rem_mass*u.solMass
+    rem_mass = rem_mass#*u.solMass
     return rem_mass
 
 def initial_mass_function(m, choice):
@@ -147,7 +147,7 @@ def ejected_gas_mass(m, sfr, choice):
     if m >= 120.0:
         dej = 0.0
     else:
-        dej = (m - (remnant_mass(m).value)) * sfr * initial_mass_function(m, choice)
+        dej = (m - (remnant_mass(m))) * sfr * initial_mass_function(m, choice)
     return dej
 
 def fresh_metals(m, metallicity):
@@ -200,7 +200,7 @@ def ejected_metal_mass(m, sfr, zdiff, metallicity, choice):
     if m >= 120.0:
         dej = 0.0
     else:
-        dej = ((m - (remnant_mass(m).value))*zdiff + fresh_metals(m, metallicity)) * \
+        dej = ((m - (remnant_mass(m)))*zdiff + fresh_metals(m, metallicity)) * \
                 sfr * initial_mass_function(m, choice)
     return dej
 
@@ -222,14 +222,14 @@ def ejected_dust_mass(m, sfr, zdiff, metallicity, choice):
     de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + mp*DELTA) x SFR(t-taum x phi(m)
     '''
     # read in dust mass from freshly formed metals as function m and Z
-    sum_mass_dust = dust_masses_fresh(m, metallicity).value
+    sum_mass_dust = dust_masses_fresh(m, metallicity)#.value
     # condensation efficiency of LIMS
     delta_LIMS = 0.45
     # no dust from stars with m>40Msun.
     if m >= 40.:
         dej = 0.0
     else:
-        dej = ((m - (remnant_mass(m).value))*zdiff*delta_LIMS \
+        dej = ((m - (remnant_mass(m)))*zdiff*delta_LIMS \
                 + sum_mass_dust) \
                 * sfr * initial_mass_function(m, choice)
     return dej
@@ -264,7 +264,7 @@ def dust_masses_fresh(m, metallicity):
         dustmass = find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass = 0.
-    dustmass = dustmass*u.solMass
+    dustmass = dustmass#*u.solMass
     return dustmass
 
 def grow_timescale(e,g,sfr,z,d):
@@ -288,11 +288,10 @@ def grow_timescale(e,g,sfr,z,d):
     else:
         t_grow = g/(e*z*sfr_in_years)
         t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
-    t_grow = t_grow*u.year
     return t_grow
 
 def graingrowth(e,g,sfr,z,md,f_c):
-        time_gg = 1e-9*grow_timescale(e,g,sfr,z,md).value #in Gyrs
+        time_gg = 1e-9*grow_timescale(e,g,sfr,z,md)#.value #in Gyrs
         if time_gg <= 0:
             mdust_gg = 0.
         else:
@@ -318,7 +317,7 @@ def destruction_timescale(destruct,g,supernova_rate):
     else:
         # sn_rate is in units of N per Gyr
         t_destroy = g/(destruct*supernova_rate)
-    t_destroy = t_destroy*u.year
+#    t_destroy = t_destroy*u.year
     return t_destroy
 
 def destroy_dust(destruct,gasmass,supernova_rate,md,f_c):
@@ -328,7 +327,7 @@ def destroy_dust(destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate).value
+    t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)#.value
     if t_des <= 0:
         mdust_des = 0
     else:
@@ -344,7 +343,7 @@ def inflows(sfr,parameter):
     -parameter: inflow parameter defined in dictionary
     '''
     inflow_rate = sfr*parameter
-    inflow_rate = inflow_rate*u.solMass/u.Gyr
+    inflow_rate = inflow_rate#*u.solMass/u.Gyr
     return inflow_rate
 
 def outflows(sfr,parameter):
@@ -356,7 +355,7 @@ def outflows(sfr,parameter):
     -parameter: outflow parameter defined in dictionary
     '''
     outflow_rate = sfr*parameter
-    outflow_rate = outflow_rate*u.solMass/u.Gyr
+    outflow_rate = outflow_rate#*u.solMass/u.Gyr
     return outflow_rate
 
 def validate_initial_dict(keysdict, data_dict):
