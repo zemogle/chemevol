@@ -96,7 +96,7 @@ initial_galaxy_params = {'run1': {
 							'inflows':{'metals': 1e-4, 'xSFR': 0, 'dust': 0},
 							'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 							'cold_gas_fraction':0.,
-							'epsilon_grain': 500.,
+							'epsilon_grain': 1e5.,
 							'destruct': 100.
 							}
 							}
@@ -112,8 +112,3 @@ time, mstars = ch.stellar_mass()
 time, metalmass, metallicity = ch.metal_mass(mgas)
 snrate = ch.supernova_rate()
 time, mdust, dust_to_metals = ch.dust_mass(mgas,metallicity,snrate)
-
-gasfraction = mgas/(mgas+mstars)
-
-# Quick look plots:
-p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals)
