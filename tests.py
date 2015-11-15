@@ -34,7 +34,7 @@ class TestFunctions:
         assert  1660 < destroy.value < 1670
 
     def test_dust_destruction(self):
-        dust_sink = destroy_dust(1000.,1.02e10,6.66e6,6.765e08,0.5)
+        dust_sink = destroy_dust(1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
         assert 2.02e8 < dust_sink < 2.29e8
 
     def test_astration(Self):
@@ -49,7 +49,7 @@ class TestFunctions:
         assert 86.3 < grow.value < 86.4
 
     def test_dust_graingrowth(self):
-        dust_ism = graingrowth(500,1.02e10,1e9,0.07,6.765e8,0.5)
+        dust_ism = graingrowth(500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert  3.200e6 < dust_ism < 3.202e6
 
     def test_outflow_func(Self):

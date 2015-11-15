@@ -32,13 +32,12 @@ inits = {
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 1e5,
+				'epsilon_grain': 500,
         'destruct': 1000.
               }
 ch = ChemModel(**inits)
-time, mgas = ch.gas_mass()
+time, mgas, metalmass, metallicity = ch.gas_and_metal_mass()
 time, mstars = ch.stellar_mass()
-time, metalmass, metallicity = ch.metal_mass(mgas)
 snrate = ch.supernova_rate()
 time, mdust, dust_sources, dust_metals, timescales = ch.dust_mass(mgas,metallicity,snrate)
 

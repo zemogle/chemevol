@@ -51,8 +51,8 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f5.set_xlabel("Gas Fraction", fontsize='16')
 
     f6 = plt.subplot(2,3,6)
-    f6.loglog(time,timescale[:,0],color='black',linewidth=2,label='destruction')
-    f6.loglog(time,timescale[:,1],color='purple',linewidth=2,label='grain growth')
+    f6.semilogy(time,timescale[:,0],color='black',linewidth=2,label='destruction')
+    f6.semilogy(time,timescale[:,1],color='purple',linewidth=2,label='grain growth')
     f6.legend(frameon=False, loc='upper right', fontsize='11')
     f6.set_xlim(0.01,20)
     f6.set_ylim(0.01,100)

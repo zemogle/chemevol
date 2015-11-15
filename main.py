@@ -105,10 +105,23 @@ initial_galaxy_params = {'run1': {
 #f.validate_initial_dict(init_keys, initial_galaxy_params)
 
 from evolve import ChemModel
+inits = {
+        'gasmass_init': 4.8e10,
+				'SFH': 'MilkyWay.sfh',
+        't_end': 20.,
+				'gamma': 0,
+				'IMF_fn': 'Chab',
+				'dust_source': 'ALL',
+				'destroy': True,
+				'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
+				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
+				'cold_gas_fraction': 0.5,
+				'epsilon_grain': 500,
+        'destruct': 1000.
+              }
+			  
 ch = ChemModel(**inits)
-
-time, mgas = ch.gas_mass()
+time, mgas, metalmass, metallicity = ch.gas_and_metal_mass()
 time, mstars = ch.stellar_mass()
-time, metalmass, metallicity = ch.metal_mass(mgas)
 snrate = ch.supernova_rate()
-time, mdust, dust_to_metals = ch.dust_mass(mgas,metallicity,snrate)
+time, mdust, dust_sources, dust_metals, timescales = ch.dust_mass(mgas,metallicity,snrate)
