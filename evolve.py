@@ -73,6 +73,7 @@ class ChemModel:
         metals_pre = 0
         metals_list = []
         mg_list = []
+        z = []
         z_lookup = []
 
         # Limit time to less than tend
@@ -82,7 +83,8 @@ class ChemModel:
         # TIME integral
         for t in time:
             metallicity = metals/mg
-            z_lookup.append([t,metallicity])
+            z.append([t,metallicity])
+            z_lookup = np.array(z)
             # set up gas and metals lost due to star formation
             gas_ast = self.sfr(t)
             metals_ast = metallicity*self.sfr(t)
@@ -122,15 +124,18 @@ class ChemModel:
                 tdiff = t - taum
                 # only release metals (ejected_gas_mass) after stars die
                 if tdiff <= 0:
-                    sfr_diff = 0.
+                    sfr_diff = self.sfr(t_0)
                     zdiff = 0.
+                    ezm = 0
+                    em = 0.
                 else:
                     sfr_diff = self.sfr(tdiff)
-                    zdiff = metallicity
+                    # get nearest Z which corresponds to Z at time=t-taum
+                    zdiff = find_nearest(z_lookup,tdiff)[1]
                     ezm += f.ejected_metal_mass(m, sfr_diff, zdiff, metallicity, self.imf_type) * dm
-                em += f.ejected_gas_mass(m, sfr_diff, self.imf_type) * dm
+                    em += f.ejected_gas_mass(m, sfr_diff, self.imf_type) * dm
                 m += dm
-
+    #            print t, m, taum, tdiff, metallicity, zdiff
             gas_ej = em
             metals_stars = ezm
 
@@ -169,6 +174,7 @@ class ChemModel:
         # initialize
         dm = 0.01
         edm = 0.
+        t_0 = 1e-3
         now = datetime.now()
         mu = t_lifetime[-1][0]
         # we pull out mass corresponding to age of system
@@ -180,6 +186,7 @@ class ChemModel:
             col_choice = lifetime_cols['low_metals']
         else:
             col_choice = lifetime_cols['high_metals']
+        z_lookup = np.array(metaldiff)
         while m <= mu:
             if m > 10.:
                 dm = 0.5
@@ -187,15 +194,17 @@ class ChemModel:
             # calculate SFR when star was born which is t-lifetime
             taum =  lookup_taum(m,col_choice)
             tdiff = t - taum
+            # need Z(t-taum) for ejected dust mass
             if tdiff <= 0.:
                 zdiff = 0.
-                sfr_diff = 0.
+                sfr_diff = self.sfr(t_0)
             else:
-                zdiff = metallicity #needs to be z(t-taum)
-                sfr_diff = self.sfr(tdiff)
+                zdiff = find_nearest(z_lookup,tdiff)[1]
+                sfr_diff = metallicity
             edm += f.ejected_dust_mass(m, sfr_diff, zdiff, metallicity, self.imf_type) * dm
             m += dm
-#            print m, t, tdiff, em
+    #        if t == 0.8:
+    #            print m, t, tdiff, sfr_diff, metallicity, zdiff, edm
         return edm
 
     def supernova_rate(self):
@@ -278,6 +287,7 @@ class ChemModel:
         dust_list_sources = []
         dz_ratio_list = []
         timescales = []
+        z_lookup = []
         # Limit time to less than 20. Gyrs
         time = self.sfh[:,0]
         time = time[time < self.tend]
@@ -287,7 +297,6 @@ class ChemModel:
             mg = gasmass[item]
             z = metallicity[item]
             r_sn = snrate[item]
-
         #set up dust mass from stars (recycled(LIMS) + new (SN+LIMS))
             mdust_stars = self.ejected_d_mass(t, z)
 
