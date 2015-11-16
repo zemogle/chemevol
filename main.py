@@ -1,7 +1,11 @@
 '''
 Chemevol - Python package to read in a star formation history file,
-input galaxy parameters and run chemical evolution to determine the evolution
+input galaxy parameters and run a chemical evolution model to determine the evolution
 of gas, metals and dust in galaxies.
+
+Running this script will produce
+(a) a results data file
+(b) a pop-up plot for looking at results quickly
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
@@ -24,7 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
 import functions as f
-import plots as p
+from evolve import ChemModel
+import data as d
 import matplotlib.pyplot as plt
 
 '''------------------------------------------------------------------------
@@ -48,14 +53,14 @@ initial_galaxy_params
 - destroy: 				add dust destruction from SN shocks True or False
 - inflows: 				there are two parameters
  						metals = metallicity of inflow: input a number
-						xSFR = inflow rate is X * SFR: input a number
-						dust = amount of dust inflow: input a number
+								 xSFR = inflow rate is X * SFR: input a number
+								 dust = amount of dust inflow: input a number
 - outflows: 			there are two parameters
  						metals = metallicity of inflow: input True or False
-								 True = metallicity of system, False = 0
-						xSFR = inflow rate is X * SFR: input a number
-						dust = amount of dust in outflow: input True of False
-							  	 True = dust/gas of system, False = 0
+						True = metallicity of system, False = 0
+								 xSFR = inflow rate is X * SFR: input a number
+								 dust = amount of dust in outflow: input True of False
+							  	 		True = dust/gas of system, False = 0
 - cold_gas_fraction = 	fraction of gas in cold dense state for grain growth
 					  	typically 0.5-0.9 for high z systems, default is 0.5
 - epsilon_grain = 		grain growth parameter from Mattsson & Andersen 2012
@@ -71,6 +76,8 @@ SFR, metals and stars over time
 init_keys = (['gasmass_init','SFH','t_end','inflows','outflows','dust_source','destroy',\
 			'IMF_fn','gamma','epsilon_grain','destruct'])
 
+'''
+THIS WILL BE EDITED TO DO MORE THAN ONE RUN
 initial_galaxy_params = {'run1': {
 							'gasmass_init': 4.8e10,
 							'SFH': 'MilkyWay.sfh',
@@ -96,37 +103,50 @@ initial_galaxy_params = {'run1': {
 							'inflows':{'metals': 1e-4, 'xSFR': 0, 'dust': 0},
 							'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 							'cold_gas_fraction':0.,
-							'epsilon_grain': 1e5.,
+							'epsilon_grain': 1e5,
 							'destruct': 100.
 							}
 							}
 
 #Now we will test that the input parameters are A-OK:
 #f.validate_initial_dict(init_keys, initial_galaxy_params)
+'''
 
+
+import functions as f
 from evolve import ChemModel
-
+import data as d
+import matplotlib.pyplot as plt
 inits = {
-        'gasmass_init': 4.8e10,
+        		'gasmass_init': 4e10,
 				'SFH': 'MilkyWay.sfh',
-        't_end': 20.,
+        		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
 				'destroy': True,
-				'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
+				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 500,
-        'destruct': 1000.
+				'epsilon_grain': 1000.,
+        		'destruct': 1000.
               }
 
-ch = ChemModel(**inits)		  
+ch = ChemModel(**inits)
+
+# call modules to run the model
 snrate = ch.supernova_rate()
-time, mgas, metalmass, metallicity, mdust, dust_sources, dust_metals, timescales = ch.gas_metal_dust_mass(snrate)
+
+time, mgas, metalmass, metallicity, mdust, dust_sources, dust_metals, timescales, sfr = ch.gas_metal_dust_mass(snrate)
 
 time, mstars = ch.stellar_mass()
-gasfraction = mgas/(mgas+mstars)
 
-# make some rough plots
-p.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources,timescales)
+# create two new parameters gasfraction and ssfr
+gasfraction = mgas/(mgas+mstars)
+ssfr = sfr/mstars
+
+# make some quick look up plots
+d.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources,timescales)
+
+#write to a file
+d.writedata(time, mgas, mstars, sfr, ssfr, mdust, metalmass, metallicity, gasfraction)

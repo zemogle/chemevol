@@ -92,7 +92,7 @@ class ChemModel:
         mg_list = []
         z = []
         z_lookup = []
-
+        sfr_list = []
         # Limit time to less than tend
         time = self.sfh[:,0]
         time = time[time < self.tend]
@@ -115,8 +115,7 @@ class ChemModel:
             metals_ast = metallicity*self.sfr(t)
             metals_inf = self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR'])
             if self.outflows['metals']:
-                outflow_metals = metallicity
-                metals_out = outflow_metals*f.outflows(self.sfr(t), self.outflows['xSFR'])
+                metals_out = metallicity*f.outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 metals_out = 0.
 
@@ -211,6 +210,7 @@ class ChemModel:
             dust_list.append(md) # write array of dust mass
             dust_list_sources.append((md_all, md_stars, md_gg)) # write array of dust sources
             timescales.append((t_des,t_gg)) # write array for grain growth & destruction timescales
+            sfr_list.append(self.sfr(t)*1e-9) # write array for sfr
             if metallicity <= 0.:  # write dust/metals ratio but == 0 when metals  = 0
                 dust_to_metals = 0.
             else:
@@ -219,7 +219,7 @@ class ChemModel:
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return time, np.array(mg_list), np.array(metals_list), np.array(Z[1]), \
                 np.array(dust_list), np.array(dust_list_sources), \
-                np.array(dz_ratio_list), np.array(timescales)
+                np.array(dz_ratio_list), np.array(timescales), np.array(sfr_list)
 
     def supernova_rate(self):
         '''
