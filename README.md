@@ -19,6 +19,7 @@ The code requires a dictionary of parameters to feed in, these are set in main.p
 The code can be run in the directory using the following example (it requires a SFH file).  
 
 ```python
+import functions as f
 import data as d
 from evolve import ChemModel
 
@@ -30,19 +31,32 @@ inits = {
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
 				'destroy': True,
-				'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
+				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 1000,
-        'destruct': 1000.
+				'epsilon_grain': 1000.,
+        		'destruct': 1000.
               }
 
 ch = ChemModel(**inits)
-snrate = ch.supernova_rate()
-time, mgas, metalmass, metallicity, mdust, dust_sources, dust_metals, timescales = ch.gas_metal_dust_mass(snrate)
 
+snrate = ch.supernova_rate()
+
+dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
 time, mstars = ch.stellar_mass()
+
+time = all_results[:,0]
+mgas = all_results[:,1]
+metalmass = all_results[:,2]
+metallicity = all_results[:,3]
+mdust = all_results[:,4]
+dust_metals = all_results[:,5]
+sfr = all_results[:,6]
+
 gasfraction = mgas/(mgas+mstars)
+ssfr = sfr/mstars
+
+d.writedata(time, mgas, mstars, sfr, ssfr, mdust, metalmass, metallicity, gasfraction)
 
 d.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources,timescales)
 

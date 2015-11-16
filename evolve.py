@@ -84,15 +84,11 @@ class ChemModel:
         metals = 0
         prev_t = 1e-3
         metals_pre = 0
-        metals_list = []
-        dust_list = []
         dust_list_sources = []
-        dz_ratio_list = []
         timescales = []
-        mg_list = []
         z = []
         z_lookup = []
-        sfr_list = []
+        all_results = []
         # Limit time to less than tend
         time = self.sfh[:,0]
         time = time[time < self.tend]
@@ -199,27 +195,21 @@ class ChemModel:
             dt = t - prev_t             # calculate  next time step
             prev_t = t
             mg += dmg*dt # gas mass integral
-            mg_list.append(mg) # write gas mass to array
             metals += dmetals*dt # metal mass integral
-            metals_list.append(metals) # write metal mass to array
             Z = zip(*z_lookup) # write metallicity to an array
             md += ddust*dt # dust mass integral
             md_all += dust_source_all*dt # dust mass sources integral
             md_gg += mdust_gg*dt # dust source from grain growth only
             md_stars += mdust_stars*dt # dust source from stars only
-            dust_list.append(md) # write array of dust mass
             dust_list_sources.append((md_all, md_stars, md_gg)) # write array of dust sources
             timescales.append((t_des,t_gg)) # write array for grain growth & destruction timescales
-            sfr_list.append(self.sfr(t)*1e-9) # write array for sfr
             if metallicity <= 0.:  # write dust/metals ratio but == 0 when metals  = 0
                 dust_to_metals = 0.
             else:
                 dust_to_metals = (md/mg)/metallicity
-            dz_ratio_list.append(dust_to_metals)
+            all_results.append((t,mg,metals,metallicity,md,dust_to_metals,self.sfr(t)*1e-9))
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
-        return time, np.array(mg_list), np.array(metals_list), np.array(Z[1]), \
-                np.array(dust_list), np.array(dust_list_sources), \
-                np.array(dz_ratio_list), np.array(timescales), np.array(sfr_list)
+        return  np.array(dust_list_sources), np.array(timescales), np.array(all_results)
 
     def supernova_rate(self):
         '''
@@ -232,7 +222,6 @@ class ChemModel:
         # define time array
         time = self.sfh[:,0]
         time = time[time < self.tend]
-        now = datetime.now()
         for t in time:
             # need to clear the sn_rates as we don't want them adding up
             sn_rate = 0.
@@ -250,7 +239,6 @@ class ChemModel:
             dt = t - prev_t
             prev_t = t
             sn_rate_list.append(r_sn)
-        print("SN rate exterior loop %s" % str(datetime.now()-now))
         return np.array(sn_rate_list)
 
     def stellar_mass(self):

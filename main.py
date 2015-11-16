@@ -132,21 +132,26 @@ inits = {
         		'destruct': 1000.
               }
 
-ch = ChemModel(**inits)
-
 # call modules to run the model
 snrate = ch.supernova_rate()
 
-time, mgas, metalmass, metallicity, mdust, dust_sources, dust_metals, timescales, sfr = ch.gas_metal_dust_mass(snrate)
-
+dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
 time, mstars = ch.stellar_mass()
+
+time = all_results[:,0]
+mgas = all_results[:,1]
+metalmass = all_results[:,2]
+metallicity = all_results[:,3]
+mdust = all_results[:,4]
+dust_metals = all_results[:,5]
+sfr = all_results[:,6]
 
 # create two new parameters gasfraction and ssfr
 gasfraction = mgas/(mgas+mstars)
 ssfr = sfr/mstars
 
-# make some quick look up plots
-d.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources,timescales)
-
 #write to a file
 d.writedata(time, mgas, mstars, sfr, ssfr, mdust, metalmass, metallicity, gasfraction)
+
+# make some quick look up plots
+d.figure(time,mgas,mstars,metalmass,metallicity,mdust,dust_metals,gasfraction,dust_sources,timescales)

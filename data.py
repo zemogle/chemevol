@@ -7,8 +7,9 @@ def writedata(time, mgas, mstars, sfr, ssfr, mdust, metalmass, metallicity, gasf
     # write data to a file for plotting
     f = open('results.dat', 'w')
     for i in range(0,len(time)):
-        t = "%s %s %s %s %s %s %s %s %s \n" % (time[i], mgas[i], mstars[i], sfr[i], ssfr[i],\
-                        mdust[i], metalmass[i], metallicity[i], gasfraction[i])
+        t = "%s %.2f %.2f %.2f %s %.2f %.2f %.2f %.2f \n" % \
+            (time[i], mgas[i], mstars[i], sfr[i], ssfr[i], mdust[i], \
+            metalmass[i], metallicity[i], gasfraction[i])
         f.write(t)
     f.close()
 
@@ -66,7 +67,7 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f6.semilogy(time,timescale[:,1],color='purple',linewidth=2,label='grain growth')
     f6.legend(frameon=False, loc='upper right', fontsize='11')
     f6.set_xlim(0.01,20)
-    f6.set_ylim(0.01,1)
+    f6.set_ylim(0.01,5)
     f6.set_ylabel("Timescale (Gyr)", fontsize='16')
     f6.set_xlabel("Time (Gyr)", fontsize='16')
     plt.show()
