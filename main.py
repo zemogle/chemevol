@@ -118,7 +118,7 @@ from evolve import ChemModel
 import data as d
 import matplotlib.pyplot as plt
 inits = {
-        		'gasmass_init': 4e10,
+        		'gasmass_init': 4.8e10,
 				'SFH': 'MilkyWay.sfh',
         		't_end': 20.,
 				'gamma': 0,
