@@ -1,5 +1,5 @@
-# chemevol
-Chemical evolution python package
+# ChemEvol
+Chemical evolution python package.
 
 # Requirements
 
@@ -25,18 +25,18 @@ from evolve import ChemModel
 
 inits = {
         'gasmass_init': 4e10,
-				'SFH': 'MilkyWay.sfh',
+        'SFH': 'MilkyWay.sfh',
         't_end': 20.,
-				'gamma': 0,
-				'IMF_fn': 'Chab',
-				'dust_source': 'ALL',
-				'destroy': True,
-				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
-				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 1000.,
-        		'destruct': 1000.
-              }
+        'gamma': 0,
+        'IMF_fn': 'Chab',
+        'dust_source': 'ALL',
+        'destroy': True,
+        'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
+        'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
+        'cold_gas_fraction': 0.5,
+        'epsilon_grain': 1000.,
+        'destruct': 1000.
+        }
 
 ch = ChemModel(**inits)
 
