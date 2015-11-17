@@ -1,27 +1,29 @@
 # ChemEvol
 Python package to read in a star formation history file, input galaxy parameters and run a chemical evolution model to determine the evolution of gas, metals and dust in galaxies.
 
-Running this script will produce
-(a) a results data file
-(b) a pop-up plot for looking at results quickly
+Running this script will produce:
+
+1. a results data file
+1. a pop-up plot for looking at results quickly
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
+
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
 
 If you use this code, please do cite the above papers.
 
-# Requirements
+## Requirements
 
-## Python packages
+### Python packages
 - numpy
 - astropy
 - logger
 - matplotlib
 
-## input files needed
+### input files needed
 The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form time (yr), SFR (Msolar/yr).    An example is provided with this code `MilkyWay.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
 
-## input data needed
+### input data needed
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit.
 
 ## Running the code
