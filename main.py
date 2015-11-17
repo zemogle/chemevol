@@ -5,7 +5,7 @@ of gas, metals and dust in galaxies.
 
 Running this script will produce
 (a) a results data file
-(b) a pop-up plot for looking at results quickly
+(b) a pop-up plot for looking at gas, dust and metal evolution
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
@@ -130,10 +130,17 @@ inits = {
 ch = ChemModel(**inits)
 
 # call modules to run the model
+
+# SN rate at each time step
 snrate = ch.supernova_rate()
 
+# returns
+# (a) dust sources vs time (all, stars only and grain growth only)
+# (b) timescales for destruction & grain growth
+# (c) all results -- t, mg, mz, Z, md, md/mz, sfr
 dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
-time, mstars = ch.stellar_mass()
+
+time, mstars = ch.stellar_mass() # returns stellar mass over time
 
 time = all_results[:,0]
 mgas = all_results[:,1]
@@ -142,8 +149,10 @@ metallicity = all_results[:,3]
 mdust = all_results[:,4]
 dust_metals = all_results[:,5]
 sfr = all_results[:,6]
+t_graingrow = timescales[:,1]
+t_destroy = timescales[:,0]
 
-# create two new parameters gasfraction and ssfr
+# create gasfraction and ssfr parameters
 gasfraction = mgas/(mgas+mstars)
 ssfr = sfr/mstars
 
