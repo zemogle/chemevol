@@ -151,12 +151,12 @@ class ChemModel:
             prev_t = t
             mg += dmg*dt # gas mass integral
             metals += dmetals*dt # metal mass integral
-            Z = zip(*z_lookup) # write metallicity to an array
-            s_f_r = zip(*sfr_lookup)
             md += ddust*dt # dust mass integral
             md_all += dust_source_all*dt # dust mass sources integral
             md_gg += mdust_gg*dt # dust source from grain growth only
             md_stars += mdust_stars*dt # dust source from stars only
+            Z = zip(*z_lookup) # write metallicity to an array
+            s_f_r = zip(*sfr_lookup) # write SFR lookup array
             dust_sources.append((md_all, md_stars, md_gg)) # write array of dust sources
             timescales.append((t_des,t_gg)) # write array for grain growth & destruction timescales
             if metallicity <= 0.:  # write dust/metals ratio but == 0 when metals  = 0
