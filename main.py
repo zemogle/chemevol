@@ -113,7 +113,7 @@ initial_galaxy_params = {'run1': {
 '''
 
 inits = {
-        		'gasmass_init': 4.8e10,
+        		'gasmass_init': 4e10,
 				'SFH': 'MilkyWay.sfh',
         		't_end': 20.,
 				'gamma': 0,

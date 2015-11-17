@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #from astropy import units as u
 import numpy as np
 import logging
-from lookups import find_nearest, dust_mass_sn, t_yields, lookup_fn, mass_yields
+from lookups import find_nearest, dust_mass_sn, t_yields, \
+                    t_lifetime, lookup_fn, lookup_taum, mass_yields
 from lookups import yield_names as yn
 
 logger = logging.Logger('chem')
@@ -373,3 +374,47 @@ def outflows(sfr,parameter):
     outflow_rate = sfr*parameter
     outflow_rate = outflow_rate#*u.solMass/u.Gyr
     return outflow_rate
+
+def mass_integral(t, metallicity, sfr_lookup, z_lookup, imf):
+     '''
+     This function does the mass integral for:
+     - e(t): ejected gas mass em
+     - ez(t): ejected metal mass ezm
+     - ed(t): ejected dust mass edm
+     - Zdiff and SFR diff are also calculated ie at t-taum
+     '''
+     mu = t_lifetime[-1]['mass']
+     dm = 0.01
+     t_0 = 1e-3
+     ezm = 0.
+     edm = 0.
+     em = 0.
+     # we pull out mass corresponding to age of system
+     # to get lower limit of integral
+     # to make taum lookup faster
+     m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+     lifetime_cols = {'low_metals':1, 'high_metals':2}
+     if metallicity < 0.019:
+         col_choice = lifetime_cols['low_metals']
+     else:
+         col_choice = lifetime_cols['high_metals']
+     while m <= mu:
+         if m > 10.:
+             dm = 0.5
+         # pull out lifetime of star of mass m so we can
+         # calculate SFR when star was born which is t-lifetime
+         taum = lookup_taum(m,col_choice)
+         tdiff = t - taum
+         # only release metals (ejected_gas_mass) after stars die
+         if tdiff <= 0:
+             sfr_diff = 0.
+             zdiff = 0.
+         else:
+             # get nearest Z which corresponds to Z at time=t-taum
+             zdiff = find_nearest(z_lookup,tdiff)[1]
+             sfr_diff = find_nearest(sfr_lookup,tdiff)[1]
+         ezm += ejected_metal_mass(m, sfr_diff, zdiff, metallicity, imf) * dm
+         em += ejected_gas_mass(m, sfr_diff, imf) * dm
+         edm += ejected_dust_mass(m, sfr_diff, zdiff, metallicity, imf) * dm
+         m += dm
+     return em, ezm, edm

@@ -88,6 +88,8 @@ class ChemModel:
         timescales = []
         z = []
         z_lookup = []
+        sfr_list = []
+        sfr_lookup = []
         all_results = []
         # Limit time to less than tend
         time = self.sfh[:,0]
@@ -99,6 +101,8 @@ class ChemModel:
             metallicity = metals/mg
             z.append([t,metallicity])
             z_lookup = np.array(z)
+            sfr_list.append([t,self.sfr(t)])
+            sfr_lookup = np.array(sfr_list)
 
             # GAS
             # astration, inflows, outflows
@@ -129,67 +133,18 @@ class ChemModel:
             mdust_gg, t_gg = f.graingrowth(self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
             mdust_des, t_des = f.destroy_dust(self.destroy_ism,mg,r_sn,md,self.coldfraction)
 
-        # MASS integral for gas, metals, dust
-        # initialize
-            mu = t_lifetime[-1]['mass']
-            dm = 0.01
-            t_0 = 1e-3
-            ezm = 0.
-            edm = 0.
-            em = 0.
-            # we pull out mass corresponding to age of system
-            # to get lower limit of integral
-            # to make taum lookup faster
-            m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
-            lifetime_cols = {'low_metals':1, 'high_metals':2}
-            if metallicity < 0.019:
-                col_choice = lifetime_cols['low_metals']
-            else:
-                col_choice = lifetime_cols['high_metals']
-            while m <= mu:
-                if m > 10.:
-                    dm = 0.5
-                # pull out lifetime of star of mass m so we can
-                # calculate SFR when star was born which is t-lifetime
-                taum = lookup_taum(m,col_choice)
-                tdiff = t - taum
-                # only release metals (ejected_gas_mass) after stars die
-                if tdiff <= 0:
-                    sfr_diff = 0.
-                    zdiff = 0.
-                else:
-                    sfr_diff = self.sfr(tdiff)
-                    # get nearest Z which corresponds to Z at time=t-taum
-                    zdiff = find_nearest(z_lookup,tdiff)[1]
-                ezm += f.ejected_metal_mass(m, sfr_diff, zdiff, metallicity, self.imf) * dm
-                em += f.ejected_gas_mass(m, sfr_diff, self.imf) * dm
-                edm += f.ejected_dust_mass(m, sfr_diff, zdiff, metallicity, self.imf) * dm
-                m += dm
-
-            gas_ej = em
-            metals_stars = ezm
-            mdust_stars = edm
+            # do the mass integral to get ejected masses for gas, metals, dust
+            gas_ej, metals_stars, mdust_stars = \
+                                f.mass_integral(t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             # gas mass integral dmg/dt =
-            dmg = - gas_ast \
-                  + gas_ej \
-                  + gas_inf \
-                  - gas_out
+            dmg = - gas_ast + gas_ej + gas_inf - gas_out
 
             # metal mass integral dMz/dt =
-            dmetals = - metals_ast \
-                      + metals_stars \
-                      + metals_pre \
-                      + metals_inf \
-                      + metals_out
+            dmetals = - metals_ast + metals_stars + metals_pre + metals_inf - metals_out
 
             # dust mass integral dMd/dt =
-            ddust = - mdust_ast \
-                    + mdust_stars \
-                    + mdust_inf \
-                    - md*mdust_out \
-                    + mdust_gg \
-                    - mdust_des
+            ddust = - mdust_ast + mdust_stars + mdust_inf - md*mdust_out + mdust_gg - mdust_des
 
             dust_source_all = mdust_stars + mdust_gg #dust sources stars + grain growth
             dt = t - prev_t             # calculate  next time step
@@ -197,6 +152,7 @@ class ChemModel:
             mg += dmg*dt # gas mass integral
             metals += dmetals*dt # metal mass integral
             Z = zip(*z_lookup) # write metallicity to an array
+            s_f_r = zip(*sfr_lookup)
             md += ddust*dt # dust mass integral
             md_all += dust_source_all*dt # dust mass sources integral
             md_gg += mdust_gg*dt # dust source from grain growth only
