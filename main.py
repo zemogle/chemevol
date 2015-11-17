@@ -112,11 +112,6 @@ initial_galaxy_params = {'run1': {
 #f.validate_initial_dict(init_keys, initial_galaxy_params)
 '''
 
-
-import functions as f
-from evolve import ChemModel
-import data as d
-import matplotlib.pyplot as plt
 inits = {
         		'gasmass_init': 4.8e10,
 				'SFH': 'MilkyWay.sfh',
@@ -131,6 +126,8 @@ inits = {
 				'epsilon_grain': 1000.,
         		'destruct': 1000.
               }
+
+ch = ChemModel(**inits)
 
 # call modules to run the model
 snrate = ch.supernova_rate()
