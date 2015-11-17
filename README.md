@@ -1,5 +1,14 @@
 # ChemEvol
-Chemical evolution python package.
+Python package to read in a star formation history file, input galaxy parameters and run a chemical evolution model to determine the evolution of gas, metals and dust in galaxies.
+
+Running this script will produce
+(a) a results data file
+(b) a pop-up plot for looking at results quickly
+
+The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
+and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
+
+If you use this code, please do cite the above papers.
 
 # Requirements
 
