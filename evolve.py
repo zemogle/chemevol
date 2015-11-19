@@ -45,27 +45,18 @@ class ChemModel:
             self.choice_des = 0
         else:
             self.choice_des = 1
-        # set up dust source choice
-        if (self.dust_source == "ALL" or "all" or "All"):
-            self.choice_sn = 1
-            self.choice_gg = 1
-            self.choice_lims = 1
-        elif (self.dust_source == "SN" or "Sn" or "sn"):
-            self.choice_sn = 1
-            self.choice_gg = 0
-            self.choice_lims = 0
-        elif (self.dust_source == "LIMS" or "Lims" or "lims"):
-            self.choice_sn = 0
-            self.choice_gg = 0
-            self.choice_lims = 1
-        elif (self.dust_source == "SN+LIMS" or "sn+lims"):
-            self.choice_sn = 1
-            self.choice_gg = 1
-            self.choice_lims = 0
-        elif (self.dust_source == "GG" or "gg" or "Gg"):
-            self.choice_sn = 0
-            self.choice_gg = 0
-            self.choice_lims = 1
+        # set up dust source choice 0 = SN, 1 = LIMS, 2 = GG
+        if (self.dust_source == "ALL" or self.dust_source == "all" or self.dust_source == "All"):
+            self.choice_dust = (1, 1, 1)
+        elif (self.dust_source == "SN" or self.dust_source == "Sn" or self.dust_source == "sn"):
+            self.choice_dust = (1, 0, 0)
+        elif (self.dust_source == "LIMS" or self.dust_source == "Lims" or self.dust_source == "lims"):
+            self.choice_dust = (0, 1, 0)
+        elif (self.dust_source == "SN+LIMS" or self.dust_source == "sn+lims" or \
+              self.dust_source == "LIMS+SN" or self.dust_source == "lims+sn"):
+            self.choice_dust = (1, 1, 0)
+        elif (self.dust_source == "GG" or self.dust_source == "gg" or self.dust_source == "Gg"):
+            self.choice_dust = (0, 0, 1)
         else:
             print ('oops please check the dust sources are in the right format')
 
@@ -158,12 +149,12 @@ class ChemModel:
                 mdust_out = 0.
 
             # destruction timescales + dust mass from grain growth and destruction
-            mdust_gg, t_gg = f.graingrowth(self.choice_gg,self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
+            mdust_gg, t_gg = f.graingrowth(self.choice_dust[2],self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
             mdust_des, t_des = f.destroy_dust(self.choice_des,self.destroy_ism,mg,r_sn,md,self.coldfraction)
 
             # do the mass integral to get ejected masses for gas, metals, dust
             gas_ej, metals_stars, mdust_stars = \
-                                f.mass_integral(t, metallicity, sfr_lookup, z_lookup, self.imf)
+                                f.mass_integral(self.choice_dust,t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             # gas mass integral dmg/dt =
             dmg = - gas_ast + gas_ej + gas_inf - gas_out

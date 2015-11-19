@@ -118,7 +118,7 @@ inits = {
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'ALL',
+				'dust_source': 'SN',
 				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
@@ -136,11 +136,11 @@ snrate = ch.supernova_rate()
 
 # returns
 # (a) dust sources vs time (all, stars only and grain growth only)
-# (b) timescales for destruction & grain growth
+# (b) timescales for destruction & grain growth in Gyrs
 # (c) all results -- t, mg, mz, Z, md, md/mz, sfr
 dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
 
-time, mstars = ch.stellar_mass() # returns stellar mass over time
+time, mstars = ch.stellar_mass() # returns time (Gyr), stellar mass (Msolar)
 
 time = all_results[:,0]
 mgas = all_results[:,1]

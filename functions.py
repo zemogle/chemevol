@@ -221,7 +221,7 @@ def ejected_metal_mass(m, sfr, zdiff, metallicity, imf):
                 sfr * imf(m)
     return dej
 
-def ejected_dust_mass(m, sfr, zdiff, metallicity, imf):
+def ejected_dust_mass(choice, m, sfr, zdiff, metallicity, imf):
     '''
     Calculate the ejected dust mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -237,21 +237,37 @@ def ejected_dust_mass(m, sfr, zdiff, metallicity, imf):
               DELTA = fraction of new metals in LIMS (0.45) and SN (from TF01)
 
     de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + mp*DELTA) x SFR(t-taum x phi(m)
+
+    In:
+    -- choice: array of dust source choices
+               0th element = sn value 1 or 0
+               1st element = lims value 1 or 0
+               2nd element = grain growth value 1 or 0
+    -- m:
+    -- sfr:
+    -- zdiff:
+    -- metallicity:
+    -- imf
+
+    delta_LIMS_recycled: fraction of metals that condense into dust 0.45
     '''
     # read in dust mass from freshly formed metals as function m and Z
-    sum_mass_dust = dust_masses_fresh(m, metallicity)
-    # condensation efficiency of LIMS
-    delta_LIMS = 0.45
+    sum_mass_dust = dust_masses_fresh(choice, m, metallicity)
+
+    # If LIMS is turned on or off
+    choice_lims = choice[1]
+    # condensation efficiency of recycled stars in LIMS
+    delta_LIMS_recycled = choice_lims*0.45
     # no dust from stars with m>40Msun.
     if m >= 40.:
         dej = 0.0
     else:
-        dej = ((m - (remnant_mass(m)))*zdiff*delta_LIMS \
+        dej = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled \
                 + sum_mass_dust) \
                 * sfr * imf(m)
     return dej
 
-def dust_masses_fresh(m, metallicity):
+def dust_masses_fresh(choice, m, metallicity):
     '''
     This function returns the dust mass ejected by a star
     of initial mass m made from freshly synthesised elements
@@ -266,6 +282,10 @@ def dust_masses_fresh(m, metallicity):
     Todini & Ferrara 2001 (MNRAS 325 276)
 
     In:
+    -- choice: array of dust source choices
+               0th element = sn value 1 or 0
+               1st element = lims value 1 or 0
+               2nd element = grain growth value 1 or 0
     -- m: mass of star
     -- metallicity: metal mass fraction Mz/Mg
 
@@ -274,13 +294,17 @@ def dust_masses_fresh(m, metallicity):
 
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
+    # Which dust sources are turned on or off?
+    choice_sn = choice[0]
+    choice_lims = choice[1]
+
     delta_new_LIMS = 0.45
     if (m < 9.0):
-        dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
+        dustmass = choice_lims*delta_new_LIMS * fresh_metals(m, metallicity)
     elif (m >= 9.0) & (m <= 40.0):
         # find dust mass from TF01 in dust_mass_sn table
         # assume massive star winds don't form dust
-        dustmass = find_nearest(np.array(dust_mass_sn),m)[1]
+        dustmass = choice_sn*find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass = 0.
     dustmass = dustmass#*u.solMass
@@ -402,7 +426,7 @@ def outflows(sfr,parameter):
     outflow_rate = outflow_rate#*u.solMass/u.Gyr
     return outflow_rate
 
-def mass_integral(t, metallicity, sfr_lookup, z_lookup, imf):
+def mass_integral(choice, t, metallicity, sfr_lookup, z_lookup, imf):
      '''
      This function does the mass integral for:
      - e(t): ejected gas mass em
@@ -411,6 +435,7 @@ def mass_integral(t, metallicity, sfr_lookup, z_lookup, imf):
      - Zdiff and SFR diff are also calculated ie at t-taum
 
      In:
+     -- choice: array of dust source choices
      -- t: time in Gyrs
      -- metallicity: metal mass fraction Mz/Mg
      -- sfr_lookup: SFR array (time, SFR) based on previous time steps
@@ -449,6 +474,6 @@ def mass_integral(t, metallicity, sfr_lookup, z_lookup, imf):
              sfr_diff = find_nearest(sfr_lookup,tdiff)[1]
          ezm += ejected_metal_mass(m, sfr_diff, zdiff, metallicity, imf) * dm
          em += ejected_gas_mass(m, sfr_diff, imf) * dm
-         edm += ejected_dust_mass(m, sfr_diff, zdiff, metallicity, imf) * dm
+         edm += ejected_dust_mass(choice, m, sfr_diff, zdiff, metallicity, imf) * dm
          m += dm
      return em, ezm, edm

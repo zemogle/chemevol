@@ -40,7 +40,7 @@ inits = {
         't_end': 20.,
         'gamma': 0,
         'IMF_fn': 'Chab',
-        'dust_source': 'ALL',
+        'dust_source': 'gg',
         'destroy': True,
         'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
         'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
