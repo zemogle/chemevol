@@ -144,12 +144,12 @@ class TestInitials:
     '''
     Tests whether things are turned on or off from init file
     '''
-    def destruction_turned_off(self):
-        dustmass = f.destroy_dust(0,1000,4e10,0.006,1e5,0.5)[0]
+    def test_destruction_turned_off(self):
+        dustmass = destroy_dust(0,1000,4e10,0.006,1e5,0.5)[0]
         assert dustmass == 0
 
-    def graingrowth_turned_off(Self):
-        dustmass = f.graingrowth(0,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
+    def test_graingrowth_turned_off(Self):
+        dustmass = graingrowth(0,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert dustmass == 0
 
 class TestTables:

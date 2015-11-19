@@ -26,9 +26,11 @@ def validate_initial_dict(keysdict, data_dict):
             # check dust_source options correct
                 if (k == 'dust_source'):
                     dummy = data_dict[run][k]
-                    if not ((dummy == 'SN') or (dummy == 'LIMS') or \
-                           (dummy == 'LIMS+SN') or (dummy == 'GG') or\
-                           (dummy == 'ALL')):
+                    if not ((dummy == 'SN') or (dummy == 'Sn') or (dummy == 'sn') \
+                            or (dummy == 'LIMS') or (dummy == 'lims') or (dummy == 'Lims') \
+                           (dummy == 'LIMS+SN') or (dummy == 'lims+sn') or (dummy == 'Lims+sn') \
+                           (dummy == 'GG') or (dummy == 'gg') or (dummy == 'Gg')  \
+                           (dummy == 'ALL') or (dummy == 'all') or (dummy == 'All') ):
                         raise ValueError("Oops double check %r:%r" % (run,k))
 
             # check IMF_fn source options correct

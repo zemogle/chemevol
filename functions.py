@@ -262,15 +262,17 @@ def dust_masses_fresh(m, metallicity):
     LIMS: we multiply the metal yields by a dust condensation
     efficiency parameter assumed to be 0.45
 
-    see Figure 3a in Rowlands et al 2014 (MNRAS 441, 1040)
-
     For high mass stars we use the SN yields of
     Todini & Ferrara 2001 (MNRAS 325 276)
-    see Figure 3b in Rowlands et al 2014 (MNRAS 441, 1040)
 
-    m - mass of star
-    delta - dust condensation efficiency for LIMS =0.45
+    In:
+    -- m: mass of star
+    -- metallicity: metal mass fraction Mz/Mg
+
+    delta_new_LIMS - dust condensation efficiency for new metals in LIMS
     yields - metal yields by mass
+
+    See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
     delta_new_LIMS = 0.45
     if (m < 9.0):
@@ -286,18 +288,17 @@ def dust_masses_fresh(m, metallicity):
 
 def grow_timescale(e,g,sfr,z,d):
     '''
-    Calculates the grain growth timescale in years.
+    Calculates the grain growth timescale in years
+    Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
 
-    - e: free parameter with MW value set to ~500.
-         e = 2e4 would result in timescales of 1Myr and below.
+    In:
+    - e: free parameter with MW value set to ~500-1000
     - G: gas mass in Msolar
     - D: dust mass in Msolar
     - Z: metallicity mass fraction
     - SFR: star formation rate in units of Msolar/Gyr
     - f_c: fraction of gas in cold dense state for grain growth
 
-    Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
-    In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
     sfr_in_years = sfr*1e-9 # to convert from per Gyr to per yr
     if z <= 0.:
@@ -308,25 +309,42 @@ def grow_timescale(e,g,sfr,z,d):
     return t_grow
 
 def graingrowth(choice,e,g,sfr,z,md,f_c):
-        time_gg = choice*1e-9*grow_timescale(e,g,sfr,z,md)
-        if time_gg <= 0:
-            mdust_gg = 0.
-        else:
-            mdust_gg = choice*md * f_c * (1.-((md/g)/z)) * time_gg**-1
-        return mdust_gg, time_gg
+    '''
+    Calculates the grain growth contribution to dust mass, also
+    returns grain growth timescale
+    Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
+
+    In:
+    -- choice: is grain growth turned on or off (1 or 0)
+    -- g: gas mass at time t in Msolar
+    -- sfr: SFR at time t in Msolar per Gyr
+    -- z: metallicity of system (Mz/Mg)
+    -- md: dust mass at time t in Msolar
+    -- f_c: fraction of gas in cold dense clouds
+
+    e is between 500-1000 appropriate for timescales < 1 Gyr.
+    In dust evolution, dMd/dt is proportional to Md/t_grow
+    '''
+        # convert grain growth timescale to Gyrs
+    time_gg = choice*1e-9*grow_timescale(e,g,sfr,z,md)
+    if time_gg <= 0:
+        mdust_gg = 0.
+    else:
+        mdust_gg = choice*md * f_c * (1.-((md/g)/z)) * time_gg**-1
+    return mdust_gg, time_gg
 
 def destruction_timescale(destruct,g,supernova_rate):
     '''
-    Calculates the dust destruction timescale in years.
+    Calculates the dust destruction timescale in years
+    Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
 
-    - sn_rate: supernova rate in N/yr
-    - g: gas mass in Msolar
-    - destruct: the amount of gas mass cleared by each supernova event
+    In
+    --  destruct: the amount of gas mass cleared by each supernova event
+    --  g: gas mass in Msolar
+    -- sn_rate: supernova rate in N/yr
 
     destruct is often 100 or 1000 Msolar, appropriate for SNe expanding
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
-
-    Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
     '''
     supernova_rate = supernova_rate*1e-9
     if supernova_rate <= 0:
@@ -341,6 +359,7 @@ def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
     Determine how much dust mass is removed by destruction in SN shocks
     Calls destruction_timescale function
 
+    In:
     -- choice: is destruction turned on or off (1 or 0)
     -- destruct: value of destruction parameter MISM
     -- gasmass: gas mass of system in Msolar at time t
@@ -362,8 +381,9 @@ def inflows(sfr,parameter):
     Define inflow rate, parameterised by N x SFR
     See Rowlands et al 2014 (MNRAS 441 1040)
 
-    -sfr: SFR at time t
-    -parameter: inflow parameter defined in dictionary
+    In:
+    -- sfr: SFR at time t
+    -- parameter: inflow parameter defined in dictionary
     '''
     inflow_rate = sfr*parameter
     inflow_rate = inflow_rate#*u.solMass/u.Gyr
@@ -374,8 +394,9 @@ def outflows(sfr,parameter):
     Define outflow rate, parameterised by N x SFR
     See Rowlands et al 2014 (MNRAS 441 1040)
 
-    -sfr: SFR at time t
-    -parameter: outflow parameter defined in dictionary
+    In:
+    -- sfr: SFR at time t
+    -- parameter: outflow parameter defined in dictionary
     '''
     outflow_rate = sfr*parameter
     outflow_rate = outflow_rate#*u.solMass/u.Gyr
@@ -388,6 +409,13 @@ def mass_integral(t, metallicity, sfr_lookup, z_lookup, imf):
      - ez(t): ejected metal mass ezm
      - ed(t): ejected dust mass edm
      - Zdiff and SFR diff are also calculated ie at t-taum
+
+     In:
+     -- t: time in Gyrs
+     -- metallicity: metal mass fraction Mz/Mg
+     -- sfr_lookup: SFR array (time, SFR) based on previous time steps
+     -- z_lookup: metallicity array (time, Z) based on previous time steps
+     -- imf: choice of IMF
      '''
      mu = t_lifetime[-1]['mass']
      dm = 0.01

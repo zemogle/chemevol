@@ -46,19 +46,28 @@ class ChemModel:
         else:
             self.choice_des = 1
         # set up dust source choice
-        if (self.dust_source == "All" or self.dust_source == "LIMS+SN" or self.dust_source == "SN"):
+        if (self.dust_source == "ALL" or "all" or "All"):
             self.choice_sn = 1
-        else:
-            self.choice_sn = 0
-        if (self.dust_source == "All" or self.dust_source == "GG"):
-                self.choice_gg = 1
-            else:
-                self.choice_gg = 0
-        if (self.dust_source == "All" or self.dust_source == "LIMS+SN" or self.dust_source == "LIMS"):
-            self.shoice_lims = 1
-        else:
+            self.choice_gg = 1
+            self.choice_lims = 1
+        elif (self.dust_source == "SN" or "Sn" or "sn"):
+            self.choice_sn = 1
+            self.choice_gg = 0
             self.choice_lims = 0
-
+        elif (self.dust_source == "LIMS" or "Lims" or "lims"):
+            self.choice_sn = 0
+            self.choice_gg = 0
+            self.choice_lims = 1
+        elif (self.dust_source == "SN+LIMS" or "sn+lims"):
+            self.choice_sn = 1
+            self.choice_gg = 1
+            self.choice_lims = 0
+        elif (self.dust_source == "GG" or "gg" or "Gg"):
+            self.choice_sn = 0
+            self.choice_gg = 0
+            self.choice_lims = 1
+        else:
+            print ('oops please check the dust sources are in the right format')
 
     def load_sfh(self):
         try:
