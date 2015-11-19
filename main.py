@@ -118,7 +118,7 @@ inits = {
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
-				'destroy': False,
+				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
