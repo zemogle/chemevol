@@ -3,7 +3,8 @@ import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, destroy_dust, graingrowth, \
                     grow_timescale, dust_masses_fresh, initial_mass_function_integral, \
-                    inflows, outflows, ejected_gas_mass, astration, fresh_metals
+                    inflows, outflows, ejected_gas_mass, astration, fresh_metals, \
+                    ejected_dust_mass, imf_chab
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
@@ -172,11 +173,28 @@ class TestFunctions:
         dust_mass = dust_masses_fresh((1,1,0),30.0,0.02)
         assert dust_mass == 1.0
 
+    def test_freshdust_sn_only(self):
+        dustmass_low = dust_masses_fresh((1,0,0), 4.9, 0.002)
+        dustmass_high = dust_masses_fresh((1,0,0), 15, 0.002)
+        assert dustmass_low == 0 and dustmass_high == 0.5
+
+    def test_freshdust_lims_only_highmetals(self):
+        dustmass_low = dust_masses_fresh((0,1,0), 4.9, 0.01)
+        dustmass_high = dust_masses_fresh((0,1,0), 15, 0.01)
+        assert dustmass_low == 0.0029655000000000003 and dustmass_high == 0.0
+
+    def test_ejected_dust_mass(self):
+        dustmass_all = ejected_dust_mass((1,1,1),5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        dustmass_sn = ejected_dust_mass((1,0,0),5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        dustmass_lims = ejected_dust_mass((0,1,0),5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        dustmass_both = ejected_dust_mass((1,1,0),5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        assert dustmass_all == 214655.06895476999 and dustmass_both == 214655.06895476999 and \
+                dustmass_sn == 0 and dustmass_lims == 214655.06895476999
 
 
 class TestInitials:
     '''
-    Tests whether things are turned on or off from init file
+    Tests whether things are turned on or off correctly from init file
     '''
     def test_destruction_turned_off(self):
         dustmass = destroy_dust(0,1000,4e10,0.006,1e5,0.5)[0]
@@ -185,6 +203,7 @@ class TestInitials:
     def test_graingrowth_turned_off(Self):
         dustmass = graingrowth(0,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert dustmass == 0
+
 
 class TestTables:
     '''

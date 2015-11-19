@@ -1,13 +1,12 @@
 # ChemEvol
 Python package to read in a star formation history file, input galaxy parameters and run a chemical evolution model to determine the evolution of gas, metals and dust in galaxies.
 
-Running this script will produce:
+Running the script following the instructions below will produce:
 
-1. a results data file
+1. a results data file with galaxy parameters
 1. a pop-up plot for looking at results quickly
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
-
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
 
 If you use this code, please do cite the above papers.
@@ -21,13 +20,13 @@ If you use this code, please do cite the above papers.
 - matplotlib
 
 ### input files needed
-The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form time (yr), SFR (Msolar/yr).    An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
+The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form: time (yr), SFR (Msolar/yr).    An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
 
 ### input data needed
-The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit.
+The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
 
 ## Running the code
-The code can be run in the directory using the following example (it requires a SFH file).  
+The code can be run when in the directory using the following example (note: requires a SFH file).  
 
 ```python
 import functions as f
@@ -40,7 +39,7 @@ inits = {
         't_end': 20.,
         'gamma': 0,
         'IMF_fn': 'Chab',
-        'dust_source': 'gg',
+        'dust_source': 'ALL',
         'destroy': True,
         'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
         'outflows':{'metals': True, 'xSFR': 0, 'dust': True},

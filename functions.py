@@ -307,7 +307,6 @@ def dust_masses_fresh(choice, m, metallicity):
         dustmass = choice_sn*find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass = 0.
-    dustmass = dustmass#*u.solMass
     return dustmass
 
 def grow_timescale(e,g,sfr,z,d):
