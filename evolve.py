@@ -131,7 +131,10 @@ class ChemModel:
 
             # destruction timescales + dust mass from grain growth and destruction
             mdust_gg, t_gg = f.graingrowth(self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
-            mdust_des, t_des = f.destroy_dust(self.destroy_ism,mg,r_sn,md,self.coldfraction)
+            if (self.destroy == "False"):
+                mdust_des, t_des = 0
+            else:
+                mdust_des, t_des = f.destroy_dust(self.destroy_ism,mg,r_sn,md,self.coldfraction)
 
             # do the mass integral to get ejected masses for gas, metals, dust
             gas_ej, metals_stars, mdust_stars = \

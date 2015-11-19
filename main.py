@@ -45,11 +45,11 @@ initial_galaxy_params
 - IMF_fn:          		choice of IMF function: Chab/chab/c, TopChab/topchab/tc,
 		  				Kroup/kroup/k or Salp/salp/s
 - dust_source: 			choice of dust sources to be included:
-						SN: supernova dust onlt
+						SN: supernova dust only
 						LIMS: low intermediate mass stars dust only
 						LIMS+SN: both SN and LIMS included
 						GG: interstellar grain growth only
-						ALL: grain growth
+						ALL: SN, LIMS and grain growth
 - destroy: 				add dust destruction from SN shocks True or False
 - inflows: 				there are two parameters
  						metals = metallicity of inflow: input a number
