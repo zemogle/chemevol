@@ -334,21 +334,27 @@ def destruction_timescale(destruct,g,supernova_rate):
     else:
         # sn_rate is in units of N per Gyr
         t_destroy = g/(destruct*supernova_rate)
-#    t_destroy = t_destroy*u.year
     return t_destroy
 
-def destroy_dust(destruct,gasmass,supernova_rate,md,f_c):
+def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
     '''
     Determine how much dust mass is removed by destruction in SN shocks
-    Calls destruction_timescale
+    Calls destruction_timescale function
+
+    -- choice: is destruction turned on or off (1 or 0)
+    -- destruct: value of destruction parameter MISM
+    -- gasmass: gas mass of system in Msolar at time t
+    -- supernova_rate: rate of core-collapse SN at time t
+    -- md: dust mass at time t
+    -- f_c: fraction of gas in cold dense clouds
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
+    t_des = choice*1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
     if t_des <= 0:
         mdust_des = 0
     else:
-        mdust_des = md*(1-f_c)*t_des**-1
+        mdust_des = choice*md*(1-f_c)*t_des**-1
     return mdust_des, t_des
 
 def inflows(sfr,parameter):
