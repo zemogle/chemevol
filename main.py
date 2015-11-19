@@ -49,7 +49,7 @@ initial_galaxy_params
 						LIMS: low intermediate mass stars dust only
 						LIMS+SN: both SN and LIMS included
 						GG: interstellar grain growth only
-						ALL: SN, LIMS and grain growth
+						ALL: includes supernovae, LIMS and grain growth combined
 - destroy: 				add dust destruction from SN shocks: True or False
 - inflows: 				there are two parameters
  						metals = metallicity of inflow: input a number
@@ -119,7 +119,7 @@ inits = {
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
-				'destroy': False,
+				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,

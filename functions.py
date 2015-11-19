@@ -307,12 +307,12 @@ def grow_timescale(e,g,sfr,z,d):
         t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
     return t_grow
 
-def graingrowth(e,g,sfr,z,md,f_c):
-        time_gg = 1e-9*grow_timescale(e,g,sfr,z,md)
+def graingrowth(choice,e,g,sfr,z,md,f_c):
+        time_gg = choice*1e-9*grow_timescale(e,g,sfr,z,md)
         if time_gg <= 0:
             mdust_gg = 0.
         else:
-            mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
+            mdust_gg = choice*md * f_c * (1.-((md/g)/z)) * time_gg**-1
         return mdust_gg, time_gg
 
 def destruction_timescale(destruct,g,supernova_rate):

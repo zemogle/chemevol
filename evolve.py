@@ -40,10 +40,25 @@ class ChemModel:
             self.imf = f.imf_kroup
         elif (self.imf_type == "Salp" or self.imf_type == "salp" or self.imf_type == "s"):
             self.imf = f.imf_salp
+        # Declare if destruction on or off
         if (self.destroy == False):
-            self.des = 0
+            self.choice_des = 0
         else:
-            self.des = 1
+            self.choice_des = 1
+        # set up dust source choice
+        if (self.dust_source == "All" or self.dust_source == "LIMS+SN" or self.dust_source == "SN"):
+            self.choice_sn = 1
+        else:
+            self.choice_sn = 0
+        if (self.dust_source == "All" or self.dust_source == "GG"):
+                self.choice_gg = 1
+            else:
+                self.choice_gg = 0
+        if (self.dust_source == "All" or self.dust_source == "LIMS+SN" or self.dust_source == "LIMS"):
+            self.shoice_lims = 1
+        else:
+            self.choice_lims = 0
+
 
     def load_sfh(self):
         try:
@@ -134,8 +149,8 @@ class ChemModel:
                 mdust_out = 0.
 
             # destruction timescales + dust mass from grain growth and destruction
-            mdust_gg, t_gg = f.graingrowth(self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
-            mdust_des, t_des = f.destroy_dust(self.des,self.destroy_ism,mg,r_sn,md,self.coldfraction)
+            mdust_gg, t_gg = f.graingrowth(self.choice_gg,self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
+            mdust_des, t_des = f.destroy_dust(self.choice_des,self.destroy_ism,mg,r_sn,md,self.coldfraction)
 
             # do the mass integral to get ejected masses for gas, metals, dust
             gas_ej, metals_stars, mdust_stars = \

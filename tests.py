@@ -34,7 +34,7 @@ class TestFunctions:
         assert  1660 < destroy < 1670
 
     def test_dust_destruction(self):
-        dust_sink = destroy_dust(1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
+        dust_sink = destroy_dust(1,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
         assert 2.02e8 < dust_sink < 2.29e8
 
     def test_astration(Self):
@@ -49,7 +49,7 @@ class TestFunctions:
         assert 86.3 < grow < 86.4
 
     def test_dust_graingrowth(self):
-        dust_ism = graingrowth(500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
+        dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert  3.200e6 < dust_ism < 3.202e6
 
     def test_outflow_func(Self):
@@ -139,6 +139,18 @@ class TestFunctions:
     def test_fresh_dust_mass_highermass_highmetals(self):
         dust_mass = dust_masses_fresh(40.0,0.02)
         assert dust_mass == 0.4
+
+class TestInitials:
+    '''
+    Tests whether things are turned on or off from init file
+    '''
+    def destruction_turned_off(self):
+        dustmass = f.destroy_dust(0,1000,4e10,0.006,1e5,0.5)[0]
+        assert dustmass == 0
+
+    def graingrowth_turned_off(Self):
+        dustmass = f.graingrowth(0,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
+        assert dustmass == 0
 
 class TestTables:
     '''
