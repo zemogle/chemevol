@@ -56,7 +56,10 @@ class ChemModel:
               self.dust_source == "LIMS+SN" or self.dust_source == "lims+sn"):
             self.choice_dust = (1, 1, 0)
         else:
-            print ('oops please check the dust sources are in the right format')
+            print ('oops please check the dust sources are in the right format and try again')
+            exit()
+
+
 
     def load_sfh(self):
         try:
