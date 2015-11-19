@@ -55,8 +55,6 @@ class ChemModel:
         elif (self.dust_source == "SN+LIMS" or self.dust_source == "sn+lims" or \
               self.dust_source == "LIMS+SN" or self.dust_source == "lims+sn"):
             self.choice_dust = (1, 1, 0)
-        elif (self.dust_source == "GG" or self.dust_source == "gg" or self.dust_source == "Gg"):
-            self.choice_dust = (0, 0, 1)
         else:
             print ('oops please check the dust sources are in the right format')
 
