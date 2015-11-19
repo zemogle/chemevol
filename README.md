@@ -21,7 +21,7 @@ If you use this code, please do cite the above papers.
 - matplotlib
 
 ### input files needed
-The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form time (yr), SFR (Msolar/yr).    An example is provided with this code `MilkyWay.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
+The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form time (yr), SFR (Msolar/yr).    An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
 
 ### input data needed
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit.
@@ -36,7 +36,7 @@ from evolve import ChemModel
 
 inits = {
         'gasmass_init': 4e10,
-        'SFH': 'MilkyWay.sfh',
+        'SFH': 'Milkyway.sfh',
         't_end': 20.,
         'gamma': 0,
         'IMF_fn': 'Chab',
