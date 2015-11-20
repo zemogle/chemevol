@@ -62,9 +62,9 @@ def extra_sfh(sfh, gamma):
     final_sfh = newlist + (sfh.tolist()[2:])
     return final_sfh
 
-def astration(gasmass,sfr):
-        mdust_astration = (1./gasmass)*sfr
-        return mdust_astration
+def astration(parameter,gasmass,sfr):
+        astration_term = (parameter/gasmass)*sfr
+        return astration_term
 
 def remnant_mass(m):
     '''
@@ -180,7 +180,6 @@ def fresh_metals(m, metallicity):
     For m < 40, winds + SNe contribute
     '''
     massyields = find_nearest(mass_yields, m)
-
     if metallicity <= 0.0025:
         if m < 40:
             sum_yields = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
@@ -203,7 +202,7 @@ def fresh_metals(m, metallicity):
             sum_yields = massyields[yn.index('yields_winds_02')]
     return sum_yields
 
-def ejected_metal_mass(m, sfr, zdiff, metallicity, imf):
+def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -218,7 +217,7 @@ def ejected_metal_mass(m, sfr, zdiff, metallicity, imf):
         dej = 0.0
     else:
         dej = ((m - (remnant_mass(m)))*zdiff + fresh_metals(m, metallicity)) * \
-                sfr * imf(m)
+                sfrdiff * imf(m)
     return dej
 
 def ejected_dust_mass(choice, m, sfr, zdiff, metallicity, imf):
@@ -406,10 +405,9 @@ def inflows(sfr,parameter):
 
     In:
     -- sfr: SFR at time t
-    -- parameter: inflow parameter defined in dictionary
+    -- parameter: inflow parameter defined in input dictionary
     '''
     inflow_rate = sfr*parameter
-    inflow_rate = inflow_rate#*u.solMass/u.Gyr
     return inflow_rate
 
 def outflows(sfr,parameter):
@@ -419,10 +417,9 @@ def outflows(sfr,parameter):
 
     In:
     -- sfr: SFR at time t
-    -- parameter: outflow parameter defined in dictionary
+    -- parameter: outflow parameter defined in input dictionary
     '''
     outflow_rate = sfr*parameter
-    outflow_rate = outflow_rate#*u.solMass/u.Gyr
     return outflow_rate
 
 def mass_integral(choice, t, metallicity, sfr_lookup, z_lookup, imf):
@@ -463,16 +460,21 @@ def mass_integral(choice, t, metallicity, sfr_lookup, z_lookup, imf):
          # calculate SFR when star was born which is t-lifetime
          taum = lookup_taum(m,col_choice)
          tdiff = t - taum
-         # only release metals (ejected_gas_mass) after stars die
+         # only release material after stars die
          if tdiff <= 0:
-             sfr_diff = 0.
-             zdiff = 0.
+             ezm = 0
+             edm = 0
+             em = 0
+             zdiff = 0
+             sfrdiff = 0
          else:
              # get nearest Z which corresponds to Z at time=t-taum
              zdiff = find_nearest(z_lookup,tdiff)[1]
-             sfr_diff = find_nearest(sfr_lookup,tdiff)[1]
-         ezm += ejected_metal_mass(m, sfr_diff, zdiff, metallicity, imf) * dm
-         em += ejected_gas_mass(m, sfr_diff, imf) * dm
-         edm += ejected_dust_mass(choice, m, sfr_diff, zdiff, metallicity, imf) * dm
+             sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
+             ezm += ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf) * dm
+             em += ejected_gas_mass(m, sfrdiff, imf) * dm
+             edm += ejected_dust_mass(choice, m, sfrdiff, zdiff, metallicity, imf) * dm
+
+         print t, m, metallicity, zdiff, em, ezm
          m += dm
      return em, ezm, edm

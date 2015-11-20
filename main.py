@@ -120,7 +120,7 @@ inits = {
 				'dust_source': 'ALL',
 				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
+				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 1000.,
         		'destruct': 1000.

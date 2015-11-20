@@ -118,7 +118,25 @@ class ChemModel:
         # TIME integral
         for item, t in enumerate(time):
             r_sn = sn_rate [item]
-            metallicity = metals/mg
+            if mg <= 0:
+                # don't let ISM go below zero
+                metallicity = 0
+                metals_ast = 0
+                mdust_ast = 0
+                metals_out = 0
+            else:
+                metallicity = metals/mg
+                metals_ast = f.astration(metals,mg,self.sfr(t))
+                mdust_ast = f.astration(md,mg,self.sfr(t))
+                if self.outflows['metals']:
+                    metals_out = metallicity*f.outflows(self.sfr(t), self.outflows['xSFR'])
+                else:
+                    metals_out = 0.
+                if self.outflows['dust']:
+                    mdust_out = (md/mg)*f.outflows(self.sfr(t), self.outflows['xSFR'])
+                else:
+                    mdust_out = 0.
+
             z.append([t,metallicity])
             z_lookup = np.array(z)
             sfr_list.append([t,self.sfr(t)])
@@ -131,23 +149,12 @@ class ChemModel:
             gas_out = f.outflows(self.sfr(t), self.outflows['xSFR'])
 
             # METALS
-            # astration, inflows, outflows
-            metals_ast = metallicity*self.sfr(t)
+            # inflows, outflows
             metals_inf = self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR'])
-            if self.outflows['metals']:
-                metals_out = metallicity*f.outflows(self.sfr(t), self.outflows['xSFR'])
-            else:
-                metals_out = 0.
 
             # DUST
             # astration, inflows, outflows, grain growth, destruction
-            mdust_ast = md*f.astration(mg,self.sfr(t))
             mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR'])
-
-            if self.outflows['dust']:
-                mdust_out = (1./mg)*f.outflows(self.sfr(t), self.outflows['xSFR'])
-            else:
-                mdust_out = 0.
 
             # destruction timescales + dust mass from grain growth and destruction
             mdust_gg, t_gg = f.graingrowth(self.choice_dust[2],self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
@@ -158,19 +165,26 @@ class ChemModel:
                                 f.mass_integral(self.choice_dust,t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             # gas mass integral dmg/dt =
-            dmg = - gas_ast + gas_ej + gas_inf - gas_out
+            dmg = -gas_ast + gas_ej + gas_inf - gas_out
 
             # metal mass integral dMz/dt =
-            dmetals = - metals_ast + metals_stars + metals_pre + metals_inf - metals_out
 
-            # dust mass integral dMd/dt =
-            ddust = - mdust_ast + mdust_stars + mdust_inf - md*mdust_out + mdust_gg - mdust_des
+            dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
+
+        #    print t, metals_ast, metals_out, metals_stars, metals_pre, mg, metals, metallicity
+
+            # dust mass integral dMd/dt
+            ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des
 
             dust_source_all = mdust_stars + mdust_gg #dust sources stars + grain growth
             dt = t - prev_t             # calculate  next time step
             prev_t = t
             mg += dmg*dt # gas mass integral
+            if mg < 0:     # don't let gas mass go negative
+                mg = 0
             metals += dmetals*dt # metal mass integral
+            if metals < 0: #don't let metal mass go negative
+                metals = 0
             md += ddust*dt # dust mass integral
             md_all += dust_source_all*dt # dust mass sources integral
             md_gg += mdust_gg*dt # dust source from grain growth only
