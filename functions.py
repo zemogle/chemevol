@@ -465,8 +465,6 @@ def mass_integral(choice, t, metallicity, sfr_lookup, z_lookup, imf):
              ezm = 0
              edm = 0
              em = 0
-             zdiff = 0
-             sfrdiff = 0
          else:
              # get nearest Z which corresponds to Z at time=t-taum
              zdiff = find_nearest(z_lookup,tdiff)[1]
@@ -474,7 +472,5 @@ def mass_integral(choice, t, metallicity, sfr_lookup, z_lookup, imf):
              ezm += ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf) * dm
              em += ejected_gas_mass(m, sfrdiff, imf) * dm
              edm += ejected_dust_mass(choice, m, sfrdiff, zdiff, metallicity, imf) * dm
-
-         print t, m, metallicity, zdiff, em, ezm
          m += dm
      return em, ezm, edm

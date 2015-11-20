@@ -119,12 +119,14 @@ class ChemModel:
         for item, t in enumerate(time):
             r_sn = sn_rate [item]
             if mg <= 0:
+
                 # don't let ISM go below zero
                 metallicity = 0
                 metals_ast = 0
                 mdust_ast = 0
                 metals_out = 0
             else:
+
                 metallicity = metals/mg
                 metals_ast = f.astration(metals,mg,self.sfr(t))
                 mdust_ast = f.astration(md,mg,self.sfr(t))
@@ -161,6 +163,7 @@ class ChemModel:
             mdust_des, t_des = f.destroy_dust(self.choice_des,self.destroy_ism,mg,r_sn,md,self.coldfraction)
 
             # do the mass integral to get ejected masses for gas, metals, dust
+
             gas_ej, metals_stars, mdust_stars = \
                                 f.mass_integral(self.choice_dust,t, metallicity, sfr_lookup, z_lookup, self.imf)
 
@@ -171,7 +174,7 @@ class ChemModel:
 
             dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
 
-        #    print t, metals_ast, metals_out, metals_stars, metals_pre, mg, metals, metallicity
+    #        print t, metals_ast/4e8, metals_out/3e10, metals_stars/3e10, dmetals#metals_ast, metals_out, metals_stars, metals_pre, mg, metals, metallicity
 
             # dust mass integral dMd/dt
             ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des
@@ -193,10 +196,10 @@ class ChemModel:
             s_f_r = zip(*sfr_lookup) # write SFR lookup array
             dust_sources.append((md_all, md_stars, md_gg)) # write array of dust sources
             timescales.append((t_des,t_gg)) # write array for grain growth & destruction timescales
-            if metallicity <= 0.:  # write dust/metals ratio but == 0 when metals  = 0
+            if mg <= 0.:  # write dust/metals ratio but == 0 when metals  = 0
                 dust_to_metals = 0.
             else:
-                dust_to_metals = (md/mg)/metallicity
+                dust_to_metals = md/metals
             all_results.append((t,mg,metals,metallicity,md,dust_to_metals,self.sfr(t)*1e-9))
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return  np.array(dust_sources), np.array(timescales), np.array(all_results)
