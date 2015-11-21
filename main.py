@@ -120,7 +120,7 @@ inits = {
 				'dust_source': 'ALL',
 				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
+				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 1000.,
         		'destruct': 1000.
@@ -130,24 +130,24 @@ ch = ChemModel(**inits)
 
 # call modules to run the model
 
-# SN rate at each time step
+# SN rate at each time step - this also sets time array so
+# this must be run before ch.gas_metal_dust_mass
 snrate = ch.supernova_rate()
 
 # returns
 # (a) dust sources vs time (all, stars only and grain growth only)
 # (b) timescales for destruction & grain growth in Gyrs
-# (c) all results -- t, mg, mz, Z, md, md/mz, sfr
+# (c) all results -- t, mg, m*, mz, Z, md, md/mz, sfr
 dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
-
-time, mstars = ch.stellar_mass() # returns time (Gyr), stellar mass (Msolar)
 
 time = all_results[:,0]
 mgas = all_results[:,1]
-metalmass = all_results[:,2]
-metallicity = all_results[:,3]
-mdust = all_results[:,4]
-dust_metals = all_results[:,5]
-sfr = all_results[:,6]
+mstars = all_results[:,2]
+metalmass = all_results[:,3]
+metallicity = all_results[:,4]
+mdust = all_results[:,5]
+dust_metals = all_results[:,6]
+sfr = all_results[:,7]
 t_graingrow = timescales[:,1]
 t_destroy = timescales[:,0]
 

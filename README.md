@@ -53,15 +53,15 @@ ch = ChemModel(**inits)
 snrate = ch.supernova_rate()
 
 dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
-time, mstars = ch.stellar_mass()
 
 time = all_results[:,0]
 mgas = all_results[:,1]
-metalmass = all_results[:,2]
-metallicity = all_results[:,3]
-mdust = all_results[:,4]
-dust_metals = all_results[:,5]
-sfr = all_results[:,6]
+mstars = all_results[:,2]
+metalmass = all_results[:,3]
+metallicity = all_results[:,4]
+mdust = all_results[:,5]
+dust_metals = all_results[:,6]
+sfr = all_results[:,7]
 
 gasfraction = mgas/(mgas+mstars)
 ssfr = sfr/mstars

@@ -8,7 +8,7 @@ def writedata(time, mgas, mstars, sfr, ssfr, mdust, metalmass, metallicity, gasf
     f = open('results.dat', 'w')
     text = "# Time(Gyr) Mg(Msol) Ms(Msol) SFR(Msol/yr) SSFR(/yr) Md(Msol) M_Z(Msol) Z, f_g \n"
     f.write(text)
-    for i in range(0,len(time)):
+    for i in range(0,len(mgas)):
         t = "%s %.2f %.2f %.2f %s %.2f %.2f %s %.2f \n" % \
             (time[i], mgas[i], mstars[i], sfr[i], ssfr[i], mdust[i], \
             metalmass[i], metallicity[i], gasfraction[i])
