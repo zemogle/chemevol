@@ -41,7 +41,7 @@ class TestFunctions:
     def test_astration(Self):
         gasmass = 1e10
         sfr = 10
-        ast = astration(gasmass, sfr)
+        ast = astration(1,gasmass, sfr)
         assert ast == 1e-9
 
     def test_timescale_graingrowth(self):
