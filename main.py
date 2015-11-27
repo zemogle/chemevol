@@ -49,6 +49,9 @@ initial_galaxy_params
 						LIMS: low intermediate mass stars dust only
 						LIMS+SN: both SN and LIMS included
 						ALL: includes supernovae, LIMS and grain growth combined
+- reduce_sn_dust		reduce the contribution from SN dust (currently set to values from
+						Todini & Ferrera 2001).  If leave default specify False. To reduce dust mass
+						then quote number to reduce by
 - destroy: 				add dust destruction from SN shocks: True or False
 - inflows: 				there are two parameters
  						metals = metallicity of inflow: input a number
@@ -84,6 +87,7 @@ initial_galaxy_params = {'run1': {
 							'gamma': 0,
 							'IMF_fn': 'Chab',
 							'dust_source': 'ALL',
+							'reduce_sn_dust': False,
 							'destroy':True,
 							'inflows':{'metals': 0., 'xSFR': 0, 'dust': True},
 							'outflows':{'metals': True, 'xSFR': 0, 'dust': False},
@@ -97,7 +101,8 @@ initial_galaxy_params = {'run1': {
 							't_end': 25.,
 							'gamma':0,
 							'IMF_fn':'c',
-							'dust_source':'GG',
+							'dust_source':'LIMS+SN',
+							'reduce_sn_dust': False
 							'destroy':True,
 							'inflows':{'metals': 1e-4, 'xSFR': 0, 'dust': 0},
 							'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
@@ -118,9 +123,10 @@ inits = {
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
+				'reduce_sn_dust': 25.0,
 				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
+				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 1000.,
         		'destruct': 1000.

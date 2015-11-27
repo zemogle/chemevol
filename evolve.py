@@ -18,6 +18,7 @@ class ChemModel:
             self.tend = inputs['t_end']
             self.imf_type = inputs['IMF_fn']
             self.dust_source = inputs['dust_source']
+            self.reduce_sn = inputs['reduce_sn_dust']
             self.destroy = inputs['destroy']
             self.inflows = inputs['inflows']
             self.outflows = inputs['outflows']
@@ -41,6 +42,8 @@ class ChemModel:
         elif (self.imf_type == "Salp" or self.imf_type == "salp" or self.imf_type == "s"):
             self.imf = f.imf_salp
         # Declare if destruction on or off
+        if self.reduce_sn == False:
+            self.reduce_sn = 1
         if (self.destroy == False):
             self.choice_des = 0
         else:
@@ -153,12 +156,12 @@ class ChemModel:
             # DUST
             # astration, inflows, outflows, grain growth, destruction
             mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR'])
-            mdust_gg, t_gg = f.graingrowth(self.choice_dust[2],self.epsilon,mg,self.sfr(t),metallicity,md,self.coldfraction)
-            mdust_des, t_des = f.destroy_dust(self.choice_des,self.destroy_ism,mg,r_sn,md,self.coldfraction)
+            mdust_gg, t_gg = f.graingrowth(self.choice_dust[2], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
+            mdust_des, t_des = f.destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
 
             # do the mass integral to get ejected masses for gas, metals, dust
             gas_ej, metals_stars, mdust_stars = \
-                                f.mass_integral(self.choice_dust,t, metallicity, sfr_lookup, z_lookup, self.imf)
+                    f.mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             # gas mass integral dmg/dt =
             dmg = -gas_ast + gas_ej + gas_inf - gas_out

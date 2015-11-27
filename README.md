@@ -26,7 +26,7 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
 
 ## Running the code
-The code can be run when in the directory using the following example (note: requires a SFH file).  
+The code can be run when in the directory using the following example (note: requires a SFH file called Milkyway.sfh).  
 
 ```python
 import functions as f
@@ -40,6 +40,7 @@ inits = {
         'gamma': 0,
         'IMF_fn': 'Chab',
         'dust_source': 'ALL',
+        'reduce_sn_dust': False
         'destroy': True,
         'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
         'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
