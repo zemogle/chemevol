@@ -300,9 +300,9 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     choice_lims = choice[1]
 
     delta_new_LIMS = 0.45
-    if (m < 9.0):
+    if (m <= 8.0):
         dustmass = choice_lims*delta_new_LIMS * fresh_metals(m, metallicity)
-    elif (m >= 9.0) & (m <= 40.0):
+    elif (m > 8.0) & (m <= 40.0):
         # find dust mass from TF01 in dust_mass_sn table
         # assume massive star winds don't form dust
         dustmass = choice_sn*(reduce_sn)**-1*find_nearest(np.array(dust_mass_sn),m)[1]

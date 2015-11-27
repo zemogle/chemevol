@@ -140,7 +140,8 @@ dust_mass_sn: dust mass returned by supernovae
             by assuming similar dust/metals
             ratio for 12-20Msun stars
 '''
-dust_mass_sn = ((9, 0.17),
+dust_mass_sn = ((8.5,0),
+                (9, 0.17),
                 (12, 0.2),
                 (15, 0.5),
                 (20, 0.5),
