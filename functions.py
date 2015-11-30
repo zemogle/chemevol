@@ -177,26 +177,26 @@ def fresh_metals(m, metallicity):
     Massive stars are from Maeder 1992
 
     For m > 40, then only winds contribute to ejected metals
-    For m < 40, winds + SNe contribute
+    For m <= 40, winds + SNe contribute
     '''
     massyields = find_nearest(mass_yields, m)
     if metallicity <= 0.0025:
-        if m < 40:
+        if m <= 40:
             sum_yields = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
         else:
             sum_yields = massyields[yn.index('yields_winds_001')]
     elif metallicity <= 0.006:
-        if m < 40:
+        if m <= 40:
             sum_yields = massyields[yn.index('yields_sn_004')]+massyields[yn.index('yields_winds_004')]
         else:
             sum_yields = massyields[yn.index('yields_winds_004')]
     elif metallicity <= 0.01:
-        if m < 40:
+        if m <= 40:
             sum_yields = massyields[yn.index('yields_sn_008')]+massyields[yn.index('yields_winds_008')]
         else:
             sum_yields = massyields[yn.index('yields_winds_008')]
     else:
-        if m < 40:
+        if m <= 40:
             sum_yields = massyields[yn.index('yields_sn_02')]+massyields[yn.index('yields_winds_02')]
         else:
             sum_yields = massyields[yn.index('yields_winds_02')]
@@ -259,7 +259,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfr, zdiff, metallicity, imf):
     # condensation efficiency of recycled stars in LIMS
     delta_LIMS_recycled = choice_lims*0.45
     # no dust from stars with m>40Msun.
-    if m >= 40.:
+    if m > 40.:
         dej = 0.0
     else:
         dej = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled \
