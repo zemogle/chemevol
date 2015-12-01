@@ -122,7 +122,7 @@ inits = {
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'LIMS',
+				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
 				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},

@@ -271,8 +271,8 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
         dej_recycled = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled)* sfrdiff * imf(m)
 
     dej = dej_recycled + dej_fresh
-    
-    return dej, dej_fresh, dej_recycled
+
+    return dej
 
 def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     '''
@@ -453,8 +453,6 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      ezm = 0.
      edm = 0.
      em = 0.
-     edm_fresh = 0
-     edm_recycled = 0
      # we pull out mass corresponding to age of system
      # to get lower limit of integral
      # to make taum lookup faster
@@ -482,8 +480,6 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
              ezm += ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf) * dm
              em += ejected_gas_mass(m, sfrdiff, imf) * dm
-             edm += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf)[0] * dm
-             edm_fresh += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf)[1] * dm
-             edm_recycled += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf)[2] * dm
+             edm += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf) * dm
          m += dm
-     return em, ezm, edm, edm_fresh, edm_recycled
+     return em, ezm, edm

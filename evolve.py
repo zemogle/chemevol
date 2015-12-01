@@ -170,8 +170,6 @@ class ChemModel:
 
             dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
 
-
-
             # dust mass integral dMd/dt
             ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des
 
