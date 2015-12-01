@@ -46,7 +46,7 @@ def extra_sfh(sfh, gamma):
     t_0 = 1e-3 # we want it to start at 1e-3
     tend_sfh = sfh[1][0] # 1st time array after 0
     # work out difference between t_0 and [1] entry in SFH
-    dlogt = (np.log10(tend_sfh) - np.log10(t_0))/100
+    dlogt = (np.log10(tend_sfh) - np.log10(t_0))/1000
     norm = sfh[1][1]*(1./np.exp(-1.*gamma*tend_sfh))
     sfr_extra = norm * np.exp(-1.*gamma*t_0)
     sfr_new = sfr_extra
@@ -177,7 +177,7 @@ def fresh_metals(m, metallicity):
     Massive stars are from Maeder 1992
 
     For m > 40, then only winds contribute to ejected metals
-    For m <= 40, winds + SNe contribute
+    For m < 40, winds + SNe contribute
     '''
     massyields = find_nearest(mass_yields, m)
     if metallicity <= 0.0025:
@@ -220,7 +220,7 @@ def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
                 sfrdiff * imf(m)
     return dej
 
-def ejected_dust_mass(choice, reduce_sn, m, sfr, zdiff, metallicity, imf):
+def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected dust mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -244,28 +244,35 @@ def ejected_dust_mass(choice, reduce_sn, m, sfr, zdiff, metallicity, imf):
                2nd element = grain growth value 1 or 0
     -- reduce_sn: factor to reduce SN dust contribution, set by user in inits
     -- m:
-    -- sfr:
+    -- sfrdiff:
     -- zdiff:
     -- metallicity:
     -- imf choice, set by user in inits
 
     delta_LIMS_recycled: fraction of metals that condense into dust 0.45
     '''
-    # read in dust mass from freshly formed metals as function m and Z
-    sum_mass_dust = dust_masses_fresh(choice, reduce_sn, m, metallicity)
-
     # If LIMS is turned on or off
     choice_lims = choice[1]
-    # condensation efficiency of recycled stars in LIMS
+    # condensation efficiency of recycled stars in LIMS for m <= 8Msun
+
     delta_LIMS_recycled = choice_lims*0.45
-    # no dust from stars with m>40Msun.
-    if m > 40.:
+
+    if m > 40.: # no dust from stars with m>40Msun.
         dej = 0.0
-    else:
-        dej = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled \
-                + sum_mass_dust) \
-                * sfr * imf(m)
-    return dej
+        dej_fresh = 0
+        dej_recycled = 0
+    elif (m > 8) & (m <= 40):
+        # read in dust mass from freshly formed metals as function m and Z (SN dust)
+        dej_fresh = dust_masses_fresh(choice, reduce_sn, m, metallicity) * sfrdiff * imf(m)
+        dej_recycled = 0
+    else: # 1 <= m <= 8 = recycled + fresh dust
+        # read in dust mass from freshly formed metals as function m and Z (0.45 * LIMS yields)
+        dej_fresh = dust_masses_fresh(choice, reduce_sn, m, metallicity) * sfrdiff * imf(m)
+        dej_recycled = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled)* sfrdiff * imf(m)
+
+    dej = dej_recycled + dej_fresh
+    
+    return dej, dej_fresh, dej_recycled
 
 def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     '''
@@ -446,6 +453,8 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      ezm = 0.
      edm = 0.
      em = 0.
+     edm_fresh = 0
+     edm_recycled = 0
      # we pull out mass corresponding to age of system
      # to get lower limit of integral
      # to make taum lookup faster
@@ -473,6 +482,8 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
              ezm += ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf) * dm
              em += ejected_gas_mass(m, sfrdiff, imf) * dm
-             edm += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf) * dm
+             edm += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf)[0] * dm
+             edm_fresh += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf)[1] * dm
+             edm_recycled += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf)[2] * dm
          m += dm
-     return em, ezm, edm
+     return em, ezm, edm, edm_fresh, edm_recycled
