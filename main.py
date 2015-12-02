@@ -1,7 +1,11 @@
 '''
 Chemevol - Python package to read in a star formation history file,
-input galaxy parameters and run chemical evolution to determine the evolution
+input galaxy parameters and run a chemical evolution model to determine the evolution
 of gas, metals and dust in galaxies.
+
+Running this script will produce
+(a) a results data file
+(b) a pop-up plot for looking at gas, dust and metal evolution
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
@@ -25,8 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 '''
 
 '''------------------------------------------------------------------------
-This is the main code
----------------------------------------------------------------------------
 First set up initial parameters for galaxy model by editing the dictionary
 initial_galaxy_params
 
@@ -69,17 +71,14 @@ SFR, metals and stars over time
 ---------------------------------------------------------------------------
 '''
 
+init_keys = (['gasmass_init','SFH','t_end','gamma','IMF_fn','dust_source','reduce_sn_dust', \
+			'destroy','inflows','outflows','cold_gas_fraction','epsilon_grain','destruct'])
+
 import functions as f
 from evolve import ChemModel
 import data as d
 import matplotlib.pyplot as plt
 
-init_keys = (['gasmass_init', 'SFH', 't_end', 'gamma','IMF_fn', 'dust_source', 'reduce_sn_dust',\
- 			  'destroy', 'inflows', 'outflows', 'cold_gas_fraction', 'epsilon_grain', 'destruct'])
-
-'''
-set initial parameters - see info above
-'''
 inits = {
         		'gasmass_init': 4e10,
 				'SFH': 'Milkyway.sfh',
@@ -98,21 +97,19 @@ inits = {
 
 ch = ChemModel(**inits)
 
-'''
-call modules to run the model, ch.supernova_rate has to be run first as
-this sets time array for the rest of the evolution.
+# call modules to run the model
 
-snrate: 	  SN rate at each time step
-dust_sources: dust mass from all sources, stars only and grain growth only
-timescales:   returns destruction & grain growth timescales in Gyrs
-all results:  returns t, Mg, M*, Mz, Z, Md, Md/Mz, SFR
-'''
-
+# SN rate at each time step - this also sets time array so
+# this must be run before ch.gas_metal_dust_mass
 snrate = ch.supernova_rate()
 
+# returns
+# dust_sources: dust sources vs time (all, stars only and grain growth only)
+# timescales: for destruction & grain growth in Gyrs
+# all results: t, mg, m*, mz, Z, md, md/mz, sfr
 dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
 
-t = all_results[:,0]
+time = all_results[:,0]
 mgas = all_results[:,1]
 mstars = all_results[:,2]
 metalmass = all_results[:,3]
@@ -126,7 +123,7 @@ gasfraction = mgas/(mgas+mstars)
 ssfr = sfr/mstars
 
 #write to a file
-d.writedata(t, mgas, mstars, sfr, ssfr, dustmass, metalmass, metallicity, gasfraction)
+d.writedata(time, mgas, mstars, sfr, ssfr, dustmass, metalmass, metallicity, gasfraction)
 
 # make some quick look up plots
-d.figure(t,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction,dust_sources,timescales)
+d.figure(time,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction,dust_sources,timescales)

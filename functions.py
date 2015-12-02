@@ -454,19 +454,18 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      edm = 0.
      em = 0.
 
-
      # we pull out mass corresponding to age of system
      # to get lower limit of integral
      # to make taum lookup faster
      m_min = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
 
-     #Checks that m_min does not exceed mu
+     # checks that m_min does not exceed mu
      if(m_min >= mu):
          m_min = mu
 
-     #Increasing the number of steps increases the
-     #resolution in the mass integral.
-     steps = 1000
+     # increasing the number of steps increases the
+     # resolution in the mass integral
+     steps = 500
      m = m_min
      dlogm = 0
      logmnew = np.log10(m) + dlogm
@@ -481,7 +480,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      else:
          col_choice = lifetime_cols['high_metals']
 
-     #Loop over the full mass range
+     # loop over the full mass range
      while count < steps:
          count += 1
          logmnew = np.log10(m) + dlogm
@@ -498,7 +497,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              edm = 0
              em = 0
          else:
-             # get nearest Z which corresponds to Z at time=t-taum
+             # get nearest Z and SFR which corresponds to Z and SFR at time=t-taum
              zdiff = find_nearest(z_lookup,tdiff)[1]
              sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
              ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
