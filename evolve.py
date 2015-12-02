@@ -158,7 +158,7 @@ class ChemModel:
             sfr_lookup = np.array(sfr_list)
 
             '''
-            STARS: dM* = sfr(t) * dt
+            STARS: dM_stars = sfr(t) * dt
             '''
             dmstars = self.sfr(t)
 

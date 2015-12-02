@@ -140,9 +140,10 @@ def initial_mass_function(m, choice):
 
 def initial_mass_function_integral(choice):
     '''
-    Calculates the sum of IMF integral from 0.8 to 120Msun.
+    Calculates the sum of IMF integral from 0.8 to 120Msun
+    This isn't called in the code but there to check if
+    normalised IMF works
     '''
-    # initialize
     # only works if dm < 0.005!
     dm = 0.002
     mmax = 120.
@@ -233,7 +234,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     2nd term: new dust from fresh heavy elements returned in dust_masses function where
               dust from massive stars (in SN only) are from Todini & Ferrara 2001 (TF01) and dust
               from Van den Hoek & Groenewegen:
-              DELTA = fraction of new metals in LIMS (0.45) 
+              DELTA = fraction of new metals in LIMS (0.45)
               md_SN = dust mass SN (from TF01)
 
     de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + (mp*DELTA)+md_SN) x SFR(t-taum x phi(m)
@@ -256,9 +257,9 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     choice_lims = choice[1]
     # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
     if m > 8:
-        delta_LIMS_recycled = choice_lims*0
+        delta_LIMS_recycled = choice_lims * 0
     else:
-        delta_LIMS_recycled = choice_lims*0.45
+        delta_LIMS_recycled = choice_lims * 0.45
 
     if m > 40.: # no dust from stars with m>40Msun.
         dej = 0.0
@@ -268,7 +269,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
         # read in dust mass from freshly formed metals as function m and Z (0.45 * LIMS yields)
         dej_fresh = dust_masses_fresh(choice, reduce_sn, m, metallicity) * sfrdiff * imf(m)
         # recycled dust = LIMS condensation efficiency
-        dej_recycled = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled)* sfrdiff * imf(m)
+        dej_recycled = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled) * sfrdiff * imf(m)
 
     dej = dej_recycled + dej_fresh
     return dej
@@ -447,26 +448,49 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      -- imf: choice of IMF
      '''
      mu = t_lifetime[-1]['mass']
-     dm = 0.01
+
      t_0 = 1e-3
      ezm = 0.
      edm = 0.
      em = 0.
+
+
      # we pull out mass corresponding to age of system
      # to get lower limit of integral
      # to make taum lookup faster
-     m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+     m_min = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+
+     #Checks that m_min does not exceed mu
+     if(m_min >= mu):
+         m_min = mu
+
+     #Increasing the number of steps increases the
+     #resolution in the mass integral.
+     steps = 1000
+     m = m_min
+     dlogm = 0
+     logmnew = np.log10(m) + dlogm
+     dm = 10**(logmnew)- m
+     dlogm = (np.log10(mu)-np.log10(m_min))/steps
+
+     count = 0
+
      lifetime_cols = {'low_metals':1, 'high_metals':2}
      if metallicity < 0.019:
          col_choice = lifetime_cols['low_metals']
      else:
          col_choice = lifetime_cols['high_metals']
-     while m <= mu:
-         if m > 10.:
-             dm = 0.5
+
+     #Loop over the full mass range
+     while count < steps:
+         count += 1
+         logmnew = np.log10(m) + dlogm
+         dm = 10.0**(logmnew) - m
+         mmid = 10.0**((logmnew+np.log10(m))/2.0)
+
          # pull out lifetime of star of mass m so we can
          # calculate SFR when star was born which is t-lifetime
-         taum = lookup_taum(m,col_choice)
+         taum = lookup_taum(mmid,col_choice)
          tdiff = t - taum
          # only release material after stars die
          if tdiff <= 0:
@@ -477,8 +501,11 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              # get nearest Z which corresponds to Z at time=t-taum
              zdiff = find_nearest(z_lookup,tdiff)[1]
              sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
-             ezm += ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf) * dm
-             em += ejected_gas_mass(m, sfrdiff, imf) * dm
-             edm += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf) * dm
-         m += dm
+             ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
+             em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
+             edm += ejected_dust_mass(choice, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
+
+         #Calculate the next mass value
+         mnew = 10**(logmnew)
+         m = mnew
      return em, ezm, edm
