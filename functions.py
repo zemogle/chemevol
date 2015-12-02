@@ -441,8 +441,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      -- imf: choice of IMF
      '''
      mu = t_lifetime[-1]['mass']
-     #print mu
-     #dm = 0.01
+
      t_0 = 1e-3
      ezm = 0.
      edm = 0.
@@ -463,8 +462,6 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      logmnew = np.log10(m) + dlogm
      dm = 10**(logmnew)- m
      dlogm = (np.log10(mu)-np.log10(m_min))/steps
-     #print dlogm
-     print t, m
 
      count = 0
 
@@ -478,8 +475,6 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
          count += 1
          logmnew = np.log10(m) + dlogm
          dm = 10.0**(logmnew) - m
-         #if m > 10.:
-            # dm = 0.5
          # pull out lifetime of star of mass m so we can
          # calculate SFR when star was born which is t-lifetime
          taum = lookup_taum(m,col_choice)
@@ -499,7 +494,4 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
 
          mnew = 10**(logmnew)
          m = mnew
-         #print dm
-        # print mnew
-     #print m, count
      return em, ezm, edm
