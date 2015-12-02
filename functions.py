@@ -501,5 +501,5 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
          m = mnew
          #print dm
         # print mnew
-     print m, count
+     #print m, count
      return em, ezm, edm

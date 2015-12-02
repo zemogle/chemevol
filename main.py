@@ -118,7 +118,7 @@ initial_galaxy_params = {'run1': {
 
 inits = {
         		'gasmass_init': 4e10,
-				'SFH': 'Milkyway.sfh',
+				'SFH': 'delayed.sfh',
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
@@ -159,6 +159,7 @@ t_destroy = timescales[:,0]
 
 # create gasfraction and ssfr parameters
 gasfraction = mgas/(mgas+mstars)
+print gasfraction
 ssfr = sfr/mstars
 
 #write to a file
