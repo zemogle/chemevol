@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
 '''
-to make sure input dictionary is set up correctly
+to make sure input dictionary is set up correctly - this is currently not set up
+so not needed
 '''
 
 def validate_initial_dict(keysdict, data_dict):
