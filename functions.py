@@ -253,25 +253,23 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
     # If LIMS is turned on or off
     choice_lims = choice[1]
-    # condensation efficiency of recycled stars in LIMS for m <= 8Msun
-
-    delta_LIMS_recycled = choice_lims*0.45
+    # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
+    if m > 8:
+        delta_LIMS_recycled = choice_lims*0
+    else
+        delta_LIMS_recycled = choice_lims*0.45
 
     if m > 40.: # no dust from stars with m>40Msun.
         dej = 0.0
         dej_fresh = 0
         dej_recycled = 0
-    elif (m > 8) & (m <= 40):
-        # read in dust mass from freshly formed metals as function m and Z (SN dust)
-        dej_fresh = dust_masses_fresh(choice, reduce_sn, m, metallicity) * sfrdiff * imf(m)
-        dej_recycled = 0
-    else: # 1 <= m <= 8 = recycled + fresh dust
+    else: # recycled + fresh dust
         # read in dust mass from freshly formed metals as function m and Z (0.45 * LIMS yields)
         dej_fresh = dust_masses_fresh(choice, reduce_sn, m, metallicity) * sfrdiff * imf(m)
+        # recycled dust = LIMS condensation efficiency
         dej_recycled = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled)* sfrdiff * imf(m)
 
     dej = dej_recycled + dej_fresh
-
     return dej
 
 def dust_masses_fresh(choice, reduce_sn, m, metallicity):
