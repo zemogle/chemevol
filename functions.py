@@ -441,23 +441,43 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      -- imf: choice of IMF
      '''
      mu = t_lifetime[-1]['mass']
-     dm = 0.01
+     #print mu
+     #dm = 0.01
      t_0 = 1e-3
      ezm = 0.
      edm = 0.
      em = 0.
+
+
      # we pull out mass corresponding to age of system
      # to get lower limit of integral
      # to make taum lookup faster
-     m = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+     m_min = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+
+     if(m_min >= mu):
+         m_min = 119.9
+
+     m = m_min
+     dlogm = 0
+     logmnew = np.log10(m) + dlogm
+     dm = 10**(logmnew)- m
+     dlogm = (np.log10(mu)-np.log10(m_min))/1000
+     #print dlogm
+     #print t, m
+
+     count = 0
+
      lifetime_cols = {'low_metals':1, 'high_metals':2}
      if metallicity < 0.019:
          col_choice = lifetime_cols['low_metals']
      else:
          col_choice = lifetime_cols['high_metals']
      while m <= mu:
-         if m > 10.:
-             dm = 0.5
+         count += 1
+         logmnew = np.log10(m) + dlogm
+         dm = 10.0**(logmnew) - m
+         #if m > 10.:
+            # dm = 0.5
          # pull out lifetime of star of mass m so we can
          # calculate SFR when star was born which is t-lifetime
          taum = lookup_taum(m,col_choice)
@@ -474,5 +494,9 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              ezm += ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf) * dm
              em += ejected_gas_mass(m, sfrdiff, imf) * dm
              edm += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf) * dm
-         m += dm
+
+         mnew = 10**(logmnew)
+         m = mnew
+        # print mnew
+     #print count
      return em, ezm, edm
