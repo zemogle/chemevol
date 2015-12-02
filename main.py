@@ -87,7 +87,7 @@ inits = {
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
-				'destroy': True,
+				'destroy': False,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
@@ -97,10 +97,19 @@ inits = {
 
 ch = ChemModel(**inits)
 
-# call modules to run the model
+'''
+call modules to run the model:
 
-# SN rate at each time step - this also sets time array so
-# this must be run before ch.gas_metal_dust_mass
+snrate: 		SN rate at each time step - this also sets time array so
+				ch.supernova_rate() must be called first to set time array for the entire code
+
+dust_sources: 	dust sources vs time ([0] all, [1] stars only, [2] grain growth only)
+timescales: 	destruction [0] & grain growth [1] timescales in Gyrs
+all results: 	t, mg, m*, mz, Z, md, md/mz, sfr
+
+'''
+
+#
 snrate = ch.supernova_rate()
 
 # returns
