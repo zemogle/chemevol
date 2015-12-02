@@ -475,9 +475,11 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
          count += 1
          logmnew = np.log10(m) + dlogm
          dm = 10.0**(logmnew) - m
+         mmid = 10.0**((logmnew+np.log10(m))/2.0)
+
          # pull out lifetime of star of mass m so we can
          # calculate SFR when star was born which is t-lifetime
-         taum = lookup_taum(m,col_choice)
+         taum = lookup_taum(mmid,col_choice)
          tdiff = t - taum
          # only release material after stars die
          if tdiff <= 0:
@@ -488,10 +490,11 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              # get nearest Z which corresponds to Z at time=t-taum
              zdiff = find_nearest(z_lookup,tdiff)[1]
              sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
-             ezm += ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf) * dm
-             em += ejected_gas_mass(m, sfrdiff, imf) * dm
-             edm += ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf) * dm
+             ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
+             em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
+             edm += ejected_dust_mass(choice, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
 
+         
          mnew = 10**(logmnew)
          m = mnew
      return em, ezm, edm
