@@ -243,10 +243,10 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
                1st element = lims value 1 or 0
                2nd element = grain growth value 1 or 0
     -- reduce_sn: factor to reduce SN dust contribution, set by user in inits
-    -- m:
-    -- sfrdiff:
-    -- zdiff:
-    -- metallicity:
+    -- m: mass of star
+    -- metallicity: metal mass fraction Mz/Mg
+    -- sfrdiff: SFR calculated at t-taum (when stars that are dying now were born)
+    -- zdiff: metallicity calculated at t-taum (when stars that are dying now were born)
     -- imf choice, set by user in inits
 
     delta_LIMS_recycled: fraction of metals that condense into dust 0.45
@@ -435,7 +435,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      - e(t): ejected gas mass em
      - ez(t): ejected metal mass ezm
      - ed(t): ejected dust mass edm
-     - Zdiff and SFR diff are also calculated ie at t-taum
+     - Zdiff and SFR diff are also calculated ie at t-taum (when stars that are dying now were born)
 
      In:
      -- choice: array of dust source choices
