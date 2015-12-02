@@ -455,15 +455,16 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      m_min = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
 
      if(m_min >= mu):
-         m_min = 119.9
+         m_min = mu
 
+     steps = 1000
      m = m_min
      dlogm = 0
      logmnew = np.log10(m) + dlogm
      dm = 10**(logmnew)- m
-     dlogm = (np.log10(mu)-np.log10(m_min))/1000
+     dlogm = (np.log10(mu)-np.log10(m_min))/steps
      #print dlogm
-     #print t, m
+     print t, m
 
      count = 0
 
@@ -472,7 +473,8 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
          col_choice = lifetime_cols['low_metals']
      else:
          col_choice = lifetime_cols['high_metals']
-     while m <= mu:
+
+     while count < steps:
          count += 1
          logmnew = np.log10(m) + dlogm
          dm = 10.0**(logmnew) - m
@@ -497,6 +499,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
 
          mnew = 10**(logmnew)
          m = mnew
+         #print dm
         # print mnew
-     #print count
+     print m, count
      return em, ezm, edm
