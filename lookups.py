@@ -8,7 +8,7 @@ and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
 
 If you use this code, please do cite the above papers.
 
-Copyright (C) 2015 Haley Gomez and Edward Gomez, Cardiff University and LCOGT
+Copyright (C) 2015 Haley Gomez, Edward Gomez and Simon Schofield, Cardiff University and LCOGT
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or

@@ -64,3 +64,7 @@ temp.*
 # files
 *.dat
 *.png
+
+# Python modules
+validate_dict.py
+multipleruns.py
