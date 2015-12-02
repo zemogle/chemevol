@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 '''
 
 '''
-These functions make a quick figure and writes to data file
+These functions make a quick figure and writes results to data file
 '''
 import matplotlib.pyplot as plt
 

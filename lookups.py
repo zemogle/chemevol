@@ -65,7 +65,7 @@ lifetime =  np.array([(0.8, 15.0, 26.0),
 
 t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low_metals','lifetime_high_metals'),meta={'name': 'Lifetime'})
 
-t_lifetime['mass'].unit = 'solMass'
+t_lifetime['mass'].unit = 'solMass' # write units to each column
 t_lifetime['lifetime_low_metals'].unit = 'Gyr'
 t_lifetime['lifetime_high_metals'].unit = 'Gyr'
 
@@ -130,15 +130,14 @@ t_yields['yields_sn_02'].unit = 'solMass'
 t_yields['yields_winds_02'].unit = 'solMass'
 
 '''
-dust_mass_sn: dust mass returned by supernovae
+dust_mass_sn: dust mass returned by supernovae from Todini & Ferrara 2001 (MNRAS 325 276)
             1st column: initial mass of star
             2nd column: dust mass returned
 
-            From Todinin & Ferrara 2001 (MNRAS 325 276)
             As TF01 only have SN masses for m_i > 12Msun
-            (ie no 9Msun entry), we add dust for 9Msun progenitor
-            by assuming similar dust/metals
-            ratio for 12-20Msun stars
+            (ie no 9Msun entry), we add dust for 8.5 + 9Msun progenitor
+            by assuming no dust from 8.5 Msun, and similar dust/metals
+            ratio for 12-20Msun for 9Msun
 '''
 dust_mass_sn = ((8.5,0),
                 (9, 0.17),
@@ -173,16 +172,17 @@ def find_nearest_col(lookup,value,colnum):
 
 def lookup_fn(lookup, column, value):
     '''
-    Take a 2D lifetime table and return nearest neighbour based on either 2 or 3 col
+    return nearest neighbour value from function based on column input
     '''
     col1 = lookup[column]
     idx = (np.abs(col1-value)).argmin()
     return lookup[idx]
 
 def lookup_taum(mass, colnum):
-#    '''
-#    Take a lifetime list
-#    '''
+    '''
+    Looks up nearest neighbour for lifetime of star of mass m from lifetime table
+    reads in the relevant colnum for correct metallicity
+    '''
     col1 = lifetime[:,0]
     idx = (np.abs(col1-mass)).argmin()
     #print mass, col1, lifetime[idx][colnum]

@@ -177,7 +177,7 @@ def fresh_metals(m, metallicity):
     Massive stars are from Maeder 1992
 
     For m > 40, then only winds contribute to ejected metals
-    For m < 40, winds + SNe contribute
+    For m <= 40, winds + SNe contribute
     '''
     massyields = find_nearest(mass_yields, m)
     if metallicity <= 0.0025:
@@ -233,9 +233,10 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     2nd term: new dust from fresh heavy elements returned in dust_masses function where
               dust from massive stars (in SN only) are from Todini & Ferrara 2001 (TF01) and dust
               from Van den Hoek & Groenewegen:
-              DELTA = fraction of new metals in LIMS (0.45) and SN (from TF01)
+              DELTA = fraction of new metals in LIMS (0.45) 
+              md_SN = dust mass SN (from TF01)
 
-    de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + mp*DELTA) x SFR(t-taum x phi(m)
+    de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + (mp*DELTA)+md_SN) x SFR(t-taum x phi(m)
 
     In:
     -- choice: array of dust source choices, set by user in inits

@@ -37,7 +37,10 @@ logger = logging.getLogger('chem')
 
 class ChemModel:
     def __init__(self, **inputs):
-    # set initial parameters from input dictionary
+        '''
+        set initial parameters from input dictionary and sort out choices
+        for IMF, dust source
+        '''
         #f.validate_initial_dict(inputs)
         try:
             self.gasmass_init = inputs['gasmass_init']
@@ -91,7 +94,9 @@ class ChemModel:
             exit()
 
     def load_sfh(self):
-    # take in input SFH file and extend backwards to start from 1e-3 Gyr
+        '''
+        takes in input SFH file and extend backwards to start from 1e-3 Gyr
+        '''
         try:
             vals = np.loadtxt(self.SFH_file)
             scale = [1e-9,1e9] # Gyr conversions for time, SFR
@@ -103,8 +108,10 @@ class ChemModel:
             logger.error("File '%s' will not parse" % self.SFH_file)
             self.sfh = None
 
-    def sfr(self, t): # original input file
-    # define sfr as function to look up nearest sfr value at specified time
+    def sfr(self, t):
+        '''
+        define sfr as function to look up nearest sfr value at any specified time
+        '''
         try:
             vals = find_nearest(self.sfh,t)
             return vals[1]
