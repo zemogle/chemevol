@@ -453,9 +453,12 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      # to make taum lookup faster
      m_min = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
 
+     #Checks that m_min does not exceed mu
      if(m_min >= mu):
          m_min = mu
 
+     #Increasing the number of steps increases the
+     #resolution in the mass integral.
      steps = 1000
      m = m_min
      dlogm = 0
@@ -471,6 +474,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      else:
          col_choice = lifetime_cols['high_metals']
 
+     #Loop over the full mass range
      while count < steps:
          count += 1
          logmnew = np.log10(m) + dlogm
@@ -494,7 +498,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
              edm += ejected_dust_mass(choice, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
 
-         
+         #Calculate the next mass value
          mnew = 10**(logmnew)
          m = mnew
      return em, ezm, edm
