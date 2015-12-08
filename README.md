@@ -26,13 +26,15 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
 
 ## Running the code
-The code can be run when in the directory using the following example (note: requires a SFH file called Milkyway.sfh).  For further details on the parameters please see `main.py`.
+The code can be run when in the directory by either running python `main.py` or by using the following example (note: requires a SFH file called Milkyway.sfh).  For further details on the definition of the parameters please see comments in `main.py`.
 
 ```python
 import functions as f
 import data as d
 from evolve import ChemModel
-
+'''
+Initialise the parameters of the model
+'''
 inits = {
         'gasmass_init': 4e10,
         'SFH': 'Milkyway.sfh',
@@ -49,12 +51,21 @@ inits = {
         'destruct': 1000.
         }
 
+'''
+Call the functions and run the chemical evolution model
+'''
+
 ch = ChemModel(**inits)
 
 snrate = ch.supernova_rate()
 
 dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
 
+'''
+Allocate data from ch.gas_metal_dust_mass
+Write the data to a file called results.dat
+Plot the results
+'''
 time = all_results[:,0]
 mgas = all_results[:,1]
 mstars = all_results[:,2]
@@ -63,7 +74,6 @@ metallicity = all_results[:,4]
 mdust = all_results[:,5]
 dust_metals = all_results[:,6]
 sfr = all_results[:,7]
-
 gasfraction = mgas/(mgas+mstars)
 ssfr = sfr/mstars
 
