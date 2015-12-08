@@ -26,7 +26,7 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
 
 ## Running the code
-The code can be run when in the directory by either running python `main.py` or by using the following example (note: requires a SFH file called Milkyway.sfh).  For further details on the definition of the parameters please see comments in `main.py`.
+The code can be run when in the directory by either  `python main.py` or by using the following example (note: requires a SFH file called Milkyway.sfh).  For further details on the definition of the parameters please see comments in `main.py`.
 
 ```python
 import functions as f
