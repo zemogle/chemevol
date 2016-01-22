@@ -39,8 +39,8 @@ import numpy as np
 - lifetime: the lifetime of stars of a given mass
             1st col: initial mass of star Msolar
 
-            2nd col: lifetime in Gyrs, metallicity (Z) < 0.008
-            3rd col: lifetime in Gyrs, Z >= 0.008
+            2nd col: lifetime in Gyrs, metallicity (Z) = 0.001
+            3rd col: lifetime in Gyrs, Z = 0.02
 
             Values from Schaller et al 1992 (A & AS 96 269)
             this table allows us to call lifetime star but also
@@ -92,7 +92,7 @@ t_lifetime['lifetime_high_metals'].unit = 'Gyr'
 '''
 mass_yields =np.array([(0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-3, 0, 6.83e-3),
              (1.0, 0, 0, 0, 8.54e-4, 0, 1.12e-4, 0, 1.61e-4),
-             (1.3, 0, 3.09e-3, 0, 1.99e-3, 0, 1.70e-30, 0, 1.70e-3),
+             (1.3, 0, 3.09e-3, 0, 1.99e-3, 0, 1.70e-3, 0, 1.70e-3),
              (1.5, 0, 3.53e-3, 0, 2.57e-3, 0, 3.06e-3, 0, 3.06e-3),
              (1.7, 0, 3.77e-3, 0, 3.99e-3, 0, 3.51e-3, 0, 3.51e-3),
              (2.0, 0, 5.29e-3, 0, 5.86e-3, 0, 5.43e-3, 0, 5.43e-3),

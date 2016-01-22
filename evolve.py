@@ -236,6 +236,10 @@ class ChemModel:
             else:
                 dust_to_metals = md/metals
             all_results.append((t,mg,mstars,metals,metallicity,md,dust_to_metals,self.sfr(t)*1e-9))
+            # to test code kinks
+            if metallicity > 0.01:
+                print 'metallicity reached 0.01'
+                break
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return np.array(dust_sources), np.array(timescales), np.array(all_results)
 

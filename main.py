@@ -79,20 +79,22 @@ from evolve import ChemModel
 import data as d
 import matplotlib.pyplot as plt
 
+
+
 inits = {
         		'gasmass_init': 4e10,
 				'SFH': 'Milkyway.sfh',
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'ALL',
+				'dust_source': 'LIMS+SN',
 				'reduce_sn_dust': False,
 				'destroy': False,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'metals': True, 'xSFR': 0, 'dust': True},
+				'outflows':{'metals': False, 'xSFR': 0, 'dust': True},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 1000.,
-        		'destruct': 1000.
+				'epsilon_grain': 800,
+        		'destruct': 0.
               }
 
 ch = ChemModel(**inits)

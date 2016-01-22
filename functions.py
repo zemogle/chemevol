@@ -475,7 +475,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      count = 0
 
      lifetime_cols = {'low_metals':1, 'high_metals':2}
-     if metallicity < 0.019:
+     if metallicity <= 0.008: # inbetween Z=0.001 and Z=0.02 from schaller et al
          col_choice = lifetime_cols['low_metals']
      else:
          col_choice = lifetime_cols['high_metals']
