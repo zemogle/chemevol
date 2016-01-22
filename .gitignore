@@ -64,6 +64,8 @@ temp.*
 # files
 *.dat
 *.png
+*.rtf
+*.txt
 
 # Python modules
 validate_dict.py
