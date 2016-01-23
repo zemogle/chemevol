@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 First set up initial parameters for galaxy model by editing the dictionary
 initial_galaxy_params
 
+- name: 				someway to identify your galaxy
 - gasmass_init: 		initial gas mass in solar masses
 - SFH: 					filename for star formation history file (filename.sfh)
 						if you don't specify a file, it will default to MW like SFH
@@ -71,70 +72,90 @@ SFR, metals and stars over time
 ---------------------------------------------------------------------------
 '''
 
-init_keys = (['gasmass_init','SFH','t_end','gamma','IMF_fn','dust_source','reduce_sn_dust', \
-			'destroy','inflows','outflows','cold_gas_fraction','epsilon_grain','destruct'])
-
 import functions as f
 from evolve import ChemModel
 import data as d
 import matplotlib.pyplot as plt
 
+# initialise your galaxy parameters here and choice of models
+# each {} entry is per galaxy separated by comma in list
 
-
-inits = {
-        		'gasmass_init': 4e10,
+inits = [
+			{	'name': 'Model_I',
+				'gasmass_init': 4e10,
 				'SFH': 'Milkyway.sfh',
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'LIMS+SN',
+				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
-				'destroy': False,
+				'destroy': True,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'metals': False, 'xSFR': 0, 'dust': True},
+				'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 800,
-        		'destruct': 0.
-              }
+        		'destruct': 0  },
 
-ch = ChemModel(**inits)
+			{	'name' : 'Model_IV',
+				'gasmass_init': 4e10,
+  				'SFH': 'delayed.sfh',
+          		't_end': 20.,
+  				'gamma': 0,
+  				'IMF_fn': 'Chab',
+  				'dust_source': 'ALL',
+  				'reduce_sn_dust': 6,
+  				'destroy': False,
+  				'inflows':{'metals': 0., 'xSFR': 1.5, 'dust': 0},
+  				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
+  				'cold_gas_fraction': 0.5,
+  				'epsilon_grain': 800,
+          		'destruct': 100.  }
+        ]
 
-'''
-call modules to run the model:
+snrate = []
+all_results = []
+galaxies = []
 
-snrate: 		SN rate at each time step - this also sets time array so
-				ch.supernova_rate() must be called first to set time array for the entire code
+for item in inits:
+	ch = ChemModel(**item)
+	'''
+	call modules to run the model:
+	snrate: 		SN rate at each time step - this also sets time array
+					so ch.supernova_rate() must be called first to set
+					time array for the entire code
 
-dust_sources: 	dust sources vs time ([0] all, [1] stars only, [2] grain growth only)
-timescales: 	destruction [0] & grain growth [1] timescales in Gyrs
-all results: 	t, mg, m*, mz, Z, md, md/mz, sfr
+	all results: 	t, mg, m*, mz, Z, md, md/mz, sfr,
+					dust_source(all), dust_source(stars),
+					dust_source(ism), destruction_time, graingrowth_time
+	'''
+	snrate = ch.supernova_rate()
+	all_results = ch.gas_metal_dust_mass(snrate)
+	# write all the parameters to a dictionary for each init set
+	params = {'time' : all_results[:,0],
+		   'mgas' : all_results[:,1],
+		   'mstars' : all_results[:,2],
+		   'metalmass' : all_results[:,3],
+		   'metallicity' : all_results[:,4],
+		   'dustmass' : all_results[:,5],
+		   'dust_metals_ratio' : all_results[:,6],
+		   'sfr' : all_results[:,7],
+		   'dust_made_all' : all_results[:,8],
+		   'dust_made_stars' : all_results[:,9],
+		   'dust_made_ism' : all_results[:,10],
+		   'timescale_destroy' : all_results[:,11],
+		   'timescale_gg' : all_results[:,12]}
+	params['gasfraction'] = params['mgas']/(params['mgas']+params['mstars'])
+	params['ssfr'] = params['sfr']/params['mgas']
+	params['name'] = item['name']
+	# write each run through inits to array galaxies
+	galaxies.append(params)
 
-'''
-
-#
-snrate = ch.supernova_rate()
-
-# returns
-# dust_sources: dust sources vs time (all, stars only and grain growth only)
-# timescales: for destruction & grain growth in Gyrs
-# all results: t, mg, m*, mz, Z, md, md/mz, sfr
-dust_sources, timescales, all_results = ch.gas_metal_dust_mass(snrate)
-
-time = all_results[:,0]
-mgas = all_results[:,1]
-mstars = all_results[:,2]
-metalmass = all_results[:,3]
-metallicity = all_results[:,4]
-dustmass = all_results[:,5]
-dust_metals_ratio = all_results[:,6]
-sfr = all_results[:,7]
-
-# create gasfraction and ssfr parameters
-gasfraction = mgas/(mgas+mstars)
-ssfr = sfr/mstars
+# check out astropy table to unpack from dictionaries and write to csv
+# galaxies[0]['name']
+# [g['name'] for g in galaxies]
 
 #write to a file
-d.writedata(time, mgas, mstars, sfr, ssfr, dustmass, metalmass, metallicity, gasfraction)
+#d.writedata(time, mgas, mstars, sfr, ssfr, dustmass, metalmass, metallicity, gasfraction)
 
 # make some quick look up plots
-d.figure(time,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction,dust_sources,timescales)
+#d.figure(time,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction)

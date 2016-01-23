@@ -378,7 +378,7 @@ def destruction_timescale(destruct,g,supernova_rate):
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
     '''
     supernova_rate = supernova_rate*1e-9
-    if supernova_rate <= 0:
+    if supernova_rate <= 0 or destruct <= 0:
         t_destroy = 0.
     else:
         # sn_rate is in units of N per Gyr

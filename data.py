@@ -41,7 +41,7 @@ def writedata(time, mgas, mstars, sfr, ssfr, mdust, metalmass, metallicity, gasf
         f.write(t)
     f.close()
 
-def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,dust_in,timescale):
+def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction):
     # plot some figures to check out results
     plt.figure(figsize = (20,8))
     f1 = plt.subplot(2,3,1)
@@ -71,6 +71,7 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f3.set_ylabel("Mass (Msun)", fontsize='16')
     f3.set_xlabel("Time (Gyrs)", fontsize='16')
 
+'''
     f4 = plt.subplot(2,3,4)
     f4.semilogy(time,dust_in[:,0],color='purple',linestyle='-',linewidth=2,label='Dust In (Stars+ISM)')
     f4.semilogy(time,dust_in[:,1],color='purple',linestyle='-.',linewidth=2,label='Dust Stars')
@@ -81,6 +82,7 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f4.set_ylabel("Mass (Msun)", fontsize='16')
     f4.set_xlabel("Time (Gyrs)", fontsize='16')
 
+
     f5 = plt.subplot(2,3,5)
     f5.semilogy(gasfraction,metallicity,color='black',linewidth=2,label='Metallicity')
     f5.semilogy(gasfraction,dust_metals_ratio,color='purple',linestyle='-',linewidth=2,label='Dust to Metals')
@@ -89,6 +91,7 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f5.set_ylim(1e-5,1.5)
     f5.set_ylabel("Fraction", fontsize='16')
     f5.set_xlabel("Gas Fraction", fontsize='16')
+
 
     f6 = plt.subplot(2,3,6)
     f6.plot(time,timescale[:,0],color='black',linewidth=2,label='destruction')
@@ -99,3 +102,4 @@ def figure(time,gas,stars,metals,metallicity,dust,dust_metals_ratio,gasfraction,
     f6.set_ylabel("Timescale (Gyr)", fontsize='16')
     f6.set_xlabel("Time (Gyr)", fontsize='16')
     plt.show()
+'''

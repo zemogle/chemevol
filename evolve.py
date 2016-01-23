@@ -134,8 +134,6 @@ class ChemModel:
         metals = 0
         prev_t = 1e-3
         metals_pre = 0
-        dust_sources = []
-        timescales = []
         mstars_list = []
         z = []
         z_lookup = []
@@ -229,19 +227,16 @@ class ChemModel:
             md_stars += mdust_stars*dt # dust source from stars only
             Z = zip(*z_lookup) # write metallicity to an array
             s_f_r = zip(*sfr_lookup) # write SFR lookup array
-            dust_sources.append((md_all, md_stars, md_gg)) # write array of dust sources
-            timescales.append((t_des,t_gg)) # write array for grain growth & destruction timescales
             if mg <= 0. or metals <=0:  # write dust/metals ratio
                 dust_to_metals = 0.
             else:
                 dust_to_metals = md/metals
-            all_results.append((t,mg,mstars,metals,metallicity,md,dust_to_metals,self.sfr(t)*1e-9))
+            all_results.append((t, mg, mstars, metals, metallicity, \
+                                md, dust_to_metals, self.sfr(t)*1e-9, \
+                                md_all, md_stars, md_gg, t_des, t_gg))
             # to test code kinks
-            if metallicity > 0.01:
-                print 'metallicity reached 0.01'
-                break
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
-        return np.array(dust_sources), np.array(timescales), np.array(all_results)
+        return np.array(all_results)
 
     def supernova_rate(self):
         '''
