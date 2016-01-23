@@ -124,9 +124,11 @@ for item in inits:
  name = item['name']
  t.write(str(name+'.dat'), format='ascii', delimiter=' ')
 
- # write each run through inits to produce final array galaxies for playing with
+ # if you want an array of every single result use:
  galaxies.append(params)
 
 # eg: to get any list of entries for any dictionary name for quick look
-# [g['name'] for g in galaxies]
-# [g['mgas'] for g in galaxies]
+  # [g['name'] for g in galaxies] will print out all the names
+  # [g['mgas'] for g in galaxies] will print out all the gasmasses
+# for getting columns for each galaxy use:
+  # gasmass  = galaxies[0]['mgas'] etc

@@ -155,7 +155,7 @@ for item in inits:
 	# write out to file based on 'name' identifier
 	name = item['name']
 	t.write(str(name+'.dat'), format='ascii', delimiter=' ')
-	# write each run through inits to produce final array galaxies
+	# if you want an array including every inits entry:
 	galaxies.append(params)
 
 # make some quick look up plots
