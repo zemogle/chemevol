@@ -4,7 +4,7 @@ input galaxy parameters and run a chemical evolution model to determine the evol
 of gas, metals and dust in galaxies.
 
 Running this script will produce
-(a) a results data file
+(a) a results data file (filename.dat) with file name given by user
 (b) a pop-up plot for looking at gas, dust and metal evolution
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
@@ -89,7 +89,7 @@ inits = [
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
-				'destroy': True,
+				'destroy': False,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 				'cold_gas_fraction': 0.5,
@@ -104,7 +104,7 @@ inits = [
   				'IMF_fn': 'Chab',
   				'dust_source': 'ALL',
   				'reduce_sn_dust': 6,
-  				'destroy': False,
+  				'destroy': True,
   				'inflows':{'metals': 0., 'xSFR': 1.5, 'dust': 0},
   				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
   				'cold_gas_fraction': 0.5,
@@ -139,23 +139,24 @@ for item in inits:
 		   'dustmass' : all_results[:,5],
 		   'dust_metals_ratio' : all_results[:,6],
 		   'sfr' : all_results[:,7],
-		   'dust_made_all' : all_results[:,8],
-		   'dust_made_stars' : all_results[:,9],
-		   'dust_made_ism' : all_results[:,10],
-		   'timescale_destroy' : all_results[:,11],
-		   'timescale_gg' : all_results[:,12]}
-	params['gasfraction'] = params['mgas']/(params['mgas']+params['mstars'])
+		   'dust_all' : all_results[:,8],
+		   'dust_stars' : all_results[:,9],
+		   'dust_ism' : all_results[:,10],
+		   'time_destroy' : all_results[:,11],
+		   'time_gg' : all_results[:,12]}
+	params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
 	params['ssfr'] = params['sfr']/params['mgas']
-	params['name'] = item['name']
-	# write each run through inits to array galaxies
+	# write to astropy table
+	t = Table(params)
+	# write out to file based on 'name' identifier
+	name = item['name']
+	t.write(str(name+'.dat'), format='ascii', delimiter=' ')
+	# write each run through inits to produce final array galaxies
 	galaxies.append(params)
 
-# check out astropy table to unpack from dictionaries and write to csv
-# galaxies[0]['name']
+# eg: to get any list of entries for any dictionary name:
 # [g['name'] for g in galaxies]
-
-#write to a file
-#d.writedata(time, mgas, mstars, sfr, ssfr, dustmass, metalmass, metallicity, gasfraction)
+# [g['mgas'] for g in galaxies]
 
 # make some quick look up plots
 #d.figure(time,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction)
