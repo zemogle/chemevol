@@ -26,6 +26,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+********************************************************************************
 '''
 
 '''------------------------------------------------------------------------
@@ -64,7 +66,8 @@ initial_galaxy_params
 					  	typically 0.5-0.9 for high z systems, default is 0.5
 - epsilon_grain = 		grain growth parameter from Mattsson & Andersen 2012
 						default is 500 for t_grow ~ 10Myr.
-- destruct = 			amount of material destroyed by each SN (typically 1000 or 100Msun)
+- destruct = 			amount of material destroyed by each SN
+						(typically 1000 or 100Msun)
 
 
 Each run will be used to generate the evolution of dust, gas,
@@ -75,6 +78,7 @@ SFR, metals and stars over time
 import functions as f
 from evolve import ChemModel
 import data as d
+from astropy.table import Table
 import matplotlib.pyplot as plt
 
 # initialise your galaxy parameters here and choice of models
@@ -153,10 +157,6 @@ for item in inits:
 	t.write(str(name+'.dat'), format='ascii', delimiter=' ')
 	# write each run through inits to produce final array galaxies
 	galaxies.append(params)
-
-# eg: to get any list of entries for any dictionary name:
-# [g['name'] for g in galaxies]
-# [g['mgas'] for g in galaxies]
 
 # make some quick look up plots
 #d.figure(time,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction)
