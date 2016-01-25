@@ -12,6 +12,8 @@ and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
 
 If you use this code, please do cite the above papers.  The license is provided with this package.
 
+this is a t_destroy
+
 ## Requirements
 
 ### Python packages

@@ -69,6 +69,8 @@ initial_galaxy_params
 - destruct = 			amount of material destroyed by each SN
 						(typically 1000 or 100Msun)
 
+						this is my new edit
+
 
 Each run will be used to generate the evolution of dust, gas,
 SFR, metals and stars over time
