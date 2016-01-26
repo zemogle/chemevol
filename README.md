@@ -5,7 +5,6 @@ Running the script following the instructions below will produce:
 
 1. a results data file with galaxy parameters in (filename.dat with name provided
   by user from inits file)
-1. a pop-up plot for looking at results quickly
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
