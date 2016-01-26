@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 
 def writedata(time, mgas, mstars, sfr, ssfr, mdust, metalmass, metallicity, gasfraction):
     # write data to a file for plotting
-    f = open('results.dat', 'w')
+    f = open('Model_VI.dat', 'w')
     text = "# Time(Gyr) Mg(Msol) Ms(Msol) SFR(Msol/yr) SSFR(/yr) Md(Msol) M_Z(Msol) Z, f_g \n"
     f.write(text)
     for i in range(0,len(mgas)):

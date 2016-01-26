@@ -91,29 +91,29 @@ inits = [
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'ALL',
+				'dust_source': 'SN+LIMS',
 				'reduce_sn_dust': False,
 				'destroy': False,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 800,
+				'epsilon_grain': 0,
         		'destruct': 0  },
 
-			{	'name' : 'Model_IV',
+			{	'name' : 'Model_VI',
 				'gasmass_init': 4e10,
   				'SFH': 'delayed.sfh',
           		't_end': 20.,
   				'gamma': 0,
-  				'IMF_fn': 'Chab',
+  				'IMF_fn': 'Salp',
   				'dust_source': 'ALL',
-  				'reduce_sn_dust': 6,
+  				'reduce_sn_dust': 25,
   				'destroy': True,
-  				'inflows':{'metals': 0., 'xSFR': 1.5, 'dust': 0},
-  				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
+  				'inflows':{'metals': 0., 'xSFR': 0.5, 'dust': 0},
+  				'outflows':{'metals': True, 'xSFR': 0.5, 'dust': True},
   				'cold_gas_fraction': 0.5,
-  				'epsilon_grain': 800,
-          		'destruct': 100.  }
+  				'epsilon_grain': 1000,
+          		'destruct': 1000.  }
         ]
 
 snrate = []

@@ -332,7 +332,7 @@ def grow_timescale(e,g,sfr,z,d):
 
     '''
     sfr_in_years = sfr*1e-9 # to convert from per Gyr to per yr
-    if z <= 0.:
+    if z <= 0. or e <= 0.:
         t_grow = 0
     else:
         t_grow = g/(e*z*sfr_in_years)
@@ -357,11 +357,12 @@ def graingrowth(choice,e,g,sfr,z,md,f_c):
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
         # convert grain growth timescale to Gyrs
-    time_gg = choice*1e-9*grow_timescale(e,g,sfr,z,md)
-    if time_gg <= 0:
+    time_gg = 1e-9*grow_timescale(e,g,sfr,z,md)
+
+    if time_gg <= 0 or choice == 0:
         mdust_gg = 0.
     else:
-        mdust_gg = choice*md * f_c * (1.-((md/g)/z)) * time_gg**-1
+        mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
     return mdust_gg, time_gg
 
 def destruction_timescale(destruct,g,supernova_rate):
