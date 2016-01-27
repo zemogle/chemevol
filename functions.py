@@ -455,14 +455,24 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      edm = 0.
      em = 0.
 
-     # we pull out mass corresponding to age of system
-     # to get lower limit of integral
-     # to make taum lookup faster
-     m_min = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+     lifetime_cols = {'low_metals':1, 'high_metals':2}
+     if metallicity <= 0.008:  # in between Z=0.001 and Z=0.02 files from Schaller et al 1992
+        # get the correct lower mass of integral based on age of system
+         m_min = lookup_fn(t_lifetime,'lifetime_low_metals',t)['mass']
+         # define column choice to speed up taum fn below
+         col_choice = lifetime_cols['low_metals']
+     else:
+         m_min = lookup_fn(t_lifetime,'lifetime_high_metals',t)['mass']
+         # define column choice to speed up taum fn below
+         col_choice = lifetime_cols['high_metals']
 
      # checks that m_min does not exceed mu
      if(m_min >= mu):
          m_min = mu
+
+
+
+
 
      # increasing the number of steps increases the
      # resolution in the mass integral
@@ -474,12 +484,6 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      dlogm = (np.log10(mu)-np.log10(m_min))/steps
 
      count = 0
-
-     lifetime_cols = {'low_metals':1, 'high_metals':2}
-     if metallicity <= 0.008: # in between Z=0.001 and Z=0.02 files from Schaller et al 1992
-         col_choice = lifetime_cols['low_metals']
-     else:
-         col_choice = lifetime_cols['high_metals']
 
      # loop over the full mass range
      while count < steps:
