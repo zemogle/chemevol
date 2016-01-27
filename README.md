@@ -20,10 +20,10 @@ If you use this code, please do cite the above papers.  The license is provided 
 - matplotlib
 - astropy.table
 
-### input files needed
+### Input files needed
 The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form: time (yr), SFR (Msolar/yr).    An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
 
-### input data needed
+### Input data needed
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
 
 ## Running the code
@@ -129,16 +129,16 @@ for item in inits:
  galaxies.append(params)
 ```
 
- ## Manipulating the results
- Once the code is run you will have an array called `galaxies` with all the parameters in.  To look at this data try:
- ```python
- [g['name'] for g in galaxies] will print out all the names
- [g['mgas'] for g in galaxies] will print out all the gasmasses
- gasmass  = galaxies[0]['mgas'] etc
- ```
+### Manipulating the results
+Once the code is run you will have an array called `galaxies` with all the parameters in.  To look at this data try:
+```python
+[g['name'] for g in galaxies] will print out all the names
+[g['mgas'] for g in galaxies] will print out all the gasmasses
+gasmass  = galaxies[0]['mgas'] etc
+```
 
- The code writes data to a file.  To reading in this data use astropy.table:
- ```python
- t = Table.read('Model_VI.dat', format='ascii')
- plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars'])
- ```
+The code writes data to a file.  To reading in this data use astropy.table:
+```python
+t = Table.read('Model_VI.dat', format='ascii')
+plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars'])
+```
