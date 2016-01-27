@@ -470,10 +470,6 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      if(m_min >= mu):
          m_min = mu
 
-
-
-
-
      # increasing the number of steps increases the
      # resolution in the mass integral
      steps = 500

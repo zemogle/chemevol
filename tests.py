@@ -262,7 +262,20 @@ class Testlookups:
     '''
     Test the lookup functions
     '''
-    def test_stellarlifetime_lookup(self):
+    def test_stellarlifetime_lookup_lowZ(self):
         lifetime_cols = {'low_metals':1, 'high_metals':2}
         taum =  lookup_taum(41.,lifetime_cols['low_metals'])
         assert taum == 0.0048999999999999998
+
+    def test_stellarlifetime_lookup_highZ(self):
+        lifetime_cols = {'low_metals':1, 'high_metals':2}
+        taum =  lookup_taum(60.,lifetime_cols['high_metals'])
+        assert taum == 0.0034
+
+    def test_minimum_mass_lookup_lowZ(self):
+        minimum_mass =  lookup_fn(t_lifetime,'lifetime_low_metals',0.029)['mass']
+        assert minimum_mass == 60.0
+
+    def test_minimum_mass_lookup_highZ(self):
+        minimum_mass =  lookup_fn(t_lifetime,'lifetime_high_metals',1.75)['mass']
+        assert minimum_mass == 2.0
