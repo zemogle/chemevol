@@ -26,20 +26,6 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 ### input data needed
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
 
-## Manipulating the results
-Once the code is run you will have an array called `galaxies` with all the parameters in.  To look at this data try:
-```python
-[g['name'] for g in galaxies] will print out all the names
-[g['mgas'] for g in galaxies] will print out all the gasmasses
-gasmass  = galaxies[0]['mgas'] etc
-```
-
-The code writes data to a file.  To reading in this data use astropy.table:
-```python
-t = Table.read('Model_VI.dat', format='ascii')
-plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars'])
-```
-
 ## Running the code
 The code can be run when in the directory by either `python main.py` or by using the following example (note: requires a SFH file called Milkyway.sfh and delayed.sfh provided
   with this package).  For further details on the definition of the parameters please see comments in `main.py`.
@@ -141,3 +127,17 @@ for item in inits:
 
  # if you want an array of every single result use:
  galaxies.append(params)
+
+ ## Manipulating the results
+ Once the code is run you will have an array called `galaxies` with all the parameters in.  To look at this data try:
+ ```python
+ [g['name'] for g in galaxies] will print out all the names
+ [g['mgas'] for g in galaxies] will print out all the gasmasses
+ gasmass  = galaxies[0]['mgas'] etc
+ ```
+
+ The code writes data to a file.  To reading in this data use astropy.table:
+ ```python
+ t = Table.read('Model_VI.dat', format='ascii')
+ plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars'])
+ ```
