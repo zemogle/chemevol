@@ -127,7 +127,7 @@ for item in inits:
 
  # if you want an array of every single result use:
  galaxies.append(params)
- ```
+'''
 
  ## Manipulating the results
  Once the code is run you will have an array called `galaxies` with all the parameters in.  To look at this data try:
