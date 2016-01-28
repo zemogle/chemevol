@@ -72,7 +72,7 @@ def remnant_mass(m):
 
     The formulism is based on Ferreras & Silk 2000 (ApJ 532 193)
     which in turn is based on Iben & Tsutukov 1984, Woosley & Weaver 1995.
-    Stars with mass above m_bh don't eject material into the ISM
+    This accounts for stars with mass above 40Msun not returning all their material into the ISM
     '''
     if m <= 9.0:
         rem_mass = 0.106*m + 0.446

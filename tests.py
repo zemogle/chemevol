@@ -273,9 +273,11 @@ class Testlookups:
         assert taum == 0.0034
 
     def test_minimum_mass_lookup_lowZ(self):
+        t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low_metals','lifetime_high_metals'),meta={'name': 'Lifetime'})
         minimum_mass =  lookup_fn(t_lifetime,'lifetime_low_metals',0.029)['mass']
-        assert minimum_mass == 60.0
+        assert minimum_mass == 9.0
 
     def test_minimum_mass_lookup_highZ(self):
+        t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low_metals','lifetime_high_metals'),meta={'name': 'Lifetime'})
         minimum_mass =  lookup_fn(t_lifetime,'lifetime_high_metals',1.75)['mass']
         assert minimum_mass == 2.0

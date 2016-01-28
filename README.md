@@ -34,6 +34,8 @@ The code can be run when in the directory by either `python main.py` or by using
 import functions as f
 from astropy.table import Table
 import data as d
+import matplotlib.pyplot as plt
+
 from evolve import ChemModel
 '''
 Initialise the parameters of the model
@@ -132,7 +134,7 @@ for item in inits:
 ### Manipulating the results
 Once the code is run you will have an array called `galaxies` with all the parameters in.  To look at this data try:
 ```python
-[g['name'] for g in galaxies] will print out all the names
+[g['dust_all'] for g in galaxies] will print out all the dust_all
 [g['mgas'] for g in galaxies] will print out all the gasmasses
 gasmass  = galaxies[0]['mgas'] etc
 ```
@@ -140,5 +142,5 @@ gasmass  = galaxies[0]['mgas'] etc
 The code writes data to a file.  To reading in this data use astropy.table:
 ```python
 t = Table.read('Model_VI.dat', format='ascii')
-plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars'])
+plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars']))
 ```
