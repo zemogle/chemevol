@@ -1,4 +1,5 @@
 # ChemEvol
+[![Build Status](https://travis-ci.org/zemogle/chemevol.svg?branch=master)](https://travis-ci.org/zemogle/chemevol)
 Python package to read in a star formation history file, input galaxy parameters and run a chemical evolution model to determine the evolution of gas, metals and dust in galaxies.
 
 Running the script following the instructions below will produce:
