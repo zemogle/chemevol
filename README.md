@@ -1,5 +1,6 @@
 # ChemEvol
 [![Build Status](https://travis-ci.org/zemogle/chemevol.svg?branch=master)](https://travis-ci.org/zemogle/chemevol)
+
 Python package to read in a star formation history file, input galaxy parameters and run a chemical evolution model to determine the evolution of gas, metals and dust in galaxies.
 
 Running the script following the instructions below will produce:
@@ -12,14 +13,19 @@ and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
 
 If you use this code, please do cite the above papers.  The license is provided with this package.
 
+## Installation
+
+Download this repository and do the following:
+```
+python setup.py install
+```
+
 ## Requirements
 
 ### Python packages
 - numpy
 - astropy
-- logger
-- matplotlib
-- astropy.table
+- matplotlib [Not a strict requirement]
 
 ### Input files needed
 The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form: time (yr), SFR (Msolar/yr).    An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
@@ -28,16 +34,13 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
 
 ## Running the code
-The code can be run when in the directory by either `python main.py` or by using the following example (note: requires a SFH file called Milkyway.sfh and delayed.sfh provided
-  with this package).  For further details on the definition of the parameters please see comments in `main.py`.
+The code can be run when in the directory by either `python chemevol/main.py` or by using the following example (note: requires a SFH file called Milkyway.sfh and delayed.sfh provided with this package).  For further details on the definition of the parameters please see comments in `main.py`.
 
 ```python
-import functions as f
 from astropy.table import Table
-import data as d
 import matplotlib.pyplot as plt
 
-from evolve import ChemModel
+from chemevol import ChemModel
 '''
 Initialise the parameters of the model
 '''
@@ -47,8 +50,8 @@ initialise your galaxy parameters here and choice of models
 inits = [
      {	'name': 'Model_I',
        'gasmass_init': 4e10,
-       'SFH': 'Milkyway.sfh',
-           't_end': 20.,
+       'SFH': 'chemevol/Milkyway.sfh',
+       't_end': 20.,
        'gamma': 0,
        'IMF_fn': 'Chab',
        'dust_source': 'ALL',
@@ -62,8 +65,8 @@ inits = [
 
      {	'name' : 'Model_IV',
        'gasmass_init': 4e10,
-         'SFH': 'delayed.sfh',
-             't_end': 20.,
+         'SFH': 'chemevol/delayed.sfh',
+         't_end': 20.,
          'gamma': 0,
          'IMF_fn': 'Chab',
          'dust_source': 'ALL',
@@ -91,35 +94,35 @@ Call the functions and run the chemical evolution model for however many galaxie
 '''
 
 for item in inits:
- ch = ChemModel(**item)
- '''
- call modules to run the model:
- snrate: 		SN rate at each time step - this also sets time array
-         so ch.supernova_rate() must be called first to set
-         time array for the entire code
+    ch = ChemModel(**item)
+    '''
+    call modules to run the model:
+    snrate: 		SN rate at each time step - this also sets time array
+           so ch.supernova_rate() must be called first to set
+           time array for the entire code
 
- all results: 	t, mg, m*, mz, Z, md, md/mz, sfr,
-         dust_source(all), dust_source(stars),
-         dust_source(ism), destruction_time, graingrowth_time
- '''
- snrate = ch.supernova_rate()
- all_results = ch.gas_metal_dust_mass(snrate)
- # write all the parameters to a dictionary for each init set
- params = {'time' : all_results[:,0],
-      'mgas' : all_results[:,1],
-      'mstars' : all_results[:,2],
-      'metalmass' : all_results[:,3],
-      'metallicity' : all_results[:,4],
-      'dustmass' : all_results[:,5],
-      'dust_metals_ratio' : all_results[:,6],
-      'sfr' : all_results[:,7],
-      'dust_all' : all_results[:,8],
-      'dust_stars' : all_results[:,9],
-      'dust_ism' : all_results[:,10],
-      'time_destroy' : all_results[:,11],
-      'time_gg' : all_results[:,12]}
- params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
- params['ssfr'] = params['sfr']/params['mgas']
+    all results: 	t, mg, m*, mz, Z, md, md/mz, sfr,
+           dust_source(all), dust_source(stars),
+           dust_source(ism), destruction_time, graingrowth_time
+    '''
+    snrate = ch.supernova_rate()
+    all_results = ch.gas_metal_dust_mass(snrate)
+    # write all the parameters to a dictionary for each init set
+    params = {'time' : all_results[:,0],
+        'mgas' : all_results[:,1],
+        'mstars' : all_results[:,2],
+        'metalmass' : all_results[:,3],
+        'metallicity' : all_results[:,4],
+        'dustmass' : all_results[:,5],
+        'dust_metals_ratio' : all_results[:,6],
+        'sfr' : all_results[:,7],
+        'dust_all' : all_results[:,8],
+        'dust_stars' : all_results[:,9],
+        'dust_ism' : all_results[:,10],
+        'time_destroy' : all_results[:,11],
+        'time_gg' : all_results[:,12]}
+    params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
+    params['ssfr'] = params['sfr']/params['mgas']
 
  # write to astropy table
  t = Table(params)
