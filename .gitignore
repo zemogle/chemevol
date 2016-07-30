@@ -60,6 +60,7 @@ target/
 # Profiler
 temp.*
 *.html
+*.lprof
 
 # files
 *.dat

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #from astropy import units as u
 import numpy as np
+from numpy import abs, array
 import logging
 from lookups import find_nearest, dust_mass_sn, t_yields, \
                     t_lifetime, lookup_fn, lookup_taum, mass_yields
@@ -203,6 +204,7 @@ def fresh_metals(m, metallicity):
             sum_yields = massyields[yn.index('yields_winds_02')]
     return sum_yields
 
+@profile
 def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
@@ -221,6 +223,7 @@ def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
                 sfrdiff * imf(m)
     return dej
 
+@profile
 def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected dust mass from stars by mass loss/stellar death
@@ -274,6 +277,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     dej = dej_recycled + dej_fresh
     return dej
 
+@profile
 def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     '''
     This function returns the dust mass ejected by a star
@@ -302,6 +306,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
 
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
+
     # Which dust sources are turned on or off?
     choice_sn = choice[0]
     choice_lims = choice[1]
@@ -312,7 +317,8 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     elif (m > 8.0) & (m <= 40.0):
         # find dust mass from TF01 in dust_mass_sn table
         # assume massive star winds don't form dust
-        dustmass = choice_sn*(reduce_sn)**-1*find_nearest(np.array(dust_mass_sn),m)[1]
+        dustmass = choice_sn*(reduce_sn)**-1* \
+            find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass = 0.
     return dustmass
@@ -432,6 +438,7 @@ def outflows(sfr,parameter):
     outflow_rate = sfr*parameter
     return outflow_rate
 
+@profile
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      '''
      This function does the mass integral for:
@@ -472,7 +479,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
 
      # increasing the number of steps increases the
      # resolution in the mass integral
-     steps = 500
+     steps = range(0,500)
      m = m_min
      dlogm = 0
      logmnew = np.log10(m) + dlogm
@@ -480,6 +487,9 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      dlogm = (np.log10(mu)-np.log10(m_min))/steps
 
      count = 0
+
+     # Look up look z min
+     z_near = lambda td : z_lookup[(abs(z_lookup[:,0]-t)).argmin()]
 
      # loop over the full mass range
      while count < steps:
@@ -499,7 +509,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              em = 0
          else:
              # get nearest Z and SFR which corresponds to Z and SFR at time=t-taum
-             zdiff = find_nearest(z_lookup,tdiff)[1]
+             zdiff = z_near(tdiff)[1] #find_nearest(z_lookup,tdiff)[1]
              sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
              ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
              em += ejected_gas_mass(mmid, sfrdiff, imf) * dm

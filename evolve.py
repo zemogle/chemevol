@@ -24,8 +24,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
 
-import functions as f
+from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
+    imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
+    ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
+    inflows, outflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust
 import numpy as np
+from numpy import array
 from lookups import find_nearest, lookup_fn, t_lifetime, lookup_taum
 import logging
 from datetime import datetime
@@ -65,13 +69,13 @@ class ChemModel:
             logger.error('You must provide initial parameters')
         # Set up IMF Function determined by user, allow for variety of spellings
         if (self.imf_type == "Chab" or self.imf_type == "chab" or self.imf_type == "c"):
-            self.imf = f.imf_chab
+            self.imf = imf_chab
         elif (self.imf_type == "TopChab" or self.imf_type == 'topchab' or self.imf_type == "tc"):
-            self.imf = f.imf_topchab
+            self.imf = imf_topchab
         elif (self.imf_type == "Kroup" or self.imf_type == "kroup" or self.imf_type == "k"):
-            self.imf = f.imf_kroup
+            self.imf = imf_kroup
         elif (self.imf_type == "Salp" or self.imf_type == "salp" or self.imf_type == "s"):
-            self.imf = f.imf_salp
+            self.imf = imf_salp
         # Declare if destruction on or off
         if self.reduce_sn == False:
             self.reduce_sn = 1
@@ -102,7 +106,7 @@ class ChemModel:
             scale = [1e-9,1e9] # Gyr conversions for time, SFR
             sfh = vals*scale # converts time in Gyr and SFR in Msun/Gyr
             # extrapolates SFH back to 0.001Gyr using SFH file and power law (gamma)
-            final_sfh = f.extra_sfh(sfh, self.gamma)
+            final_sfh = extra_sfh(sfh, self.gamma)
             self.sfh = np.array(final_sfh)
         except:
             logger.error("File '%s' will not parse" % self.SFH_file)
@@ -151,9 +155,9 @@ class ChemModel:
 
             # start appending arrays for needing later
             z.append([t,metallicity])
-            z_lookup = np.array(z)
+            z_lookup = array(z)
             sfr_list.append([t,self.sfr(t)])
-            sfr_lookup = np.array(sfr_list)
+            sfr_lookup = array(sfr_list)
 
             '''
             STARS: dM_stars = sfr(t) * dt
@@ -165,19 +169,19 @@ class ChemModel:
             set up astration, inflow, outflow components
             '''
             gas_ast = self.sfr(t)
-            gas_inf = f.inflows(self.sfr(t), self.inflows['xSFR'])
-            gas_out = f.outflows(self.sfr(t), self.outflows['xSFR'])
+            gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
+            gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
 
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
             '''
-            metals_ast = f.astration(metals,mg,self.sfr(t))
+            metals_ast = astration(metals,mg,self.sfr(t))
             if self.outflows['metals']:
-                metals_out = metallicity*f.outflows(self.sfr(t), self.outflows['xSFR'])
+                metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 metals_out = 0.
-            metals_inf = self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR'])
+            metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
 
             '''
             DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
@@ -185,14 +189,14 @@ class ChemModel:
             set up astration, inflows, outflows, destruction, grain growth components
             '''
             if self.outflows['dust']:
-                mdust_out = (md/mg)*f.outflows(self.sfr(t), self.outflows['xSFR'])
+                mdust_out = (md/mg)*outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 mdust_out = 0.
-            mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR'])
-            mdust_ast = f.astration(md,mg,self.sfr(t))
+            mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
+            mdust_ast = astration(md,mg,self.sfr(t))
 
-            mdust_gg, t_gg = f.graingrowth(self.choice_dust[2], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
-            mdust_des, t_des = f.destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
+            mdust_gg, t_gg = graingrowth(self.choice_dust[2], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
+            mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
 
             '''
             Get ejected masses from stars when they die
@@ -201,7 +205,7 @@ class ChemModel:
             mdust_stars = ed(t): ejected dust mass from stars of mass m at t = taum (fresh + recycled)
             '''
             gas_ej, metals_stars, mdust_stars = \
-                    f.mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
+                    mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
@@ -260,7 +264,7 @@ class ChemModel:
             while m < 40.:
                 if m > 10.:
                     dm = 0.5
-                sn_rate += f.initial_mass_function(m, self.imf_type)*dm
+                sn_rate += initial_mass_function(m, self.imf_type)*dm
                 m += dm
             r_sn = self.sfr(t)*sn_rate # units in N per Gyr
             dt = t - prev_t
