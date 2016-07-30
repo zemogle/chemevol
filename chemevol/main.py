@@ -75,9 +75,7 @@ SFR, metals and stars over time
 ---------------------------------------------------------------------------
 '''
 
-import functions as f
-from evolve import ChemModel
-import data as d
+from chemevol import ChemModel
 from astropy.table import Table
 import matplotlib.pyplot as plt
 
@@ -87,7 +85,7 @@ import matplotlib.pyplot as plt
 inits = [
 			{	'name': 'Model_I',
 				'gasmass_init': 4e10,
-				'SFH': 'Milkyway.sfh',
+				'SFH': 'chemevol/Milkyway.sfh',
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
@@ -102,7 +100,7 @@ inits = [
 
 			{	'name' : 'Model_VI',
 				'gasmass_init': 4e10,
-  				'SFH': 'delayed.sfh',
+  				'SFH': 'chemevol/delayed.sfh',
           		't_end': 20.,
   				'gamma': 0,
   				'IMF_fn': 'Salp',

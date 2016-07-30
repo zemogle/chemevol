@@ -58,19 +58,19 @@ class ChemModel:
             self.destroy_ism = inputs['destruct']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
-                self.SFH_file = 'Milkyway.sfh'
+                self.SFH_file = 'chemevol/Milkyway.sfh'
             self.sfh_file = self.SFH_file
             self.load_sfh()
         except KeyError:
             logger.error('You must provide initial parameters')
         # Set up IMF Function determined by user, allow for variety of spellings
-        if (self.imf_type == "Chab" or self.imf_type == "chab" or self.imf_type == "c"):
+        if (self.imf_type in ["Chab", "chab", "c"]):
             self.imf = f.imf_chab
-        elif (self.imf_type == "TopChab" or self.imf_type == 'topchab' or self.imf_type == "tc"):
+        elif (self.imf_type in ["TopChab", "topchab","tc"]):
             self.imf = f.imf_topchab
-        elif (self.imf_type == "Kroup" or self.imf_type == "kroup" or self.imf_type == "k"):
+        elif (self.imf_type in ["Kroup", "kroup", "k"]):
             self.imf = f.imf_kroup
-        elif (self.imf_type == "Salp" or self.imf_type == "salp" or self.imf_type == "s"):
+        elif (self.imf_type in ["Salp", "salp", "s"]):
             self.imf = f.imf_salp
         # Declare if destruction on or off
         if self.reduce_sn == False:
