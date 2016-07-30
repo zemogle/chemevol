@@ -488,8 +488,8 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
 
      count = 0
 
-     # Look up look z min
      z_near = lambda td : z_lookup[(abs(z_lookup[:,0]-t)).argmin()]
+     sfr_near = lambda td : sfr_lookup[(abs(sfr_lookup[:,0]-t)).argmin()]
 
      # loop over the full mass range
      while count < steps:
@@ -509,8 +509,8 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              em = 0
          else:
              # get nearest Z and SFR which corresponds to Z and SFR at time=t-taum
-             zdiff = z_near(tdiff)[1] #find_nearest(z_lookup,tdiff)[1]
-             sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
+             zdiff = z_near(tdiff)[1] # find_nearest(z_lookup,tdiff)[1]
+             sfrdiff = sfr_near(tdiff)[1] # find_nearest(sfr_lookup,tdiff)[1]
              ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
              em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
              edm += ejected_dust_mass(choice, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
