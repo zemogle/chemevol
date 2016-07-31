@@ -42,6 +42,13 @@ from functions import remnant_mass, destruction_timescale, destroy_dust, graingr
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
+dustchoice_all = {'sn' : True, 'lims' : True, 'gg':True}
+dustchoice_sn = {'sn' : True, 'lims' : False, 'gg':False}
+dustchoice_lims = {'sn' : False, 'lims' : True, 'gg':False}
+dustchoice_snlims = {'sn' : True, 'lims' : True, 'gg':False}
+dustchoice_gg = {'sn' : False, 'lims' : False, 'gg':True}
+
+
 class TestFunctions:
     '''
     Test all the function values
@@ -144,35 +151,35 @@ class TestFunctions:
         assert mass_yields == 9.39
 
     def test_fresh_dust_mass_lowmass_lowmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,1.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,1.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_midmass_lowmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,5.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,5.0,0.001)
         assert 0.00346 < dust_mass < 0.00348
 
     def test_fresh_dust_mass_highmass_lowmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,30.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,30.0,0.001)
         assert dust_mass == 1.0
 
     def test_fresh_dust_mass_highermass_lowmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,40.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,40.0,0.001)
         assert dust_mass == 0.4
 
     def test_fresh_dust_mass_lowmass_highmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,1.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,1.0,0.02)
         assert  0.000070 < dust_mass < 0.000073
 
     def test_fresh_dust_mass_midmass_highmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,2.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,2.0,0.02)
         assert 2.442e-3 < dust_mass < 2.446e-3
 
     def test_fresh_dust_mass_highmass_highmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,30.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,30.0,0.02)
         assert dust_mass == 1.0
 
     def test_fresh_dust_mass_highermass_highmetals(self):
-        dust_mass = dust_masses_fresh((1,1,1),1.0,40.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,40.0,0.02)
         assert dust_mass == 0.4
 
     def test_fresh_metals_highmass_highmetals(self):
@@ -180,48 +187,48 @@ class TestFunctions:
         assert mass_yields == 9.39
 
     def test_fresh_dust_mass_lowmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh((1,0,0),1,2.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_sn,1,2.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_midmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh((0,0,1),1,8.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_gg,1,8.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_highmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh((0,0,1),1,30.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_gg,1,30.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_highermass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh((1,0,0),1,40.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_sn,1,40.0,0.001)
         assert dust_mass == 0.4
 
     def test_fresh_dust_mass_lowmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh((0,1,0),1,1.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_lims,1,1.0,0.02)
         assert  0.000070 < dust_mass < 0.000073
 
     def test_fresh_dust_mass_midmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh((1,0,0),1,2.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_sn,1,2.0,0.02)
         assert dust_mass  == 0
 
     def test_fresh_dust_mass_highmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh((1,1,0),1,30.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_snlims,1,30.0,0.02)
         assert dust_mass == 1.0
 
     def test_freshdust_sn_only(self):
-        dustmass_low = dust_masses_fresh((1,0,0), 1.0,4.9, 0.002)
-        dustmass_high = dust_masses_fresh((1,0,0), 1.0,15, 0.002)
+        dustmass_low = dust_masses_fresh(dustchoice_sn, 1.0,4.9, 0.002)
+        dustmass_high = dust_masses_fresh(dustchoice_sn, 1.0,15, 0.002)
         assert dustmass_low == 0 and dustmass_high == 0.5
 
     def test_freshdust_lims_only_highmetals(self):
-        dustmass_low = dust_masses_fresh((0,1,0), 1.0,4.9, 0.01)
-        dustmass_high = dust_masses_fresh((0,1,0), 1.0,15, 0.01)
+        dustmass_low = dust_masses_fresh(dustchoice_lims, 1.0,4.9, 0.01)
+        dustmass_high = dust_masses_fresh(dustchoice_lims, 1.0,15, 0.01)
         assert dustmass_low == 0.0029655000000000003 and dustmass_high == 0.0
 
     def test_ejected_dust_mass(self):
-        dustmass_all = ejected_dust_mass((1,1,1),1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
-        dustmass_sn = ejected_dust_mass((1,0,0),1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
-        dustmass_lims = ejected_dust_mass((0,1,0),1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
-        dustmass_both = ejected_dust_mass((1,1,0),1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        dustmass_all = ejected_dust_mass(dustchoice_all,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        dustmass_sn = ejected_dust_mass(dustchoice_sn,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        dustmass_lims = ejected_dust_mass(dustchoice_lims,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
+        dustmass_both = ejected_dust_mass(dustchoice_snlims,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
         assert dustmass_all == 214655.06895476999 and dustmass_both == 214655.06895476999 and \
                 dustmass_sn == 0 and dustmass_lims == 214655.06895476999
 

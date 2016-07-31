@@ -69,13 +69,13 @@ class ChemModel:
             logger.error('You must provide initial parameters')
         # Set up IMF Function determined by user, allow for variety of spellings
         if (self.imf_type in ["Chab", "chab", "c"]):
-            self.imf = f.imf_chab
+            self.imf = imf_chab
         elif (self.imf_type in ["TopChab", "topchab","tc"]):
-            self.imf = f.imf_topchab
+            self.imf = imf_topchab
         elif (self.imf_type in ["Kroup", "kroup", "k"]):
-            self.imf = f.imf_kroup
+            self.imf = imf_kroup
         elif (self.imf_type in ["Salp", "salp", "s"]):
-            self.imf = f.imf_salp
+            self.imf = imf_salp
         # Declare if destruction on or off
         if self.reduce_sn == False:
             self.reduce_sn = 1
@@ -83,16 +83,31 @@ class ChemModel:
             self.choice_des = 0
         else:
             self.choice_des = 1
-        # set up dust source choice from user: 0 = SN dust on, 1 = LIMS dust on, 2 = GG on
-        if (self.dust_source == "ALL" or self.dust_source == "all" or self.dust_source == "All"):
-            self.choice_dust = (1, 1, 1)
-        elif (self.dust_source == "SN" or self.dust_source == "Sn" or self.dust_source == "sn"):
-            self.choice_dust = (1, 0, 0)
-        elif (self.dust_source == "LIMS" or self.dust_source == "Lims" or self.dust_source == "lims"):
-            self.choice_dust = (0, 1, 0)
-        elif (self.dust_source == "SN+LIMS" or self.dust_source == "sn+lims" or \
-              self.dust_source == "LIMS+SN" or self.dust_source == "lims+sn"):
-            self.choice_dust = (1, 1, 0)
+        # set up dust source choice from user: sn = True; SN dust on, lims = True; LIMS dust on, gg = Grain Growth
+        if self.dust_source in ["ALL", "all", "All"]:
+            self.choice_dust = {
+                                    'sn' : True,
+                                    'lims' : True,
+                                    'gg' :True
+                                }
+        elif self.dust_source in ["SN", "Sn", "sn"]:
+            self.choice_dust =  {
+                                    'sn' : True,
+                                    'lims' : False,
+                                    'gg' :False
+                                }
+        elif self.dust_source in ["LIMS", "Lims", "lims"]:
+            self.choice_dust =  {
+                                    'sn' : False,
+                                    'lims' : True,
+                                    'gg' :False
+                                }
+        elif self.dust_source in ["SN+LIMS", "sn+lims", "LIMS+SN", "lims+sn"]:
+            self.choice_dust =  {
+                                    'sn' : True,
+                                    'lims' : True,
+                                    'gg' :False
+                                }
         else:
             print ('oops please check the dust sources are in the right format and try again')
             exit()
@@ -195,7 +210,7 @@ class ChemModel:
             mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
             mdust_ast = astration(md,mg,self.sfr(t))
 
-            mdust_gg, t_gg = graingrowth(self.choice_dust[2], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
+            mdust_gg, t_gg = graingrowth(self.choice_dust['lims'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
 
             '''

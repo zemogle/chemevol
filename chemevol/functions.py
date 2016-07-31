@@ -204,7 +204,6 @@ def fresh_metals(m, metallicity):
             sum_yields = massyields[yn.index('yields_winds_02')]
     return sum_yields
 
-@profile
 def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
@@ -223,7 +222,6 @@ def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
                 sfrdiff * imf(m)
     return dej
 
-@profile
 def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected dust mass from stars by mass loss/stellar death
@@ -257,12 +255,12 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     delta_LIMS_recycled: fraction of metals that condense into dust 0.45
     '''
     # If LIMS is turned on or off
-    choice_lims = choice[1]
+    choice_lims = choice['lims']
     # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
-    if m > 8:
-        delta_LIMS_recycled = choice_lims * 0
+    if m <= 8. and choice_lims:
+        delta_LIMS_recycled = 0.45
     else:
-        delta_LIMS_recycled = choice_lims * 0.45
+        delta_LIMS_recycled = 0.
 
     if m > 40.: # no dust from stars with m>40Msun.
         dej = 0.0
@@ -277,7 +275,6 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     dej = dej_recycled + dej_fresh
     return dej
 
-@profile
 def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     '''
     This function returns the dust mass ejected by a star
@@ -307,18 +304,13 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
 
-    # Which dust sources are turned on or off?
-    choice_sn = choice[0]
-    choice_lims = choice[1]
-
     delta_new_LIMS = 0.45
-    if (m <= 8.0):
-        dustmass = choice_lims*delta_new_LIMS * fresh_metals(m, metallicity)
-    elif (m > 8.0) & (m <= 40.0):
+    if (m <= 8.0) and choice['lims']:
+        dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
+    elif (m > 8.0) and (m <= 40.0) and choice['sn']:
         # find dust mass from TF01 in dust_mass_sn table
         # assume massive star winds don't form dust
-        dustmass = choice_sn*(reduce_sn)**-1* \
-            find_nearest(np.array(dust_mass_sn),m)[1]
+        dustmass = reduce_sn**-1*find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass = 0.
     return dustmass
@@ -438,7 +430,6 @@ def outflows(sfr,parameter):
     outflow_rate = sfr*parameter
     return outflow_rate
 
-@profile
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      '''
      This function does the mass integral for:
@@ -479,7 +470,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
 
      # increasing the number of steps increases the
      # resolution in the mass integral
-     steps = range(0,500)
+     steps = 500
      m = m_min
      dlogm = 0
      logmnew = np.log10(m) + dlogm
@@ -488,8 +479,8 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
 
      count = 0
 
-     z_near = lambda td : z_lookup[(abs(z_lookup[:,0]-t)).argmin()]
-     sfr_near = lambda td : sfr_lookup[(abs(sfr_lookup[:,0]-t)).argmin()]
+     z_near = lambda td : z_lookup[(abs(z_lookup[:,0]-td)).argmin()]
+     sfr_near = lambda td : sfr_lookup[(abs(sfr_lookup[:,0]-td)).argmin()]
 
      # loop over the full mass range
      while count < steps:

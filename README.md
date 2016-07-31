@@ -61,7 +61,7 @@ inits = [
        'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
        'cold_gas_fraction': 0.5,
        'epsilon_grain': 800,
-           'destruct': 0  },
+       'destruct': 0  },
 
      {	'name' : 'Model_IV',
        'gasmass_init': 4e10,
