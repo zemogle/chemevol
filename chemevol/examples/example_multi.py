@@ -1,36 +1,7 @@
 '''
-Chemevol - Python package to read in a star formation history file,
-input galaxy parameters and run a chemical evolution model to determine the evolution
-of gas, metals and dust in galaxies.
+Example of using ChemEvol without using the BulkEvolve class, but with multiple galaxies.
 
-Running this script will produce
-(a) a results data file (filename.dat) with file name given by user
-(b) a pop-up plot for looking at gas, dust and metal evolution
-
-The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
-and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
-
-If you use this code, please do cite the above papers.
-
-Copyright (C) 2015 Haley Gomez, Edward Gomez and Simon Schofield, Cardiff University and LCOGT
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-********************************************************************************
-'''
-
-'''------------------------------------------------------------------------
+---------------------------------------------------
 First set up initial parameters for galaxy model by editing the dictionary
 initial_galaxy_params
 
@@ -77,7 +48,6 @@ SFR, metals and stars over time
 
 from chemevol import ChemModel
 from astropy.table import Table
-import matplotlib.pyplot as plt
 
 # initialise your galaxy parameters here and choice of models
 # each {} entry is per galaxy separated by comma in list

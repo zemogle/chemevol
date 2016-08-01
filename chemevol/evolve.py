@@ -28,11 +28,16 @@ from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab,
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
     inflows, outflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust
+
+from astropy.table import Table
 import numpy as np
 from numpy import array
 from lookups import find_nearest, lookup_fn, t_lifetime, lookup_taum
 import logging
 from datetime import datetime
+import os.path
+import json
+
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -123,8 +128,8 @@ class ChemModel:
             # extrapolates SFH back to 0.001Gyr using SFH file and power law (gamma)
             final_sfh = extra_sfh(sfh, self.gamma)
             self.sfh = np.array(final_sfh)
-        except:
-            logger.error("File '%s' will not parse" % self.SFH_file)
+        except Exception as e:
+            logger.error("File '%s' will not parse %s" % (self.SFH_file, e))
             self.sfh = None
 
     def sfr(self, t):
@@ -286,3 +291,94 @@ class ChemModel:
             prev_t = t
             sn_rate_list.append(r_sn)
         return np.array(sn_rate_list)
+
+class BulkEvolve:
+    def __init__(self, filename):
+        if os.path.isfile(filename):
+            self.filename = filename
+        else:
+            logger.error('File {} does not exist'.format(filename))
+        return
+
+    def upload_json(self):
+        try:
+            with open(self.filename) as data_file:
+                data = json.load(data_file)
+            self.inits = data
+        except ValueError:
+            logger.error('Cannot read: Are you sure this is a JSON file?')
+        return
+
+
+    def upload_csv(self):
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals', 'inflows_xSFR', 'inflows_dust', 'outflows_metals','outflows_xSFR', 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct']
+        alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
+                    ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
+                    ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
+                    ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
+                    ('f16','<f8'), ('f17','<f8')])
+        try:
+            data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
+        except ValueError:
+            logger.error('Cannot read: Are you sure this is a CSV file?')
+        init_list = []
+        for i in range(0,len(data)):
+            gal_tup = zip(names, data[i])
+            gal_data = dict(gal_tup)
+            gal_data['inflows'] = {'metals': gal_data['inflows_metals'],
+                                    'xSFR': gal_data['inflows_xSFR'],
+                                    'dust': gal_data['inflows_dust']}
+            gal_data['outflows'] = {'metals': gal_data['outflows_metals'],
+                                    'xSFR': gal_data['outflows_xSFR'],
+                                    'dust': gal_data['outflows_dust']}
+            init_list.append(gal_data)
+        self.inits = init_list
+        return
+
+
+    def evolve_all(self):
+        '''
+        call modules to run the model:
+        snrate:         SN rate at each time step - this also sets time array
+                        so ch.supernova_rate() must be called first to set
+                        time array for the entire code
+
+        all results:     t, mg, m*, mz, Z, md, md/mz, sfr,
+                        dust_source(all), dust_source(stars),
+                        dust_source(ism), destruction_time, graingrowth_time
+        '''
+        snrate = []
+        all_results = []
+        galaxies = []
+
+        for item in self.inits:
+            logger.warning('Starting run on {}'.format(item['name']))
+            ch = ChemModel(**item)
+
+            snrate = ch.supernova_rate()
+            all_results = ch.gas_metal_dust_mass(snrate)
+            # write all the parameters to a dictionary for each init set
+            params = {'time' : all_results[:,0],
+                   'mgas' : all_results[:,1],
+                   'mstars' : all_results[:,2],
+                   'metalmass' : all_results[:,3],
+                   'metallicity' : all_results[:,4],
+                   'dustmass' : all_results[:,5],
+                   'dust_metals_ratio' : all_results[:,6],
+                   'sfr' : all_results[:,7],
+                   'dust_all' : all_results[:,8],
+                   'dust_stars' : all_results[:,9],
+                   'dust_ism' : all_results[:,10],
+                   'time_destroy' : all_results[:,11],
+                   'time_gg' : all_results[:,12]}
+            params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
+            params['ssfr'] = params['sfr']/params['mgas']
+            # write to astropy table
+            t = Table(params)
+            # write out to file based on 'name' identifier
+            name = item['name']
+            t.write(str(name+'.dat'), format='ascii', delimiter=' ')
+            # if you want an array including every inits entry:
+            galaxies.append(params)
+        self.results = galaxies
+        return
