@@ -222,7 +222,7 @@ class ChemModel:
             mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
             mdust_ast = astration(md,mg,self.sfr(t))
 
-            mdust_gg, t_gg = graingrowth(self.choice_dust['lims'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
+            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
 
             '''

@@ -6,7 +6,7 @@ Python package to read in a star formation history file, input galaxy parameters
 Running the script following the instructions below will produce:
 
 1. a results data file with galaxy parameters in (filename.dat with name provided
-  by user from inits file)
+  by user from inits file - see instructions below)
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
@@ -31,26 +31,27 @@ python setup.py install
 The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form: time (yr), SFR (Msolar/yr).    An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
 
 ### Input data needed
-The code requires a dictionary of parameters to feed in, these are set in main.py and can be changed to suit following the comments.
+The code also requires a dictionary of initial parameters. These can be set directly by adding dictionaries directly into main.py, or providing a CSV or JSON file.  There are example files in the folder `examples/` which show the correct format of each type of file.
 
-## Running the code
 There are helper functions for loading batch files in CSV and valid JSON format.
 *Note*: Valid JSON uses double quotes for definitions and lower case for booleans, e.g. `"myvalue" : false`)
 
+## Running the code
+
+
 ```python
 import chemevol as ch
-galaxies = ch.BulkEvolve('data.json')
+galaxies = ch.BulkEvolve('examples/data.json')
 galaxies.upload_json()
 galaxies.evolve_all()
 ```
 Or for CSV files:
 ```python
 import chemevol as ch
-galaxies = ch.BulkEvolve('data.csv')
+galaxies = ch.BulkEvolve('examples/data.csv')
 galaxies.upload_csv()
 galaxies.evolve_all()
 ```
-
 See the files in `examples/` for the correct format of each type of file.
 
 ### Viewing the results
