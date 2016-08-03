@@ -56,9 +56,15 @@ See the files in `examples/` for the correct format of each type of file.
 ### Viewing the results
 Once the code is run you will have an array called `galaxies.results` with all the parameters in.  To look at this data try:
 ```python
+<<<<<<< HEAD
 [g['dust_all'] for g in galaxies.results] will print out all the dust_all
 [g['mgas'] for g in galaxies.results] will print out all the gasmasses
 gasmass  = galaxies.results[0]['mgas'] etc
+=======
+[g['dust_all'] for g in galaxies] #  will print out all the dust_all
+[g['mgas'] for g in galaxies] # will print out all the gasmasses
+gasmass  = galaxies[0]['mgas'] etc
+>>>>>>> master
 ```
 
 The code writes data to a file (if you use the example in `examples/data.json` the file is called `Model_VI.dat`).  To read in this data you can use `astropy.table`:
