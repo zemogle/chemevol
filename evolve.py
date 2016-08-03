@@ -1,7 +1,11 @@
 '''
 Chemevol - Python package to read in a star formation history file,
-input galaxy parameters and run chemical evolution to determine the evolution
+input galaxy parameters and run a chemical evolution model to determine the evolution
 of gas, metals and dust in galaxies.
+
+Running this script will produce
+(a) a results data file (filename.dat) with file name given by user
+(b) a pop-up plot for looking at gas, dust and metal evolution
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
@@ -22,6 +26,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+********************************************************************************
 '''
 
 import functions as f
@@ -92,6 +98,7 @@ class ChemModel:
         else:
             print ('oops please check the dust sources are in the right format and try again')
             exit()
+
 
     def load_sfh(self):
         '''

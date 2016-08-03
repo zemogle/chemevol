@@ -135,8 +135,8 @@ for item in inits:
 ### Manipulating the results
 Once the code is run you will have an array called `galaxies` with all the parameters in.  To look at this data try:
 ```python
-[g['dust_all'] for g in galaxies] will print out all the dust_all
-[g['mgas'] for g in galaxies] will print out all the gasmasses
+[g['dust_all'] for g in galaxies] #  will print out all the dust_all
+[g['mgas'] for g in galaxies] # will print out all the gasmasses
 gasmass  = galaxies[0]['mgas'] etc
 ```
 
