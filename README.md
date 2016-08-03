@@ -34,7 +34,7 @@ The code reads in a star formation history from a file called filename.sfh.  Thi
 The code also requires a dictionary of initial parameters. These can be set directly by adding dictionaries directly into main.py, or providing a CSV or JSON file.  There are example files in the folder `examples/` which show the correct format of each type of file.
 
 There are helper functions for loading batch files in CSV and valid JSON format.
-*Note*: Valid JSON uses double quotes for definitions and lower case for booleans, e.g. `"myvalue" : false`)
+*Note*: Valid JSON uses double quotes for definitions and lower case for booleans, e.g. `"myvalue" : false`
 
 ## Running the code
 
