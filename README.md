@@ -62,7 +62,7 @@ Once the code is run you will have an array called `galaxies.results` with all t
 gasmass  = galaxies.results[0]['mgas'] etc
 ```
 
-The code writes data to a file (if you use the example in `examples/data.json` the file is called `Model_VI.dat`).  To read in this data you can use `astropy.table`:
+The code writes data to a file (if you use the example in `examples/data.json` the code writes out two files called `Model_I.dat` and `Model_VI.dat`).  To read in this data you can use `astropy.table`:
 ```python
 import matplotlib.pyplot as plt
 
