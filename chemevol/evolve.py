@@ -30,11 +30,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ********************************************************************************
 '''
 
-import functions as f
+from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
+    imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
+    ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
+    inflows, outflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust
+
+from astropy.table import Table
 import numpy as np
+from numpy import array
 from lookups import find_nearest, lookup_fn, t_lifetime, lookup_taum
 import logging
 from datetime import datetime
+import os.path
+import json
+
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -64,20 +73,20 @@ class ChemModel:
             self.destroy_ism = inputs['destruct']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
-                self.SFH_file = 'Milkyway.sfh'
+                self.SFH_file = 'chemevol/Milkyway.sfh'
             self.sfh_file = self.SFH_file
             self.load_sfh()
         except KeyError:
             logger.error('You must provide initial parameters')
         # Set up IMF Function determined by user, allow for variety of spellings
-        if (self.imf_type == "Chab" or self.imf_type == "chab" or self.imf_type == "c"):
-            self.imf = f.imf_chab
-        elif (self.imf_type == "TopChab" or self.imf_type == 'topchab' or self.imf_type == "tc"):
-            self.imf = f.imf_topchab
-        elif (self.imf_type == "Kroup" or self.imf_type == "kroup" or self.imf_type == "k"):
-            self.imf = f.imf_kroup
-        elif (self.imf_type == "Salp" or self.imf_type == "salp" or self.imf_type == "s"):
-            self.imf = f.imf_salp
+        if (self.imf_type in ["Chab", "chab", "c"]):
+            self.imf = imf_chab
+        elif (self.imf_type in ["TopChab", "topchab","tc"]):
+            self.imf = imf_topchab
+        elif (self.imf_type in ["Kroup", "kroup", "k"]):
+            self.imf = imf_kroup
+        elif (self.imf_type in ["Salp", "salp", "s"]):
+            self.imf = imf_salp
         # Declare if destruction on or off
         if self.reduce_sn == False:
             self.reduce_sn = 1
@@ -85,16 +94,31 @@ class ChemModel:
             self.choice_des = 0
         else:
             self.choice_des = 1
-        # set up dust source choice from user: 0 = SN dust on, 1 = LIMS dust on, 2 = GG on
-        if (self.dust_source == "ALL" or self.dust_source == "all" or self.dust_source == "All"):
-            self.choice_dust = (1, 1, 1)
-        elif (self.dust_source == "SN" or self.dust_source == "Sn" or self.dust_source == "sn"):
-            self.choice_dust = (1, 0, 0)
-        elif (self.dust_source == "LIMS" or self.dust_source == "Lims" or self.dust_source == "lims"):
-            self.choice_dust = (0, 1, 0)
-        elif (self.dust_source == "SN+LIMS" or self.dust_source == "sn+lims" or \
-              self.dust_source == "LIMS+SN" or self.dust_source == "lims+sn"):
-            self.choice_dust = (1, 1, 0)
+        # set up dust source choice from user: sn = True; SN dust on, lims = True; LIMS dust on, gg = Grain Growth
+        if self.dust_source in ["ALL", "all", "All"]:
+            self.choice_dust = {
+                                    'sn' : True,
+                                    'lims' : True,
+                                    'gg' :True
+                                }
+        elif self.dust_source in ["SN", "Sn", "sn"]:
+            self.choice_dust =  {
+                                    'sn' : True,
+                                    'lims' : False,
+                                    'gg' :False
+                                }
+        elif self.dust_source in ["LIMS", "Lims", "lims"]:
+            self.choice_dust =  {
+                                    'sn' : False,
+                                    'lims' : True,
+                                    'gg' :False
+                                }
+        elif self.dust_source in ["SN+LIMS", "sn+lims", "LIMS+SN", "lims+sn"]:
+            self.choice_dust =  {
+                                    'sn' : True,
+                                    'lims' : True,
+                                    'gg' :False
+                                }
         else:
             print ('oops please check the dust sources are in the right format and try again')
             exit()
@@ -109,10 +133,10 @@ class ChemModel:
             scale = [1e-9,1e9] # Gyr conversions for time, SFR
             sfh = vals*scale # converts time in Gyr and SFR in Msun/Gyr
             # extrapolates SFH back to 0.001Gyr using SFH file and power law (gamma)
-            final_sfh = f.extra_sfh(sfh, self.gamma)
+            final_sfh = extra_sfh(sfh, self.gamma)
             self.sfh = np.array(final_sfh)
-        except:
-            logger.error("File '%s' will not parse" % self.SFH_file)
+        except Exception as e:
+            logger.error("File '%s' will not parse %s" % (self.SFH_file, e))
             self.sfh = None
 
     def sfr(self, t):
@@ -158,9 +182,9 @@ class ChemModel:
 
             # start appending arrays for needing later
             z.append([t,metallicity])
-            z_lookup = np.array(z)
+            z_lookup = array(z)
             sfr_list.append([t,self.sfr(t)])
-            sfr_lookup = np.array(sfr_list)
+            sfr_lookup = array(sfr_list)
 
             '''
             STARS: dM_stars = sfr(t) * dt
@@ -172,19 +196,19 @@ class ChemModel:
             set up astration, inflow, outflow components
             '''
             gas_ast = self.sfr(t)
-            gas_inf = f.inflows(self.sfr(t), self.inflows['xSFR'])
-            gas_out = f.outflows(self.sfr(t), self.outflows['xSFR'])
+            gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
+            gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
 
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
             '''
-            metals_ast = f.astration(metals,mg,self.sfr(t))
+            metals_ast = astration(metals,mg,self.sfr(t))
             if self.outflows['metals']:
-                metals_out = metallicity*f.outflows(self.sfr(t), self.outflows['xSFR'])
+                metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 metals_out = 0.
-            metals_inf = self.inflows['metals']*f.inflows(self.sfr(t), self.inflows['xSFR'])
+            metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
 
             '''
             DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
@@ -192,14 +216,14 @@ class ChemModel:
             set up astration, inflows, outflows, destruction, grain growth components
             '''
             if self.outflows['dust']:
-                mdust_out = (md/mg)*f.outflows(self.sfr(t), self.outflows['xSFR'])
+                mdust_out = (md/mg)*outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 mdust_out = 0.
-            mdust_inf = self.inflows['dust']*f.inflows(self.sfr(t), self.inflows['xSFR'])
-            mdust_ast = f.astration(md,mg,self.sfr(t))
+            mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
+            mdust_ast = astration(md,mg,self.sfr(t))
 
-            mdust_gg, t_gg = f.graingrowth(self.choice_dust[2], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
-            mdust_des, t_des = f.destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
+            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
+            mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
 
             '''
             Get ejected masses from stars when they die
@@ -208,7 +232,7 @@ class ChemModel:
             mdust_stars = ed(t): ejected dust mass from stars of mass m at t = taum (fresh + recycled)
             '''
             gas_ej, metals_stars, mdust_stars = \
-                    f.mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
+                    mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
@@ -267,10 +291,101 @@ class ChemModel:
             while m < 40.:
                 if m > 10.:
                     dm = 0.5
-                sn_rate += f.initial_mass_function(m, self.imf_type)*dm
+                sn_rate += initial_mass_function(m, self.imf_type)*dm
                 m += dm
             r_sn = self.sfr(t)*sn_rate # units in N per Gyr
             dt = t - prev_t
             prev_t = t
             sn_rate_list.append(r_sn)
         return np.array(sn_rate_list)
+
+class BulkEvolve:
+    def __init__(self, filename):
+        if os.path.isfile(filename):
+            self.filename = filename
+        else:
+            logger.error('File {} does not exist'.format(filename))
+        return
+
+    def upload_json(self):
+        try:
+            with open(self.filename) as data_file:
+                data = json.load(data_file)
+            self.inits = data
+        except ValueError:
+            logger.error('Cannot read: Are you sure this is a JSON file?')
+        return
+
+
+    def upload_csv(self):
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals', 'inflows_xSFR', 'inflows_dust', 'outflows_metals','outflows_xSFR', 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct']
+        alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
+                    ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
+                    ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
+                    ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
+                    ('f16','<f8'), ('f17','<f8')])
+        try:
+            data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
+        except ValueError:
+            logger.error('Cannot read: Are you sure this is a CSV file?')
+        init_list = []
+        for i in range(0,len(data)):
+            gal_tup = zip(names, data[i])
+            gal_data = dict(gal_tup)
+            gal_data['inflows'] = {'metals': gal_data['inflows_metals'],
+                                    'xSFR': gal_data['inflows_xSFR'],
+                                    'dust': gal_data['inflows_dust']}
+            gal_data['outflows'] = {'metals': gal_data['outflows_metals'],
+                                    'xSFR': gal_data['outflows_xSFR'],
+                                    'dust': gal_data['outflows_dust']}
+            init_list.append(gal_data)
+        self.inits = init_list
+        return
+
+
+    def evolve_all(self):
+        '''
+        call modules to run the model:
+        snrate:         SN rate at each time step - this also sets time array
+                        so ch.supernova_rate() must be called first to set
+                        time array for the entire code
+
+        all results:     t, mg, m*, mz, Z, md, md/mz, sfr,
+                        dust_source(all), dust_source(stars),
+                        dust_source(ism), destruction_time, graingrowth_time
+        '''
+        snrate = []
+        all_results = []
+        galaxies = []
+
+        for item in self.inits:
+            logger.warning('Starting run on {}'.format(item['name']))
+            ch = ChemModel(**item)
+
+            snrate = ch.supernova_rate()
+            all_results = ch.gas_metal_dust_mass(snrate)
+            # write all the parameters to a dictionary for each init set
+            params = {'time' : all_results[:,0],
+                   'mgas' : all_results[:,1],
+                   'mstars' : all_results[:,2],
+                   'metalmass' : all_results[:,3],
+                   'metallicity' : all_results[:,4],
+                   'dustmass' : all_results[:,5],
+                   'dust_metals_ratio' : all_results[:,6],
+                   'sfr' : all_results[:,7],
+                   'dust_all' : all_results[:,8],
+                   'dust_stars' : all_results[:,9],
+                   'dust_ism' : all_results[:,10],
+                   'time_destroy' : all_results[:,11],
+                   'time_gg' : all_results[:,12]}
+            params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
+            params['ssfr'] = params['sfr']/params['mgas']
+            # write to astropy table
+            t = Table(params)
+            # write out to file based on 'name' identifier
+            name = item['name']
+            t.write(str(name+'.dat'), format='ascii', delimiter=' ')
+            # if you want an array including every inits entry:
+            galaxies.append(params)
+        self.results = galaxies
+        return

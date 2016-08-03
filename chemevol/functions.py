@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #from astropy import units as u
 import numpy as np
+from numpy import abs, array
 import logging
 from lookups import find_nearest, dust_mass_sn, t_yields, \
                     t_lifetime, lookup_fn, lookup_taum, mass_yields
@@ -254,12 +255,12 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     delta_LIMS_recycled: fraction of metals that condense into dust 0.45
     '''
     # If LIMS is turned on or off
-    choice_lims = choice[1]
+    choice_lims = choice['lims']
     # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
-    if m > 8:
-        delta_LIMS_recycled = choice_lims * 0
+    if m <= 8. and choice_lims:
+        delta_LIMS_recycled = 0.45
     else:
-        delta_LIMS_recycled = choice_lims * 0.45
+        delta_LIMS_recycled = 0.
 
     if m > 40.: # no dust from stars with m>40Msun.
         dej = 0.0
@@ -302,17 +303,14 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
 
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
-    # Which dust sources are turned on or off?
-    choice_sn = choice[0]
-    choice_lims = choice[1]
 
     delta_new_LIMS = 0.45
-    if (m <= 8.0):
-        dustmass = choice_lims*delta_new_LIMS * fresh_metals(m, metallicity)
-    elif (m > 8.0) & (m <= 40.0):
+    if (m <= 8.0) and choice['lims']:
+        dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
+    elif (m > 8.0) and (m <= 40.0) and choice['sn']:
         # find dust mass from TF01 in dust_mass_sn table
         # assume massive star winds don't form dust
-        dustmass = choice_sn*(reduce_sn)**-1*find_nearest(np.array(dust_mass_sn),m)[1]
+        dustmass = reduce_sn**-1*find_nearest(np.array(dust_mass_sn),m)[1]
     else:
         dustmass = 0.
     return dustmass
@@ -346,7 +344,7 @@ def graingrowth(choice,e,g,sfr,z,md,f_c):
     Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
 
     In:
-    -- choice: is grain growth turned on or off (1 or 0)
+    -- choice: is grain growth turned on or off (True or False)
     -- g: gas mass at time t in Msolar
     -- sfr: SFR at time t in Msolar per Gyr
     -- z: metallicity of system (Mz/Mg)
@@ -356,13 +354,13 @@ def graingrowth(choice,e,g,sfr,z,md,f_c):
     e is between 500-1000 appropriate for timescales < 1 Gyr.
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
-        # convert grain growth timescale to Gyrs
-    time_gg = choice*1e-9*grow_timescale(e,g,sfr,z,md)
-    
-    if time_gg <= 0 or choice == 0:
-        mdust_gg = 0.
-    else:
+
+    if choice and z != 0.: #accounts for 1/z in equation
+        time_gg = 1e-9*grow_timescale(e,g,sfr,z,md) # convert grain growth timescale to Gyrs
         mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
+    else:
+        mdust_gg = 0.
+        time_gg = 0.
     return mdust_gg, time_gg
 
 def destruction_timescale(destruct,g,supernova_rate):
@@ -392,7 +390,7 @@ def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
     Calls destruction_timescale function
 
     In:
-    -- choice: is destruction turned on or off (1 or 0)
+    -- choice: is destruction turned on or off (True or False)
     -- destruct: value of destruction parameter MISM
     -- gasmass: gas mass of system in Msolar at time t
     -- supernova_rate: rate of core-collapse SN at time t
@@ -401,12 +399,12 @@ def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    t_des = choice*1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
-    if t_des <= 0:
-        mdust_des = 0
-
+    if choice and md !=0:
+        t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
+        mdust_des = md*(1-f_c)*t_des**-1
     else:
-        mdust_des = choice*md*(1-f_c)*t_des**-1
+        mdust_des = 0
+        t_des = 0
     return mdust_des, t_des
 
 def inflows(sfr,parameter):
@@ -482,6 +480,9 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
 
      count = 0
 
+     z_near = lambda td : z_lookup[(abs(z_lookup[:,0]-td)).argmin()]
+     sfr_near = lambda td : sfr_lookup[(abs(sfr_lookup[:,0]-td)).argmin()]
+
      # loop over the full mass range
      while count < steps:
          count += 1
@@ -500,8 +501,8 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
              em = 0
          else:
              # get nearest Z and SFR which corresponds to Z and SFR at time=t-taum
-             zdiff = find_nearest(z_lookup,tdiff)[1]
-             sfrdiff = find_nearest(sfr_lookup,tdiff)[1]
+             zdiff = z_near(tdiff)[1] # find_nearest(z_lookup,tdiff)[1]
+             sfrdiff = sfr_near(tdiff)[1] # find_nearest(sfr_lookup,tdiff)[1]
              ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
              em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
              edm += ejected_dust_mass(choice, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
