@@ -59,29 +59,30 @@ inits = [
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'SN+LIMS',
+				'dust_source': 'LIMS+SN',
 				'reduce_sn_dust': False,
 				'destroy': False,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 0,
+				'epsilon_grain': 800,
         		'destruct': 0  },
 
-			{	'name' : 'Model_VI',
+			{	'name' : 'Model_IV',
 				'gasmass_init': 4e10,
   				'SFH': 'chemevol/delayed.sfh',
           		't_end': 20.,
   				'gamma': 0,
-  				'IMF_fn': 'Salp',
+  				'IMF_fn': 'Chab',
   				'dust_source': 'ALL',
-  				'reduce_sn_dust': 25,
+  				'reduce_sn_dust': 6,
   				'destroy': True,
-  				'inflows':{'metals': 0., 'xSFR': 0.5, 'dust': 0},
-  				'outflows':{'metals': True, 'xSFR': 0.5, 'dust': True},
+  				'inflows':{'metals': 0., 'xSFR': 1.5, 'dust': 0},
+  				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
   				'cold_gas_fraction': 0.5,
-  				'epsilon_grain': 1000,
-          		'destruct': 1000.  }
+  				'epsilon_grain': 800,
+          		'destruct': 100.  }
+
         ]
 
 snrate = []
@@ -125,3 +126,6 @@ for item in inits:
 	t.write(str(name+'.dat'), format='ascii', delimiter=' ')
 	# if you want an array including every inits entry:
 	galaxies.append(params)
+
+# make some quick look up plots
+# d.figure(time,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction)
