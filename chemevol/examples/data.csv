@@ -1,0 +1,3 @@
+# name, gasmass_init, SFH, t_end, gamma, IMF_fn, dust_source, reduce_sn_dust, destroy, inflows_metals, inflows_xSFR, inflows_dust, outflows_metals,outflows_xSFR, outflows_dust, cold_gas_fraction, epsilon_grain, destruct
+Model_I, 4e10, chemevol/Milkyway.sfh, 20., 0, Chab, SN+LIMS, False, False, 0., 0.,0., False, 0, False, 0.5, 0, 0
+Model_VI, 4e10, chemevol/delayed.sfh, 20., 0, Salp, ALL, 25, True, 0., 0.5, 0, True, 0.5, True, 0.5, 1000, 1000
