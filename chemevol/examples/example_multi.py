@@ -59,7 +59,7 @@ inits = [
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'LIMS+SN',
+				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
 				'destroy': False,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
@@ -70,7 +70,7 @@ inits = [
 
 			{	'name' : 'Model_IV',
 				'gasmass_init': 4e10,
-  				'SFH': 'chemevol/delayed.sfh',
+  				'SFH': 'Milkyway.sfh',
           		't_end': 20.,
   				'gamma': 0,
   				'IMF_fn': 'Chab',
