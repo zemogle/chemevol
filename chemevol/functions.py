@@ -399,7 +399,7 @@ def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    if choice:
+    if choice and md !=0:
         t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
         mdust_des = md*(1-f_c)*t_des**-1
     else:
