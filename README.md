@@ -38,6 +38,7 @@ There are helper functions for loading batch files in CSV and valid JSON format.
 
 ## Running the code
 
+`cd chemevol`
 
 ```python
 import chemevol as ch
