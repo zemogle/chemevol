@@ -58,7 +58,7 @@ See the files in `examples/` for the correct format of each type of file.
 ### Viewing the results
 Once the code is run you will have an array called `galaxies.results` with all the parameters in.  To look at this data try:
 ```python
-[g['dust_all'] for g in galaxies.results] #will print out all the dust_all
+[g['dust_all'] for g in galaxies.results] #will print out the dust_all
 [g['mgas'] for g in galaxies.results] #will print out all the gasmasses
 gasmass  = galaxies.results[0]['mgas'] #etc
 ```
