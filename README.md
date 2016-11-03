@@ -75,6 +75,6 @@ plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars']))
 Alternatively you can run the code without the bulkevolve class above:
 
 ## Running the code using the example python script provided
-Copy the example_multi.py file to the desired directory. Then edit the parameters in the init dictionaries within this script.
+Copy the example_multi.py file to the desired directory (where your .sfh file is and where you want to have your results). Then edit the parameters in the init dictionaries within this script.
 
  python example_multi.py
