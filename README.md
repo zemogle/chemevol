@@ -31,12 +31,14 @@ python setup.py install
 The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form: time (yr), SFR (Msolar/yr) and in the directory where you are running the code.   An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
 
 ### Input data needed
-The code also requires a dictionary of initial parameters. These can be set directly by adding dictionaries directly into main.py, or providing a CSV or JSON file.  There are example files in the folder `<Download Dir/chemevol/chemevol/examples/` which show the correct format of each type of file.  Feel free to copy these example data files into the directory where you wish to run the code.
+The code also requires a dictionary of initial parameters. This can be done by providing a .json or .csv file and using the package installed, or by running the example python script provided with this package.
+
+There are example data files in the folder `<Download Dir/chemevol/chemevol/examples/` which show the correct format of each type of file.  Feel free to copy these example data files into the directory where you wish to run the code and follow the instructions.
 
 There are helper functions for loading batch files in CSV and valid JSON format.
 *Note*: Valid JSON uses double quotes for definitions and lower case for booleans, e.g. `"myvalue" : false`
 
-## Running the code
+## Running the code as a package using json or csv data files
 
 ```python
 import chemevol as ch
@@ -51,7 +53,7 @@ galaxies = ch.BulkEvolve('<File directory>/data.csv')
 galaxies.upload_csv()
 galaxies.evolve_all()
 ```
-See the files in `<Download Dir>/chemevol/chemevol/examples/` for the correct format of each type of file.
+See the files in `<Download Dir>/chemevol/chemevol/examples/` for the correct format of each type of file (.py, .json, .csv examples are provided).
 
 ### Viewing the results
 Once the code is run you will have an array called `galaxies.results` with all the parameters in.  To look at this data try:
@@ -68,4 +70,12 @@ import matplotlib.pyplot as plt
 
 t = Table.read('Model_VI.dat', format='ascii')
 plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars']))
+```
+
+Alternatively you can run the code without the bulkevolve class above:
+
+## Running the code using the example python script provided
+Copy the example_multi.py file to the desired directory. Then edit the parameters in the init dictionaries within this script.
+```python
+ `example_multi.py`
 ```
