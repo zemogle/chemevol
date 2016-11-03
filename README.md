@@ -63,6 +63,7 @@ gasmass  = galaxies.results[0]['mgas'] #etc
 
 The code writes data to a file (if you use the example in `<Download Dir>/chemevol/chemevol/examples/data.json` the code writes out two files called `Model_I.dat` and `Model_VI.dat`).  To read in this data for plotting or playing with you can use `astropy.table`:
 ```python
+from astropy.table import Table
 import matplotlib.pyplot as plt
 
 t = Table.read('Model_VI.dat', format='ascii')

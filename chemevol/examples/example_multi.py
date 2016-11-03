@@ -55,7 +55,7 @@ from astropy.table import Table
 inits = [
 			{	'name': 'Model_I',
 				'gasmass_init': 4e10,
-				'SFH': 'chemevol/Milkyway.sfh',
+				'SFH': 'Milkyway.sfh',
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
@@ -126,6 +126,3 @@ for item in inits:
 	t.write(str(name+'.dat'), format='ascii', delimiter=' ')
 	# if you want an array including every inits entry:
 	galaxies.append(params)
-
-# make some quick look up plots
-# d.figure(time,mgas,mstars,metalmass,metallicity,dustmass,dust_metals_ratio,gasfraction)
