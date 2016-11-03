@@ -28,32 +28,30 @@ python setup.py install
 - matplotlib [Not a strict requirement]
 
 ### Input files needed
-The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form: time (yr), SFR (Msolar/yr).    An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
+The code reads in a star formation history from a file called filename.sfh.  This needs to be in the form: time (yr), SFR (Msolar/yr) and in the directory where you are running the code.   An example is provided with this code `Milkyway.sfh` based on the SFH for the Milky Way in Yin et al 2009 (A & A, 505, 497).
 
 ### Input data needed
-The code also requires a dictionary of initial parameters. These can be set directly by adding dictionaries directly into main.py, or providing a CSV or JSON file.  There are example files in the folder `examples/` which show the correct format of each type of file.
+The code also requires a dictionary of initial parameters. These can be set directly by adding dictionaries directly into main.py, or providing a CSV or JSON file.  There are example files in the folder `<Download Dir/chemevol/chemevol/examples/` which show the correct format of each type of file.  Feel free to copy these example data files into the directory where you wish to run the code.
 
 There are helper functions for loading batch files in CSV and valid JSON format.
 *Note*: Valid JSON uses double quotes for definitions and lower case for booleans, e.g. `"myvalue" : false`
 
 ## Running the code
 
-Change directory to: chemevol
-
 ```python
 import chemevol as ch
-galaxies = ch.BulkEvolve('examples/data.json')
+galaxies = ch.BulkEvolve('<File directory>/data.json')
 galaxies.upload_json()
 galaxies.evolve_all()
 ```
 Or for CSV files:
 ```python
 import chemevol as ch
-galaxies = ch.BulkEvolve('examples/data.csv')
+galaxies = ch.BulkEvolve('<File directory>/data.csv')
 galaxies.upload_csv()
 galaxies.evolve_all()
 ```
-See the files in `examples/` for the correct format of each type of file.
+See the files in `<Download Dir>/chemevol/chemevol/examples/` for the correct format of each type of file.
 
 ### Viewing the results
 Once the code is run you will have an array called `galaxies.results` with all the parameters in.  To look at this data try:
@@ -63,7 +61,7 @@ Once the code is run you will have an array called `galaxies.results` with all t
 gasmass  = galaxies.results[0]['mgas'] #etc
 ```
 
-The code writes data to a file (if you use the example in `examples/data.json` the code writes out two files called `Model_I.dat` and `Model_VI.dat`).  To read in this data you can use `astropy.table`:
+The code writes data to a file (if you use the example in `<Download Dir>/chemevol/chemevol/examples/data.json` the code writes out two files called `Model_I.dat` and `Model_VI.dat`).  To read in this data for plotting or playing with you can use `astropy.table`:
 ```python
 import matplotlib.pyplot as plt
 
