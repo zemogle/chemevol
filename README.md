@@ -82,7 +82,7 @@ Copy the example_multi.py file to the desired directory (where your .sfh file is
 ## Full list of Input Parameters to Model
 
 |   Parameter Name   |   Description   |   If not specified, will revert to default   |
-|   --------------   |   -----------:  |   -------:  |
+|   --------------   |   :-----------  |   -------:  |
 |   name             |   to identify your galaxy/run, output file will be called this   |   None   |
 |   gasmass_init     |   initial gas mass in solar masses  |    None    |
 |   SFH       			 |	 filename for star formation history file (filename.sfh)   |   MilkyWay.sfh : MW-like SFH    |
