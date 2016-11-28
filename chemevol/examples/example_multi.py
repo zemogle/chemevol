@@ -23,9 +23,11 @@ initial_galaxy_params
 						then quote number to reduce by
 - destroy: 				add dust destruction from SN shocks: True or False
 - inflows: 				there are three parameters
- 						inflows_metals = metallicity of inflow: input a number appropriate for primordial inflow (eg 1e-4)
+ 						inflows_metals = metallicity of inflow: input a number appropriate for primordial
+						inflow eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013).
 								 inflows_xSFR = inflow rate of gas is X * SFR: input a number
-								 inflows_dust = amount of dust inflow: input a number
+								 inflows_dust = amount of dust inflow: input a number appropriate
+								 for dust eg 0.4 x the metallicity (Edmunds 2000)
 - outflows: 			there are three parameters
  						outflows_metals = metallicity of inflow: input True or False
 								   True = metallicity of system, False = 0
