@@ -94,6 +94,6 @@ Copy the example_multi.py file to the desired directory (where your .sfh file is
 |   destroy 	       |	 add dust destruction from SN shocks: True or False   |   None   |
 |   inflows 		     |	 inflows_metals = metallicity of inflow: input a number appropriate for the metallicity of primordial gas inflows eg 1e-4. inflows_xSFR = inflow rate of gas is X * SFR: input a number X.  inflows_dust = amount of dust inflow: input a number appropriate for dust/gas ratio of primordial inflows  |   None   |
 |   outflows         | 	 outflows_metals = metallicity of inflow: input True or False where True = current metallicity of system, False = 0.  outflows_xSFR = outflow rate of gas is X * SFR: input a number. outflows_dust = amount of dust in outflow: input True of False where	True = dust/gas of system, False = 0   |   None    |
-|   cold_gas_fraction    |	fraction of gas in cold dense state for grain growth, typically 0.5 (Asano et al 2012)  |    None    |
+|   cold_gas_fraction    |	fraction of gas in cold dense state for grain growth, typically 0.5 (eg Asano et al 2013)  |    None    |
 |   epsilon_grain   |		grain growth parameter from Mattsson & Andersen 2012, typically 500 for t_grow ~ 10Myr  consistent with MW |    None    |
 |   destruct        | 			amount of material destroyed by each supernova, typically 1000 or 100Msun for diffuse or dense interstellar gas   |   None   |
