@@ -172,6 +172,7 @@ class ChemModel:
         time = time[time < self.tend]
         now = datetime.now()
         # TIME integral
+        print 'please work'
         for item, t in enumerate(time):
             r_sn = sn_rate [item]
             metallicity = metals/mg
