@@ -31,7 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
-    inflows, outflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust
+    inflows, outflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust,\
+    outflows_feldmann
 
 from astropy.table import Table
 import numpy as np
@@ -172,7 +173,6 @@ class ChemModel:
         time = time[time < self.tend]
         now = datetime.now()
         # TIME integral
-        print 'please work'
         for item, t in enumerate(time):
             r_sn = sn_rate [item]
             metallicity = metals/mg

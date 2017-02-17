@@ -440,14 +440,13 @@ def outflows_feldmann(sfr,m):
     -- sfr: SFR at time t
     -- m: stellar mass at time t
     '''
-
-    x = 1
-    y = (m/1e10)**-0.59
-    f_comb = (x+y)-(x**-1+y**-1)**-1
     # TO NOT HAVE CRAZY OUTFLOWS WE PUT A LOWER LIMIT ON THIS -- LOOK AT SIMULATIONS TO CHECK
     if (m<1e7):
         outflow_feld = 0.
     else:
+        x = 1
+        y = (m/1e10)**-0.59
+        f_comb = (x+y)-(x**-1+y**-1)**-1
         outflow_feld = sfr*2*f_comb
     return outflow_feld
 
