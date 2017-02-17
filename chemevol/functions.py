@@ -446,8 +446,9 @@ def outflows_feldmann(sfr,m):
     f_comb = (x+y)-(x**-1+y**-1)**-1
     # TO NOT HAVE CRAZY OUTFLOWS WE PUT A LOWER LIMIT ON THIS -- LOOK AT SIMULATIONS TO CHECK
     if (m<1e7):
-        outflow_feld = sfr*
-    outflow_feld = sfr*2*f_comb
+        outflow_feld = 0.
+    else:
+        outflow_feld = sfr*2*f_comb
     return outflow_feld
 
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
