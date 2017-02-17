@@ -36,7 +36,7 @@ from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, destroy_dust, graingrowth, \
                     grow_timescale, dust_masses_fresh, initial_mass_function_integral, \
                     inflows, outflows, ejected_gas_mass, astration, fresh_metals, \
-                    ejected_dust_mass, imf_chab, outflows_feldmann
+                    ejected_dust_mass, imf_chab
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
@@ -229,14 +229,6 @@ class TestFunctions:
         dustmass_both = ejected_dust_mass(dustchoice_snlims,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
         assert dustmass_all == 214655.06895476999 and dustmass_both == 214655.06895476999 and \
                 dustmass_sn == 0 and dustmass_lims == 214655.06895476999
-
-    def test_outflows_feldmann(self):
-        outflows = outflows_feldmann(1.,1e10)
-        assert outflows == 3
-
-    def test_outflows_feldmann_low(self):
-        outflows = outflows_feldmann(1.,1e5)
-        assert outflows == 0
 
 class TestInitials:
     '''

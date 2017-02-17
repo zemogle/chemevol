@@ -431,26 +431,6 @@ def outflows(sfr,parameter):
     outflow_rate = sfr*parameter
     return outflow_rate
 
-def outflows_feldmann(sfr,m):
-    '''
-    Define outflow rate, parameterised by e_comb x SFR
-    See Feldmann et al 2015 MNRAS 449 327
-
-    In:
-    -- sfr: SFR at time t
-    -- m: stellar mass at time t
-    '''
-
-    x = 1
-    y = (m/1e10)**-0.59
-    f_comb = (x+y)-(x**-1+y**-1)**-1
-    # TO NOT HAVE CRAZY OUTFLOWS WE PUT A LOWER LIMIT ON THIS -- LOOK AT SIMULATIONS TO CHECK
-    if (m<1e7):
-        outflow_feld = 0.
-    else:
-        outflow_feld = sfr*2*f_comb
-    return outflow_feld
-
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      '''
      This function does the mass integral for:
