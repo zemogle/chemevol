@@ -64,7 +64,7 @@ inits = [
 				'reduce_sn_dust': False,
 				'destroy': False,
 				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
+				'outflows':{'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 800,
         		'destruct': 0  },
@@ -79,7 +79,7 @@ inits = [
   				'reduce_sn_dust': 6,
   				'destroy': True,
   				'inflows':{'metals': 0., 'xSFR': 1.5, 'dust': 0},
-  				'outflows':{'metals': True, 'xSFR': 1.5, 'dust': True},
+  				'outflows':{'metals': True, 'dust': True},
   				'cold_gas_fraction': 0.5,
   				'epsilon_grain': 800,
           		'destruct': 100.  }

@@ -195,7 +195,7 @@ class ChemModel:
             '''
             gas_ast = self.sfr(t)
             gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
-            gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
+            gas_out = outflows_feldmann(self.sfr(t), mstars)
 
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
@@ -203,7 +203,7 @@ class ChemModel:
             '''
             metals_ast = astration(metals,mg,self.sfr(t))
             if self.outflows['metals']:
-                metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
+                metals_out = metallicity*outflows_feldmann(self.sfr(t), mstars)
             else:
                 metals_out = 0.
             metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
@@ -214,7 +214,7 @@ class ChemModel:
             set up astration, inflows, outflows, destruction, grain growth components
             '''
             if self.outflows['dust']:
-                mdust_out = (md/mg)*outflows(self.sfr(t), self.outflows['xSFR'])
+                mdust_out = (md/mg)*outflows_feldmann(self.sfr(t), mstars)
             else:
                 mdust_out = 0.
             mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
@@ -316,11 +316,11 @@ class BulkEvolve:
 
 
     def upload_csv(self):
-        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals', 'inflows_xSFR', 'inflows_dust', 'outflows_metals','outflows_xSFR', 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct']
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals', 'inflows_xSFR', 'inflows_dust', 'outflows_metals', 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct']
         alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
                     ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
-                    ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
+                    ('f12','bool'),('f14','bool'), ('f15','<f8'),
                     ('f16','<f8'), ('f17','<f8')])
         try:
             data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
@@ -334,7 +334,6 @@ class BulkEvolve:
                                     'xSFR': gal_data['inflows_xSFR'],
                                     'dust': gal_data['inflows_dust']}
             gal_data['outflows'] = {'metals': gal_data['outflows_metals'],
-                                    'xSFR': gal_data['outflows_xSFR'],
                                     'dust': gal_data['outflows_dust']}
             init_list.append(gal_data)
         self.inits = init_list
