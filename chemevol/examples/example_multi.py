@@ -66,23 +66,7 @@ inits = [
 				'outflows':{'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 800,
-        		'destruct': 0  },
-
-			{	'name' : 'Model_IV',
-				'gasmass_init': 4e10,
-  				'SFH': 'Milkyway.sfh',
-          		't_end': 20.,
-  				'gamma': 0,
-  				'IMF_fn': 'Chab',
-  				'dust_source': 'ALL',
-  				'reduce_sn_dust': 6,
-  				'destroy': True,
-  				'inflows':{'metals': 0., 'xSFR': 1.5, 'dust': 0},
-  				'outflows':{'metals': True, 'dust': True},
-  				'cold_gas_fraction': 0.5,
-  				'epsilon_grain': 800,
-          		'destruct': 100.  }
-
+        		'destruct': 0  }
         ]
 
 snrate = []
