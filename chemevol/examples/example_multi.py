@@ -31,7 +31,6 @@ initial_galaxy_params
 - outflows: 			there are three parameters
  						outflows_metals = metallicity of inflow: input True or False
 								   True = metallicity of system, False = 0
-								 outflows_xSFR = outflow rate of gas is X * SFR: input a number
 								 outflows_dust = amount of dust in outflow: input True of False
 							  	 		  True = dust/gas of system, False = 0
 - cold_gas_fraction = 	fraction of gas in cold dense state for grain growth
