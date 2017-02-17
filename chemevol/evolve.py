@@ -41,12 +41,10 @@ import logging
 from datetime import datetime
 import os.path
 import json
-blah balh
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('chem')
-
 
 class ChemModel:
     def __init__(self, **inputs):
