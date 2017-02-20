@@ -441,10 +441,12 @@ def outflows_feldmann(sfr,m):
     -- m: stellar mass at time t
     '''
     # TO NOT HAVE CRAZY OUTFLOWS WE PUT A LOWER LIMIT ON THIS -- LOOK AT SIMULATIONS TO CHECK
-    if (m<1e7):
+    m_low = 1e7 # is there a lower limit for which this expression is valid?
+    if (m < m_low):
         outflow_feld = 0.
     else:
         x = 1
+        # equation from simulations
         y = (m/1e10)**-0.59
         f_comb = (x+y)-(x**-1+y**-1)**-1
         outflow_feld = sfr*2*f_comb
