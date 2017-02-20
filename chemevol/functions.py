@@ -433,23 +433,27 @@ def outflows(sfr,parameter):
 
 def outflows_feldmann(sfr,m):
     '''
-    Define outflow rate, parameterised by e_comb x SFR
-    See Feldmann et al 2015 MNRAS 449 327
+    Define outflow rate, parameterised by epsilon_out = 2*f_comb, outflows = epsilon_out x SFR
+    See Feldmann et al 2015 MNRAS 449 327 - using same terminology as their paper
 
     In:
     -- sfr: SFR at time t
     -- m: stellar mass at time t
     '''
+    x = 1
+    f_comb = (x+y) - (x**-1+y**-1)**-1
     # TO NOT HAVE CRAZY OUTFLOWS WE PUT A LOWER LIMIT ON THIS -- LOOK AT SIMULATIONS TO CHECK
-    m_low = 1e7 # is there a lower limit for which this expression is valid?
+    m_low = 1.25e8 # graph simulations in Feldmann refered paper only go to logM* = 8.1
     if (m < m_low):
         outflow_feld = 0.
     else:
         x = 1
         # equation from simulations
         y = (m/1e10)**-0.59
-        f_comb = (x+y)-(x**-1+y**-1)**-1
-        outflow_feld = sfr*2*f_comb
+        epsilon_out = 2 * f_comb
+        if (epsilon_out < 2): # this is to copy Feldmann and ensure outflow never < 2 x SFR
+            epsilon_out = 2
+        outflow_feld = sfr * epsilon_out
     return outflow_feld
 
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
