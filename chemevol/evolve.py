@@ -195,7 +195,7 @@ class ChemModel:
             gas_ast = self.sfr(t)
             gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
             gas_out = outflows_feldmann(self.sfr(t), mstars)
-            print 'time=',t,'sfr=',self.sfr(t),'mstar=',mstars,'gas=',mg,'gas_ast=', gas_ast, 'gas_out=',gas_out,'f_comb',outflows_feldmann(self.sfr(t), mstars)/self.sfr(t)
+            print 'time=',t,'sfr=',self.sfr(t)/1e9,'mstar=',mstars/1e10,'gas=',mg,'gas_ast=', gas_ast, 'gas_out=',gas_out,'epsilon_out',outflows_feldmann(self.sfr(t), mstars)/self.sfr(t)
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
