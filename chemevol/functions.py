@@ -441,15 +441,13 @@ def outflows_feldmann(sfr,m):
     -- m: stellar mass at time t
     '''
     x = 1
-    y = (m/1e10)**-0.59
-    f_comb = (x+y) - (x**-1+y**-1)**-1
-
-    # TO NOT HAVE CRAZY OUTFLOWS WE PUT A LOWER LIMIT ON THIS -- LOOK AT SIMULATIONS TO CHECK
-    m_low = 1.25e8 # graph simulations in Feldmann refered paper only go to logM* = 8.1
+    m_low = 1.25e8 # graph simulations in Feldmann refered paper only go to logM* = 8.1 so we truncate mstar here
     if (m < m_low):
         outflow_feld = 0.
     else:
         # equation from simulations
+        y = (m/1e10)**-0.59
+        f_comb = (x+y) - (x**-1+y**-1)**-1
         epsilon_out = 2 * f_comb
         if (epsilon_out < 2): # this is to copy Feldmann and ensure outflow never < 2 x SFR
             epsilon_out = 2
