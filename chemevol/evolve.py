@@ -31,8 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
-    inflows, outflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust,\
-    outflows_feldmann
+    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, outflows_feldmann
 
 from astropy.table import Table
 import numpy as np
@@ -183,6 +182,8 @@ class ChemModel:
             sfr_list.append([t,self.sfr(t)])
             sfr_lookup = array(sfr_list)
 
+            # Now for setting up the components of the integrals
+            # Stars, gas and dust
             '''
             STARS: dM_stars = sfr(t) * dt
             '''
@@ -193,30 +194,47 @@ class ChemModel:
             set up astration, inflow, outflow components
             '''
             gas_ast = self.sfr(t)
-            gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
-            gas_out = outflows_feldmann(self.sfr(t), mstars)
-            #print 'time=',t,'sfr=',self.sfr(t)/1e9,'mstar=',mstars/1e10,'gas=',mg/1e10,md_all/1e6
+            # Does the user set outflows and inflows on (True)?
+            if self.inflows['on']:
+                gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
+            else:
+                gas_inf = 0.
+            if self.outflows['on']:
+                gas_out = outflows_feldmann(self.sfr(t), mstars)
+            else:
+                gas_out = 0.
+        #    print 'time=',t,'sfr=',self.sfr(t)/1e9,'mstar=',mstars/1e10,'gas=','dust=',md_all/1e6,gas_out,gas_inf
+
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
             '''
             metals_ast = astration(metals,mg,self.sfr(t))
-            if self.outflows['metals']:
+            # are outflows and inflows on (True) and if so what metal parameters needed?
+            if (self.outflows['on'] and self.outflows['metals']):     # Does the user set outflows and metals on (True)?
                 metals_out = metallicity*outflows_feldmann(self.sfr(t), mstars)
             else:
                 metals_out = 0.
-            metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
+            if self.inflows['on']:
+                metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
+            else:
+                metals_inf = 0.
 
             '''
             DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
                          - (1-f)*Md/t_destroy + f(1-Md/Mg)*Md/t_graingrowth) * dt
             set up astration, inflows, outflows, destruction, grain growth components
             '''
-            if self.outflows['dust']:
+            # are outflows and inflows on (True) and if so what dust parameters needed?
+            if (self.outflows['on'] and self.outflows['dust']): # Does the user set outflows and metals on (True)?
                 mdust_out = (md/mg)*outflows_feldmann(self.sfr(t), mstars)
             else:
                 mdust_out = 0.
-            mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
+            if self.inflows['on']:
+                mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
+            else:
+                mdust_inf = 0.
+
             mdust_ast = astration(md,mg,self.sfr(t))
 
             mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)

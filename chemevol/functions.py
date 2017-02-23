@@ -419,39 +419,32 @@ def inflows(sfr,parameter):
     inflow_rate = sfr*parameter
     return inflow_rate
 
-def outflows(sfr,parameter):
-    '''
-    Define outflow rate, parameterised by N x SFR
-    See Rowlands et al 2014 (MNRAS 441 1040)
-
-    In:
-    -- sfr: SFR at time t
-    -- parameter: outflow parameter defined in input dictionary
-    '''
-    outflow_rate = sfr*parameter
-    return outflow_rate
-
 def outflows_feldmann(sfr,m):
     '''
     Define outflow rate, parameterised by epsilon_out = 2*f_comb, outflows = epsilon_out x SFR
-    See Feldmann et al 2015 MNRAS 449 327 - using same terminology as their paper
+    See Feldmann et al 2015 MNRAS 449 327 Eq 27 derived from Hopkins et al 2012 MNRAS 421 3522 (Fig 7)
+    Here we use same terminology as their paper
 
     In:
     -- sfr: SFR at time t
     -- m: stellar mass at time t
     '''
     x = 1
-    m_low = 1e8 # graph simulations in Feldmann refered paper only go to logM* = 8.1 so we truncate mstar here
+    # the function is based on simulations in Hopkins et al 2012 and only go to logM* = 8.1 so we truncate mstar here
+    m_low = 1e8
     if (m < m_low):
         outflow_feld = 0.
     else:
-        # equation from simulations
+        # equation from Feldmann et al 2015 based on Hopkins et al 2012 simulations
         y = (m/1e10)**-0.59
         f_comb = (x+y) - (x**-1+y**-1)**-1
         epsilon_out = 2 * f_comb
-        if (epsilon_out > 30): # Feldmann sets outflows to never < 2 x SFR, but Hopkins paper has floor at ~1
+        # Feldmann doesnt set a max value of outflow, but Hopkins paper has mean < Feldmann for low M*
+        # Here we use Hopkins mean + standard deviation to limit the max outflow rate to be < 30 (there are sims above this, but only few outliers)
+        if (epsilon_out > 30):
             epsilon_out = 30
-        elif (epsilon_out < 1): # Feldmann doesnt set a max, but Hopkins paper has std of all sims < 30 (above this are few outliers)
+        # Feldmann sets outflows to never be less than 2 x SFR, but Hopkins paper has floor at ~1
+        elif (epsilon_out < 1):
             epsilon_out = 1
         outflow_feld = sfr * epsilon_out
     return outflow_feld

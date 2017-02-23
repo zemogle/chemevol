@@ -22,17 +22,20 @@ initial_galaxy_params
 						Todini & Ferrera 2001).  If leave default specify False. To reduce dust mass
 						then quote number to reduce by
 - destroy: 				add dust destruction from SN shocks: True or False
-- inflows: 				there are three parameters
- 						inflows_metals = metallicity of inflow: input a number appropriate for primordial
-						inflow eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013).
-								 inflows_xSFR = inflow rate of gas is X * SFR: input a number
-								 inflows_dust = amount of dust inflow: input a number appropriate
-								 for dust eg 0.4 x the metallicity (Edmunds 2000)
+- inflows: 				there are four parameters
+							on: do you wish to turn inflows on: input True or False
+							inflows_metals = metallicity of inflow Y or N: input a number appropriate for primordial
+							inflow gas eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013).
+							inflows_xSFR = inflow rate of gas is X * SFR: input a number X
+							inflows_dust = amount of dust inflow: input a number appropriate
+							for dust eg 0.4 x the metallicity (Edmunds 2000)
 - outflows: 			there are three parameters
- 						outflows_metals = metallicity of inflow: input True or False
-								   True = metallicity of system, False = 0
-								 outflows_dust = amount of dust in outflow: input True of False
-							  	 		  True = dust/gas of system, False = 0
+							on: do you wish to turn outflows on Y or N: input True or False
+ 							outflows_metals = metallicity of inflow: input True or False
+						   	(True = metallicity of system, False = 0)
+						 	outflows_dust = amount of dust in outflow: input True of False
+							(True = dust/gas of system, False = 0)
+							(The equation for outflows is take from simulations of feedback in Hopkins et al 2012, see Eq 27 in Feldmann et al 2015)
 - cold_gas_fraction = 	fraction of gas in cold dense state for grain growth
 					  	typically 0.5-0.9 for high z systems, default is 0.5 eg Asano et al 2013
 - epsilon_grain = 		grain growth parameter from Mattsson & Andersen 2012
@@ -62,8 +65,23 @@ inits = [
 				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
 				'destroy': False,
-				'inflows':{'on':False,'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'on':False, 'metals': False, 'dust': False},
+				'inflows':{'on': False, 'metals': 0., 'xSFR': 0, 'dust': 0},
+				'outflows':{'on': True, 'metals': False, 'dust': False},
+				'cold_gas_fraction': 0.5,
+				'epsilon_grain': 800,
+        		'destruct': 0  }, 
+
+			{	'name': 'Model_II',
+				'gasmass_init': 4e10,
+				'SFH': 'MilkyWay.sfh',
+        		't_end': 20.,
+				'gamma': 0,
+				'IMF_fn': 'Chab',
+				'dust_source': 'ALL',
+				'reduce_sn_dust': True,
+				'destroy': True,
+				'inflows':{'on': True, 'metals': 0., 'xSFR': 3, 'dust': 0},
+				'outflows':{'on': False, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 800,
         		'destruct': 0  }
