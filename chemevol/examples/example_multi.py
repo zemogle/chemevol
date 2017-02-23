@@ -21,7 +21,9 @@ initial_galaxy_params
 - reduce_sn_dust		reduce the contribution from SN dust (currently set to values from
 						Todini & Ferrera 2001).  If leave default specify False. To reduce dust mass
 						then quote number to reduce by
-- destroy: 				add dust destruction from SN shocks: True or False
+- destroy: 				on: add dust destruction from SN shocks: True or False
+						mass: Amount of material destroyed by each SN
+						(typically 1000 or 100Msun)
 - inflows: 				there are four parameters
 							on: do you wish to turn inflows on: input True or False
 							inflows_metals = metallicity of inflow Y or N: input a number appropriate for primordial
@@ -40,9 +42,6 @@ initial_galaxy_params
 					  	typically 0.5-0.9 for high z systems, default is 0.5 eg Asano et al 2013
 - epsilon_grain = 		grain growth parameter from Mattsson & Andersen 2012
 						default is 500 for t_grow ~ 10Myr.
-- destruct = 			amount of material destroyed by each SN
-						(typically 1000 or 100Msun)
-
 
 Each run will be used to generate the evolution of dust, gas,
 SFR, metals and stars over time
@@ -64,12 +63,11 @@ inits = [
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
-				'destroy': False,
+				'destroy': {'on': False, 'mass': 0},
 				'inflows':{'on': False, 'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'on': True, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 800,
-        		'destruct': 0  },
+				'epsilon_grain': 800},
 
 			{	'name': 'Model_II',
 				'gasmass_init': 4e10,
@@ -79,12 +77,11 @@ inits = [
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
 				'reduce_sn_dust': 20.,
-				'destroy': False,
+				'destroy': {'on': True, 'mass': 100},
 				'inflows':{'on': True, 'metals': 1e-3, 'xSFR': 3, 'dust': 5e-4},
 				'outflows':{'on': True, 'metals': True, 'dust': True},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 800,
-        		'destruct': 0  }
+				'epsilon_grain': 800}
 
         ]
 

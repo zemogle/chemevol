@@ -66,7 +66,7 @@ class ChemModel:
             self.SFH_file = inputs['SFH']
             self.coldfraction = inputs['cold_gas_fraction']
             self.epsilon = inputs['epsilon_grain']
-            self.destroy_ism = inputs['destruct']
+        #    self.destroy_ism = inputs['destruct']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
                 self.SFH_file = 'chemevol/Milkyway.sfh'
@@ -83,13 +83,12 @@ class ChemModel:
             self.imf = imf_kroup
         elif (self.imf_type in ["Salp", "salp", "s"]):
             self.imf = imf_salp
-        # Declare if destruction on or off
         if self.reduce_sn == False:
             self.reduce_sn = 1
-        if (self.destroy == False):
-            self.choice_des = 0
-        else:
-            self.choice_des = 1
+    #    if (self.destroy == False):
+    #        self.choice_des = 0
+    #    else:
+    #        self.choice_des = 1
         # set up dust source choice from user: sn = True; SN dust on, lims = True; LIMS dust on, gg = Grain Growth
         if self.dust_source in ["ALL", "all", "All"]:
             self.choice_dust = {
@@ -238,7 +237,7 @@ class ChemModel:
             mdust_ast = astration(md,mg,self.sfr(t))
 
             mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
-            mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
+            mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, md, self.coldfraction)
 
             '''
             Get ejected masses from stars when they die
