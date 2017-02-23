@@ -97,9 +97,18 @@ class TestFunctions:
         grow = grow*1e-6 #in Myr
         assert 86.3 < grow < 86.4
 
+    def test_timescale_graingrowth_off(self):
+        grow = grow_timescale(False,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        grow = grow*1e-6 #in Myr
+        assert grow == 0
+
     def test_dust_graingrowth(self):
         dust_ism = graingrowth(True,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert  3.200e6 < dust_ism < 3.202e6
+
+    def test_dust_graingrowth_off(self):
+        dust_ism = graingrowth(False,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
+        assert dust_ism == 0
 
     def test_inflow_func(Self):
        gas_inflow = inflows(1.0,1.5)
