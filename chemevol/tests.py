@@ -35,7 +35,7 @@ import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, destroy_dust, graingrowth, \
                     grow_timescale, dust_masses_fresh, initial_mass_function_integral, \
-                    inflows, outflows, ejected_gas_mass, astration, fresh_metals, \
+                    inflows, ejected_gas_mass, astration, fresh_metals, \
                     ejected_dust_mass, imf_chab, outflows_feldmann
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
@@ -91,10 +91,6 @@ class TestFunctions:
     def test_dust_graingrowth(self):
         dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert  3.200e6 < dust_ism < 3.202e6
-
-    def test_outflow_func(Self):
-        gas_outflow = outflows(1.0,1.5)
-        assert gas_outflow == 1.5
 
     def test_inflow_func(Self):
        gas_inflow = inflows(1.0,1.5)
