@@ -78,13 +78,14 @@ inits = [
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'ALL',
-				'reduce_sn_dust': False,
+				'reduce_sn_dust': 20.,
 				'destroy': False,
-				'inflows':{'on': False, 'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'on': True, 'metals': False, 'dust': False},
+				'inflows':{'on': True, 'metals': 1e-3, 'xSFR': 3, 'dust': 5e-4},
+				'outflows':{'on': True, 'metals': True, 'dust': True},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 800,
         		'destruct': 0  }
+
         ]
 
 snrate = []
