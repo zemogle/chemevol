@@ -420,49 +420,77 @@ def inflows(sfr,parameter):
     return inflow_rate
 
 def gas_inandout(in_on,out_on,in_sfr,sfr,m):
-'''
-Derive the gas lost and gained from inflows and outflows
+    '''
+    Derive the gas lost and gained from inflows and outflows
 
-In:
--- in_on: are inflows turned on? (True/False)
--- out_on: are outflows turned on? (True/False)
--- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
--- sfr: SFR at time t
--- m: stellar mass at time t
-'''
-    if not self.inflows['on']:
+    In:
+    -- in_on: are inflows turned on? (True/False)
+    -- out_on: are outflows turned on? (True/False)
+    -- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
+    -- sfr: SFR at time t
+    -- m: stellar mass at time t
+    '''
+    if not in_on:
         gas_inf = 0
     else:
         gas_inf = inflows(sfr,in_sfr)
 
-    if not self.outflows['on']:
+    if not out_on:
         gas_out = 0.
     else:
         gas_out = outflows_feldmann(sfr, m)
     return gas_inf,gas_out
 
-def metlas_inandout(in_on,in_sfr,in_met,out_on,out_met,sfr,m):
-'''
-Derive the metals lost and gained from inflows and outflows
+def metals_inandout(in_on,in_sfr,in_met,out_on,out_met,sfr,Z,m):
+    '''
+    Derive the metals lost and gained from inflows and outflows
 
-In:
--- in_on: are inflows turned on? (True/False)
--- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
--- in_met: the metallicity of the inflow gas
--- out_on: are outflows turned on? (True/False)
--- out_met: the metallicity of the outflow gas
--- sfr: SFR at time t
--- m: stellar mass at time t
-'''
-    if not self.inflows['on']:
-        metals_inf = 0.
+    In:
+    -- in_on: are inflows turned on? (True/False)
+    -- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
+    -- in_met: the metallicity of the inflow gas
+    -- out_on: are outflows turned on? (True/False)
+    -- out_met: is the outflow gas enriched? (True/False)
+    -- sfr: SFR at time t
+    -- Z: value of metallicity of system at time t
+    -- m: stellar mass at time t
+    '''
+    if in_on == False:
+        metal_inf = 0.
     else:
-        metals_inf = in_metal*inflows(sfr, in_sfr)
+        metal_inf = in_met*inflows(sfr, in_sfr)
 
-    if (self.outflows['on'] and self.outflows['metals']):     # Does the user set outflows and metals on (True)?
-        metals_out = out_met*outflows_feldmann(sfr, mstars)
+    if out_on == False or out_met == False:
+        metal_out = 0.
     else:
-        metals_out = 0.
+        metal_out = Z*outflows_feldmann(sfr, m)
+    return metal_inf,metal_out
+
+def dust_inandout(in_on,in_sfr,in_md,out_on,out_md,sfr,D,m):
+    '''
+    Derive the dust mass lost and gained from inflows and outflows
+
+    In:
+    -- in_on: are inflows turned on? (True/False)
+    -- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
+    -- in_md: the dust-to-gas ratio of the inflow gas
+    -- out_on: are outflows turned on? (True/False)
+    -- out_md: does the outflow include dust (True or False)
+    -- sfr: SFR at time t
+    -- D : dust-to-gas ratio of system at time t
+    -- m: stellar mass at time t
+    '''
+    # If inflows set to False, dust gained in inflows = 0
+    if in_on == False:
+        dust_inf = 0.
+    else:
+        dust_inf = in_md*inflows(sfr,in_sfr)
+    # if outflows: False or dust outflows False, dust lost in outflows = 0
+    if (out_on == False or out_md == False):
+        dust_out = 0.
+    else:
+        dust_out = D*outflows_feldmann(sfr,m)
+    return dust_inf,dust_out
 
 def outflows_feldmann(sfr,m):
     '''

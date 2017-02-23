@@ -31,7 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
-    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, outflows_feldmann
+    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, \
+    gas_inandout, metals_inandout, dust_inandout, outflows_feldmann
 
 from astropy.table import Table
 import numpy as np
@@ -188,22 +189,32 @@ class ChemModel:
             GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
             set up astration, inflow, outflow components
             '''
-            gas_ast = self.sfr(t)
+            gas_ast = self.sfr(t) # gas lost due to astration
             # How much gas is lost or gained dure to outflows/inflows
-            gas_inf,gas_out = gas_inandout(self.inflows['on'],self.outflows['on'],\
-                self.inflows['xSFR'],self.sfr(t),mstars)
+            gas_inf,gas_out = gas_inandout(
+                self.inflows['on'],\
+                self.outflows['on'],\
+                self.inflows['xSFR'],\
+                self.sfr(t),\
+                mstars)
         #    print 'time=',t,'sfr=',self.sfr(t)/1e9,'mstar=',mstars/1e10,'gas=','dust=',md_all/1e6,gas_out,gas_inf
 
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
             '''
+            # metals lost due to astration
             metals_ast = astration(metals,mg,self.sfr(t))
             # are outflows and inflows on (True) and if so what metal parameters needed?
-            metals_inf,metals_out = met_inandout(self.inflows['on'],self.inflows['xSFR'],\
-                self.inflows['metals'],self.outflows['on'],self.outflows['metals'],,self.sfr(t),mstars)
-
-
+            metals_inf,metals_out = metals_inandout(
+                self.inflows['on'],\
+                self.inflows['xSFR'],\
+                self.inflows['metals'],\
+                self.outflows['on'],\
+                self.outflows['metals'],\
+                self.sfr(t),\
+                metallicity,
+                mstars)
 
             '''
             DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
@@ -211,19 +222,23 @@ class ChemModel:
             set up astration, inflows, outflows, destruction, grain growth components
             '''
             # are outflows and inflows on (True) and if so what dust parameters needed?
-            if (self.outflows['on'] and self.outflows['dust']): # Does the user set outflows and metals on (True)?
-                mdust_out = (md/mg)*outflows_feldmann(self.sfr(t), mstars)
-            else:
-                mdust_out = 0.
-            if self.inflows['on']:
-                mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
-            else:
-                mdust_inf = 0.
+
+            mdust_inf,mdust_out = dust_inandout(
+                self.inflows['on'],\
+                self.inflows['xSFR'],\
+                self.inflows['dust'],\
+                self.outflows['on'],\
+                self.outflows['dust'],\
+                self.sfr(t),\
+                (md/mg),
+                mstars)
 
             mdust_ast = astration(md,mg,self.sfr(t))
 
-            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'],self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
-            mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, md, self.coldfraction)
+            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'],self.epsilon,mg, self.sfr(t), \
+                metallicity, md, self.coldfraction)
+            mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, \
+                md, self.coldfraction)
 
             '''
             Get ejected masses from stars when they die
