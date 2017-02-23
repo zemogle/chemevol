@@ -454,6 +454,7 @@ def outflows_feldmann(sfr,m):
         outflow_feld = sfr * epsilon_out
     return outflow_feld
 
+
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      '''
      This function does the mass integral for:
