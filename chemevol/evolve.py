@@ -189,15 +189,9 @@ class ChemModel:
             set up astration, inflow, outflow components
             '''
             gas_ast = self.sfr(t)
-            # Does the user set outflows and inflows on (True)?
-            if self.inflows['on']:
-                gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
-            else:
-                gas_inf = 0.
-            if self.outflows['on']:
-                gas_out = outflows_feldmann(self.sfr(t), mstars)
-            else:
-                gas_out = 0.
+            # How much gas is lost or gained dure to outflows/inflows
+            gas_inf,gas_out = gas_inandout(self.inflows['on'],self.outflows['on'],\
+                self.inflows['xSFR'],self.sfr(t),mstars)
         #    print 'time=',t,'sfr=',self.sfr(t)/1e9,'mstar=',mstars/1e10,'gas=','dust=',md_all/1e6,gas_out,gas_inf
 
             '''
@@ -206,14 +200,10 @@ class ChemModel:
             '''
             metals_ast = astration(metals,mg,self.sfr(t))
             # are outflows and inflows on (True) and if so what metal parameters needed?
-            if (self.outflows['on'] and self.outflows['metals']):     # Does the user set outflows and metals on (True)?
-                metals_out = metallicity*outflows_feldmann(self.sfr(t), mstars)
-            else:
-                metals_out = 0.
-            if self.inflows['on']:
-                metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
-            else:
-                metals_inf = 0.
+            metals_inf,metals_out = met_inandout(self.inflows['on'],self.inflows['xSFR'],\
+                self.inflows['metals'],self.outflows['on'],self.outflows['metals'],,self.sfr(t),mstars)
+
+
 
             '''
             DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
