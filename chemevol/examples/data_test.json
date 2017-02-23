@@ -7,12 +7,11 @@
 				"IMF_fn": "Chab",
 				"dust_source": "ALL",
 				"reduce_sn_dust": false,
-				"destroy": false,
-				"inflows":{"metals": 0.0, "xSFR": 0.0, "dust": 0.0},
-				"outflows":{"metals": false, "dust": false},
+				"destroy": {"on": false, "mass": 0},
+				"inflows":{"on": false, "metals": 0.0, "xSFR": 0.0, "dust": 0.0},
+				"outflows":{"on": false, "metals": false, "dust": false},
 				"cold_gas_fraction": 0.5,
-				"epsilon_grain": 800.0,
-        		"destruct": 0.0  },
+				"epsilon_grain": 800.0},
 
 			{	"name" : "Model_VI",
 				"gasmass_init": 4e10,
@@ -22,10 +21,9 @@
   				"IMF_fn": "Salp",
   				"dust_source": "SN+LIMS",
   				"reduce_sn_dust": 6,
-  				"destroy": true,
-  				"inflows":{"metals": 0.0, "xSFR": 1.5, "dust": 0.0},
-  				"outflows":{"metals": true, "dust": true},
+  				"destroy": {"on": true, "mass": 100},
+  				"inflows":{"on": true, "metals": 0.0, "xSFR": 1.5, "dust": 0.0},
+  				"outflows":{"on": true, "metals": true, "dust": true},
   				"cold_gas_fraction": 0.5,
-  				"epsilon_grain": 800.0,
-          		"destruct": 100.0  }
+  				"epsilon_grain": 800.0 }
         ]

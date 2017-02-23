@@ -333,12 +333,14 @@ class BulkEvolve:
 
 
     def upload_csv(self):
-        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals', 'inflows_xSFR', 'inflows_dust', 'outflows_metals', 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct']
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source',\
+         'reduce_sn_dust', 'destroy_on', 'mass_destroy', 'inflows_on', 'inflows_metals', 'inflows_xSFR', \
+         'inflows_dust', 'outflows_on','outflows_metals', 'outflows_dust', 'cold_gas_fraction',\
+          'epsilon_grain']
         alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
-                    ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
-                    ('f12','bool'),('f14','bool'), ('f15','<f8'),
-                    ('f16','<f8'), ('f17','<f8')])
+                    ('f8','bool'), ('f9','<f8'), ('f10','bool'), ('f11','<f8'),('f12','<f8'),('f13','<f8'),
+                    ('f14','bool'), ('f15','bool'),('f16','bool'), ('f17','<f8'), ('f18','<f8')])
         try:
             data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
         except ValueError:
@@ -347,11 +349,15 @@ class BulkEvolve:
         for i in range(0,len(data)):
             gal_tup = zip(names, data[i])
             gal_data = dict(gal_tup)
-            gal_data['inflows'] = {'metals': gal_data['inflows_metals'],
+            gal_data['inflows'] = { 'on': gal_data['inflows_on'],
+                                    'metals': gal_data['inflows_metals'],
                                     'xSFR': gal_data['inflows_xSFR'],
                                     'dust': gal_data['inflows_dust']}
-            gal_data['outflows'] = {'metals': gal_data['outflows_metals'],
+            gal_data['outflows'] = {'on': gal_data['inflows_on'],
+                                    'metals': gal_data['outflows_metals'],
                                     'dust': gal_data['outflows_dust']}
+            gal_data['destroy'] = {'on': gal_data['destroy_on'],
+                                    'mass': gal_data['mass_destroy']}
             init_list.append(gal_data)
         self.inits = init_list
         return
