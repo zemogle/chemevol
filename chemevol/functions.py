@@ -315,7 +315,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
         dustmass = 0.
     return dustmass
 
-def grow_timescale(e,g,sfr,z,d):
+def grow_timescale(on,e,g,sfr,z,d):
     '''
     Calculates the grain growth timescale in years
     Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
@@ -330,14 +330,14 @@ def grow_timescale(e,g,sfr,z,d):
 
     '''
     sfr_in_years = sfr*1e-9 # to convert from per Gyr to per yr
-    if z <= 0. or e <= 0.:
+    if (on == False or z <= 0 or e <= 0): # set to zero if destroy not turned on
         t_grow = 0
     else:
         t_grow = g/(e*z*sfr_in_years)
         t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
     return t_grow
 
-def graingrowth(choice,e,g,sfr,z,md,f_c):
+def graingrowth(on,e,g,sfr,z,md,f_c):
     '''
     Calculates the grain growth contribution to dust mass, also
     returns grain growth timescale
@@ -355,12 +355,12 @@ def graingrowth(choice,e,g,sfr,z,md,f_c):
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
 
-    if choice and z != 0.: #accounts for 1/z in equation
-        time_gg = 1e-9*grow_timescale(e,g,sfr,z,md) # convert grain growth timescale to Gyrs
-        mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
-    else:
+    if (on == False or md == 0 or z ==0): #accounts for 1/z in equation
         mdust_gg = 0.
         time_gg = 0.
+    else:
+        time_gg = 1e-9*grow_timescale(on,e,g,sfr,z,md) # convert grain growth timescale to Gyrs
+        mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
     return mdust_gg, time_gg
 
 def destruction_timescale(on,destruct,g,supernova_rate):

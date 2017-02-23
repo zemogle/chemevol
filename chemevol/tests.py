@@ -69,13 +69,22 @@ class TestFunctions:
         assert mass == 0.
 
     def test_timescale_destruction(self):
-        destroy = destruction_timescale(1000.,1.0992e10,6.6e6)
+        destroy = destruction_timescale(True,1000.,1.0992e10,6.6e6)
         destroy = destroy*1e-6 #in Myr
         assert  1660 < destroy < 1670
 
     def test_dust_destruction(self):
-        dust_sink = destroy_dust(1,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
+        dust_sink = destroy_dust(True,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
         assert 2.02e8 < dust_sink < 2.29e8
+
+    def test_timescale_destruction_off(self):
+        destroy = destruction_timescale(False,1000.,1.0992e10,6.6e6)
+        destroy = destroy*1e-6 #in Myr
+        assert destroy == 0
+
+    def test_dust_destruction_off(self):
+        dust_sink = destroy_dust(False,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
+        assert dust_sink == 0
 
     def test_astration(Self):
         gasmass = 1e10
@@ -84,12 +93,12 @@ class TestFunctions:
         assert ast == 1e-9
 
     def test_timescale_graingrowth(self):
-        grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        grow = grow_timescale(True,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
         grow = grow*1e-6 #in Myr
         assert 86.3 < grow < 86.4
 
     def test_dust_graingrowth(self):
-        dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
+        dust_ism = graingrowth(True,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert  3.200e6 < dust_ism < 3.202e6
 
     def test_inflow_func(Self):
