@@ -449,10 +449,10 @@ def outflows_feldmann(sfr,m):
         y = (m/1e10)**-0.59
         f_comb = (x+y) - (x**-1+y**-1)**-1
         epsilon_out = 2 * f_comb
-        if (epsilon_out < 1): # Feldmann sets outflows to never < 2 x SFR, but Hopkins paper has floor at ~1
-            epsilon_out = 1
-        elif (epsilon_out > 30): # Feldmann doesnt set a max, but Hopkins paper has std of all sims < 30 (above this are few outliers)
+        if (epsilon_out > 30): # Feldmann sets outflows to never < 2 x SFR, but Hopkins paper has floor at ~1
             epsilon_out = 30
+        elif (epsilon_out < 1): # Feldmann doesnt set a max, but Hopkins paper has std of all sims < 30 (above this are few outliers)
+            epsilon_out = 1
         outflow_feld = sfr * epsilon_out
     return outflow_feld
 
