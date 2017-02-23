@@ -363,7 +363,7 @@ def graingrowth(choice,e,g,sfr,z,md,f_c):
         time_gg = 0.
     return mdust_gg, time_gg
 
-def destruction_timescale(destruct,g,supernova_rate):
+def destruction_timescale(on,destruct,g,supernova_rate):
     '''
     Calculates the dust destruction timescale in years
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
@@ -377,7 +377,7 @@ def destruction_timescale(destruct,g,supernova_rate):
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
     '''
     supernova_rate = supernova_rate*1e-9
-    if supernova_rate <= 0 or destruct <= 0:
+    if (supernova_rate <= 0 or on == False or destruct ==0): # set to zero if destroy not turned on
         t_destroy = 0.
     else:
         # sn_rate is in units of N per Gyr
@@ -399,14 +399,12 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    print on, destruct,md,f_c,supernova_rate,gasmass
-    if (on == True and md !=0):
-        t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
-        mdust_des = md*(1-f_c)*t_des**-1
-    else:
+    if (on == False or md == 0 or supernova_rate == 0):
         mdust_des = 0
         t_des = 0
-
+    else:
+        t_des = 1e-9*destruction_timescale(on,destruct,gasmass,supernova_rate)
+        mdust_des = md*(1-f_c)*t_des**-1
     return mdust_des, t_des
 
 def inflows(sfr,parameter):
