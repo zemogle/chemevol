@@ -451,9 +451,10 @@ def outflows_feldmann(sfr,m):
         epsilon_out = 2 * f_comb
         if (epsilon_out < 1): # Feldmann sets outflows to never < 2 x SFR, but Hopkins paper has floor at ~1
             epsilon_out = 1
+        elif (epsilon_out > 30): # Feldmann doesnt set a max, but Hopkins paper has std of all sims < 30 (above this are few outliers)
+            epsilon_out = 30
         outflow_feld = sfr * epsilon_out
     return outflow_feld
-
 
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      '''

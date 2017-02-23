@@ -62,7 +62,7 @@ inits = [
 				'dust_source': 'ALL',
 				'reduce_sn_dust': False,
 				'destroy': False,
-				'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
+				'inflows':{'metals': 0., 'xSFR': 3, 'dust': 0},
 				'outflows':{'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 800,
