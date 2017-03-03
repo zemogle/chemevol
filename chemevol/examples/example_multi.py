@@ -121,6 +121,7 @@ for item in inits:
 	params['ssfr'] = params['sfr']/params['mgas']
 	# write to astropy table
 	t = Table(params)
+
 	# write out to file based on 'name' identifier
 	name = item['name']
 	t.write(str(name+'.dat'), format='ascii', delimiter=' ')

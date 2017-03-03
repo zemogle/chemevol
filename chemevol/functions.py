@@ -435,7 +435,6 @@ def gas_inandout(in_on,out_on,in_sfr,sfr,m):
     else:
         gas_inf = inflows(sfr,in_sfr)
 
-<<<<<<< HEAD
     if not out_on:
         gas_out = 0.
     else:
@@ -523,8 +522,6 @@ def outflows_feldmann(sfr,m):
         outflow_feld = sfr * epsilon_out
     return outflow_feld
 
-=======
->>>>>>> master
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
      '''
      This function does the mass integral for:
