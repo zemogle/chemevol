@@ -35,17 +35,10 @@ import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, destroy_dust, graingrowth, \
                     grow_timescale, dust_masses_fresh, initial_mass_function_integral, \
-<<<<<<< HEAD
                     inflows, ejected_gas_mass, astration, fresh_metals, \
                     ejected_dust_mass, imf_chab, outflows_feldmann, gas_inandout,\
                     metals_inandout, dust_inandout
-=======
-                    inflows, outflows, ejected_gas_mass, astration, fresh_metals, \
-                    ejected_dust_mass, imf_chab
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
+
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
@@ -335,13 +328,6 @@ class TestFunctions:
         assert dustmass_all == 214655.06895476999 and dustmass_both == 214655.06895476999 and \
                 dustmass_sn == 0 and dustmass_lims == 214655.06895476999
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> master
-=======
->>>>>>> master
 class TestInitials:
     '''
     Tests whether things are turned on or off correctly from init file
