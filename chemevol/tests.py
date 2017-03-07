@@ -42,6 +42,9 @@ from functions import remnant_mass, destruction_timescale, destroy_dust, graingr
 =======
                     inflows, outflows, ejected_gas_mass, astration, fresh_metals, \
                     ejected_dust_mass, imf_chab
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
@@ -333,7 +336,10 @@ class TestFunctions:
                 dustmass_sn == 0 and dustmass_lims == 214655.06895476999
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 =======
 >>>>>>> master
 class TestInitials:
