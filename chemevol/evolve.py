@@ -181,9 +181,9 @@ class ChemModel:
             # Now for setting up the components of the integrals
             # Stars, gas and dust
             '''
-            STARS: dM_stars = sfr(t) - e(t) * dt
+            STARS: dM_stars = (sfr(t) - e(t) ) * dt
             '''
-            #dmstars = self.sfr(t)
+            #old code had: dmstars = self.sfr(t)
 
             '''
             GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
