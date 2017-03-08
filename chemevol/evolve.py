@@ -69,6 +69,9 @@ class ChemModel:
             self.coldfraction = inputs['cold_gas_fraction']
             self.epsilon = inputs['epsilon_grain']
             self.destroy_ism = inputs['destruct']
+            self.f_disc = inputs['f_disc']
+            self.f_debris = inputs['f_debris']
+            self.f_wind = inputs['f_wind']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
                 self.SFH_file = 'chemevol/Milkyway.sfh'
@@ -192,11 +195,15 @@ class ChemModel:
             gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
             gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
 
+            planets = (self.f_disc*(self.f_wind+self.f_debris)-1.)*(-1.)
+            if planets < 0:
+                planets = -1.*planets
+
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
             '''
-            metals_ast = astration(metals,mg,self.sfr(t))
+            metals_ast = astration(metals,mg,self.sfr(t)) * planets
             if self.outflows['metals']:
                 metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
             else:
@@ -213,7 +220,7 @@ class ChemModel:
             else:
                 mdust_out = 0.
             mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
-            mdust_ast = astration(md,mg,self.sfr(t))
+            mdust_ast = astration(md,mg,self.sfr(t)) * planets
 
             mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
@@ -316,12 +323,17 @@ class BulkEvolve:
 
 
     def upload_csv(self):
-        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals', 'inflows_xSFR', 'inflows_dust', 'outflows_metals','outflows_xSFR', 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct']
-        alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn',
+                'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals',
+                'inflows_xSFR', 'inflows_dust', 'outflows_metals', 'outflows_xSFR',
+                'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct',
+                'f_disc', 'f_debris', 'f_wind']
+        alttype = np.dtype([('f0','S50'), ('f1', '<f8'), ('f2', 'S100'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
                     ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
                     ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
-                    ('f16','<f8'), ('f17','<f8')])
+                    ('f16','<f8'), ('f17','<f8'), ('f18','<f8'), ('f19','<f8'),
+                    ('f20','<f8')])
         try:
             data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
         except ValueError:
