@@ -378,7 +378,7 @@ def destruction_timescale(on,destruct,g,supernova_rate):
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
     '''
     supernova_rate = supernova_rate*1e-9
-    if (supernova_rate <= 0 or on == False or destruct ==0): # set to zero if destroy not turned on
+    if (supernova_rate <= 0 or on == False or destruct == 0): # set to zero if destroy not turned on
         t_destroy = 0.
     else:
         # sn_rate is in units of N per Gyr
@@ -400,7 +400,7 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    if (on == False or md == 0 or supernova_rate == 0):
+    if (on == False or md == 0 or supernova_rate == 0 or destruct == 0):
         mdust_des = 0
         t_des = 0
     else:
