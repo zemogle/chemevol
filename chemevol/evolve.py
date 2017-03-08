@@ -181,9 +181,9 @@ class ChemModel:
             # Now for setting up the components of the integrals
             # Stars, gas and dust
             '''
-            STARS: dM_stars = sfr(t) * dt
+            STARS: dM_stars = sfr(t) - e(t) * dt
             '''
-            dmstars = self.sfr(t)
+            #dmstars = self.sfr(t)
 
             '''
             GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
@@ -252,6 +252,7 @@ class ChemModel:
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
             '''
+            dmstars = self.sfr(t) - gas_ej
             dmg = -gas_ast + gas_ej + gas_inf - gas_out
             dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
             ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des

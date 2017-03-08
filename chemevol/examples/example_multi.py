@@ -57,7 +57,7 @@ from astropy.table import Table
 inits = [
 			{	'name': 'Model_I',
 				'gasmass_init': 4e10,
-				'SFH': 'MilkyWay.sfh',
+				'SFH': 'Milkyway.sfh',
         		't_end': 20.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
