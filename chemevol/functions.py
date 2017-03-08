@@ -345,17 +345,18 @@ def graingrowth(on,e,g,sfr,z,md,f_c):
 
     In:
     -- choice: is grain growth turned on or off (True or False)
+    -- e: the grain growth epsilon factor given by user
     -- g: gas mass at time t in Msolar
     -- sfr: SFR at time t in Msolar per Gyr
     -- z: metallicity of system (Mz/Mg)
     -- md: dust mass at time t in Msolar
     -- f_c: fraction of gas in cold dense clouds
 
-    e is between 500-1000 appropriate for timescales < 1 Gyr.
+    e between 500-1000 appropriate for timescales < 1 Gyr.
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
 
-    if (on == False or md == 0 or z ==0): #accounts for 1/z in equation
+    if (on == False or md == 0 or z == 0 or e == 0): #accounts for 1/z in equation
         mdust_gg = 0.
         time_gg = 0.
     else:
