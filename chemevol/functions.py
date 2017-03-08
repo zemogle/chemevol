@@ -355,7 +355,7 @@ def graingrowth(choice,e,g,sfr,z,md,f_c):
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
 
-    if choice and z != 0.: #accounts for 1/z in equation
+    if choice and z != 0. and e != 0.: #accounts for 1/z in equation
         time_gg = 1e-9*grow_timescale(e,g,sfr,z,md) # convert grain growth timescale to Gyrs
         mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
     else:
@@ -399,7 +399,7 @@ def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-    if choice and md !=0:
+    if choice and md !=0 and destruct !=0:
         t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
         mdust_des = md*(1-f_c)*t_des**-1
     else:

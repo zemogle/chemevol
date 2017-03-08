@@ -185,11 +185,6 @@ class ChemModel:
             sfr_lookup = array(sfr_list)
 
             '''
-            STARS: dM_stars = sfr(t) * dt
-            '''
-            dmstars = self.sfr(t)
-
-            '''
             GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
             set up astration, inflow, outflow components
             '''
@@ -231,6 +226,11 @@ class ChemModel:
             '''
             gas_ej, metals_stars, mdust_stars = \
                     mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
+
+            '''
+            STARS: dM_stars = (sfr(t) - e(t)) * dt
+            '''
+            dmstars = self.sfr(t) - gas_ej
 
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
