@@ -330,7 +330,7 @@ class BulkEvolve:
                 'inflows_xSFR', 'inflows_dust', 'outflows_metals', 'outflows_xSFR',
                 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct',
                 'f_disc', 'f_debris', 'f_wind']
-        alttype = np.dtype([('f0','S50'), ('f1', '<f8'), ('f2', 'S100'), ('f3','<f8'),
+        alttype = np.dtype([('f0','S100'), ('f1', '<f8'), ('f2', 'S120'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
                     ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
                     ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
