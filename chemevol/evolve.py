@@ -78,7 +78,7 @@ class ChemModel:
             self.sfh_file = self.SFH_file
             self.load_sfh()
         except KeyError:
-            logger.error('You must provide initial parameters in the correct format')
+            logger.error('You must provide initial parameters')
         # Set up IMF Function determined by user, allow for variety of spellings
         if (self.imf_type in ["Chab", "chab", "c"]):
             self.imf = imf_chab
@@ -176,6 +176,12 @@ class ChemModel:
         time = self.sfh[:,0]
         time = time[time < self.tend]
         now = datetime.now()
+
+        #Planet formation
+        planets = (self.f_disc*(self.f_wind+self.f_debris)-1.)*(-1.)
+        if planets < 0:
+            planets = -1.*planets
+
         # TIME integral
         for item, t in enumerate(time):
             r_sn = sn_rate [item]
@@ -194,10 +200,6 @@ class ChemModel:
             gas_ast = self.sfr(t)
             gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
             gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
-
-            planets = (self.f_disc*(self.f_wind+self.f_debris)-1.)*(-1.)
-            if planets < 0:
-                planets = -1.*planets
 
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
