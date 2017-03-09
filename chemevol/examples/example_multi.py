@@ -129,6 +129,21 @@ inits = [
 			'epsilon_grain': 6000,
 			'destruct': 1000},
 
+		{	'name': 'Model_VI_test', # this model needs to be run longer - set time to 60 Gyrs
+			'gasmass_init': 4e10,
+			'SFH': 'delayed_over_3.sfh',
+			't_end': 20.,
+			'gamma': 0,
+			'IMF_fn': 'Chab',
+			'dust_source': 'All',
+			'reduce_sn_dust': 25,
+			'destroy': True,
+			'inflows':{'metals': 0., 'xSFR': 2.0, 'dust': 0},
+			'outflows':{'metals': True, 'xSFR': 2.0,'dust': True},
+			'cold_gas_fraction': 0.5,
+			'epsilon_grain': 10000,
+			'destruct': 100}
+
         ]
 
 snrate = []
