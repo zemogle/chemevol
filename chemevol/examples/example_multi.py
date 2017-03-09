@@ -131,8 +131,8 @@ inits = [
 
 		{	'name': 'Model_VI_test', # this model needs to be run longer - set time to 60 Gyrs
 			'gasmass_init': 4e10,
-			'SFH': 'delayed_over_3.sfh',
-			't_end': 20.,
+			'SFH': 'delayed_over_3_long.sfh',
+			't_end': 60.,
 			'gamma': 0,
 			'IMF_fn': 'Chab',
 			'dust_source': 'All',
