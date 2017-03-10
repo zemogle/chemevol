@@ -136,13 +136,13 @@ inits = [
 			'gamma': 0,
 			'IMF_fn': 'Chab',
 			'dust_source': 'All',
-			'reduce_sn_dust': 25,
+			'reduce_sn_dust': 100,
 			'destroy': True,
 			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
 			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
 			'cold_gas_fraction': 0.5,
 			'epsilon_grain': 10000,
-			'destruct': 500}
+			'destruct': 150}
 
 ]
 
