@@ -54,7 +54,37 @@ from astropy.table import Table
 # each {} entry is per galaxy separated by comma in list
 
 inits = [
-		{	'name': 'Model_I_test',
+		{	'name': 'Model_V_test',
+			'gasmass_init': 4e10,
+			'SFH': 'delayed.sfh',
+			't_end': 20.,
+			'gamma': 0,
+			'IMF_fn': 'Chab',
+			'dust_source': 'All',
+			'reduce_sn_dust': 12,
+			'destroy': True,
+			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
+			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
+			'cold_gas_fraction': 0.5,
+			'epsilon_grain': 6000,
+			'destruct': 2000},
+
+		{	'name': 'Model_VI_test', # this model needs to be run longer - set time to 60 Gyrs
+			'gasmass_init': 4e10,
+			'SFH': 'delayed_over_3_long.sfh',
+			't_end': 60.,
+			'gamma': 0,
+			'IMF_fn': 'Chab',
+			'dust_source': 'All',
+			'reduce_sn_dust': 25,
+			'destroy': True,
+			'inflows':{'metals': 0., 'xSFR': 4.0, 'dust': 0},
+			'outflows':{'metals': True, 'xSFR': 4.0,'dust': True},
+			'cold_gas_fraction': 0.5,
+			'epsilon_grain': 10000,
+			'destruct': 100}
+
+			'''{	'name': 'Model_I_test',
 			'gasmass_init': 4e10,
 			'SFH': 'Milkyway.sfh',
 			't_end': 20.,
@@ -99,7 +129,8 @@ inits = [
 			'epsilon_grain': 0,
 			'destruct': 0 },
 
-		{	'name': 'Model_IV_test',
+
+			{	'name': 'Model_IV_test',
 			'gasmass_init': 4e10,
 			'SFH': 'delayed.sfh',
 			't_end': 20.,
@@ -112,37 +143,7 @@ inits = [
 			'outflows':{'metals': True, 'xSFR': 2.,'dust': True},
 			'cold_gas_fraction': 0.5,
 			'epsilon_grain': 1200,
-			'destruct': 200 },
-
-		{	'name': 'Model_V_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 12,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 2.0, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 2.0,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 6000,
-			'destruct': 1000},
-
-		{	'name': 'Model_VI_test', # this model needs to be run longer - set time to 60 Gyrs
-			'gasmass_init': 4e10,
-			'SFH': 'delayed_over_3_long.sfh',
-			't_end': 60.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 25,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 4.0, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 4.0,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 10000,
-			'destruct': 100}
+			'destruct': 200 },'''
 
         ]
 
