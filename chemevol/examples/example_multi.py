@@ -54,20 +54,20 @@ from astropy.table import Table
 # each {} entry is per galaxy separated by comma in list
 
 inits = [
-	{	'name': 'Model_VII_test',
-		'gasmass_init': 4e10,
-		'SFH': 'burst.sfh',
-		't_end': 20.,
-		'gamma': 0,
-		'IMF_fn': 'Chab',
-		'dust_source': 'All',
-		'reduce_sn_dust': 12,
-		'destroy': True,
-		'inflows':{'metals': 0., 'xSFR': 6, 'dust': 0},
-		'outflows':{'metals': True, 'xSFR': 6,'dust': True},
-		'cold_gas_fraction': 0.5,
-		'epsilon_grain': 10000,
-		'destruct': 100}
+		{	'name': 'Model_VII_test',
+			'gasmass_init': 4e10,
+			'SFH': 'burst.sfh',
+			't_end': 20.,
+			'gamma': 0,
+			'IMF_fn': 'Chab',
+			'dust_source': 'All',
+			'reduce_sn_dust': 12,
+			'destroy': True,
+			'inflows':{'metals': 0., 'xSFR': 6, 'dust': 0},
+			'outflows':{'metals': True, 'xSFR': 6,'dust': True},
+			'cold_gas_fraction': 0.5,
+			'epsilon_grain': 10000,
+			'destruct': 100 }
 ]
 '''
 		{	'name': 'Model_I_test',
