@@ -54,23 +54,6 @@ from astropy.table import Table
 # each {} entry is per galaxy separated by comma in list
 
 inits = [
-		{	'name': 'Model_VI_test', #needs to be run till 60Gyrs
-			'gasmass_init': 4e10,
-			'SFH': 'delayed_over_3_long.sfh',
-			't_end': 60.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 100,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 15000,
-			'destruct': 150}
-
-]
-'''
 		{	'name': 'Model_I_test',
 			'gasmass_init': 4e10,
 			'SFH': 'Milkyway.sfh',
@@ -146,6 +129,21 @@ inits = [
 			'epsilon_grain': 6000,
 			'destruct': 1500},
 
+		{	'name': 'Model_VI_test', #needs to be run till 60Gyrs
+			'gasmass_init': 4e10,
+			'SFH': 'delayed_over_3_long.sfh',
+			't_end': 60.,
+			'gamma': 0,
+			'IMF_fn': 'Chab',
+			'dust_source': 'All',
+			'reduce_sn_dust': 100,
+			'destroy': True,
+			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
+			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
+			'cold_gas_fraction': 0.5,
+			'epsilon_grain': 10000,
+			'destruct': 150},
+
 		{	'name': 'Model_VII_test',
 			'gasmass_init': 4e10,
 			'SFH': 'burst.sfh',
@@ -160,7 +158,7 @@ inits = [
 			'cold_gas_fraction': 0.5,
 			'epsilon_grain': 15000,
 			'destruct': 150 }
-'''
+]
 
 snrate = []
 all_results = []
