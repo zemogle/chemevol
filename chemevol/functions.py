@@ -401,7 +401,7 @@ def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
     '''
     if choice and md !=0 and destruct !=0:
         t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
-        mdust_des = md*(1-f_c)*t_des**-1
+        mdust_des = md*(1-f_c)*t_des**-1  #removing md to mg ratio
     else:
         mdust_des = 0
         t_des = 0
