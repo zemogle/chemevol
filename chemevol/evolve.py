@@ -67,7 +67,6 @@ class ChemModel:
             self.SFH_file = inputs['SFH']
             self.coldfraction = inputs['cold_gas_fraction']
             self.epsilon = inputs['epsilon_grain']
-        #    self.destroy_ism = inputs['destruct']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
                 self.SFH_file = 'chemevol/Milkyway.sfh'
@@ -280,6 +279,7 @@ class ChemModel:
                                 md, dust_to_metals, self.sfr(t)*1e-9, \
                                 md_all, md_stars, md_gg, t_des, t_gg))
             # to test code kinks
+            print t, 'all',md_all, 'stardust', md_stars, mdust_stars,'gg', md_gg, mdust_gg, 'inf', mdust_inf, 'out',mdust_out, 'des',mdust_des
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return np.array(all_results)
 

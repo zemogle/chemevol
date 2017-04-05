@@ -62,26 +62,27 @@ inits = [
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'All',
-				'reduce_sn_dust': False,
+				'reduce_sn_dust': 0,
 				'destroy': {'on': False, 'mass': 0},
 				'inflows':{'on': False, 'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'on': False, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 0},
+				'epsilon_grain': 0}
 
+'''
 			{	'name': 'Model_B',
 				'gasmass_init': 4e10,
 				'SFH': 'MilkyWay.sfh',
         		't_end': 20.,
 				'gamma': 0,
-				'IMF_fn': 'Chab',
-				'dust_source': 'All',
+				'IMF_fn': 'Kroup',
+				'dust_source': 'LIMS',
 				'reduce_sn_dust': False,
-				'destroy': {'on': True, 'mass': 0},
-				'inflows':{'on': False, 'metals': 0., 'xSFR': 0, 'dust': 0},
-				'outflows':{'on': False, 'metals': False, 'dust': False},
-				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 800}
+				'destroy': {'on': True, 'mass': 100},
+				'inflows':{'on': True, 'metals': 0., 'xSFR': 1.5, 'dust': 0},
+				'outflows':{'on': True, 'metals': False, 'dust': True},
+				'cold_gas_fraction': 0.0,
+				'epsilon_grain': 800}'''
         ]
 
 snrate = []
