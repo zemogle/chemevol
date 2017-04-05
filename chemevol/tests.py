@@ -48,7 +48,6 @@ dustchoice_lims = {'sn' : False, 'lims' : True, 'gg':False}
 dustchoice_snlims = {'sn' : True, 'lims' : True, 'gg':False}
 dustchoice_gg = {'sn' : False, 'lims' : False, 'gg':True}
 
-
 class TestFunctions:
     '''
     Test all the function values

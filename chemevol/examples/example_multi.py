@@ -31,7 +31,7 @@ initial_galaxy_params
 							inflows_xSFR = inflow rate of gas is X * SFR: input a number X
 							inflows_dust = amount of dust inflow: input a number appropriate
 							for dust eg 0.4 x the metallicity (Edmunds 2000)
-- outflows: 			there are three parameters
+- outflows: 			there are two parameters
 							on: do you wish to turn outflows on Y or N: input True or False
  							outflows_metals = metallicity of inflow: input True or False
 						   	(True = metallicity of system, False = 0)
@@ -55,7 +55,7 @@ from astropy.table import Table
 # each {} entry is per galaxy separated by comma in list
 
 inits = [
-			{	'name': 'Model_I_mstar',
+			{	'name': 'Model_A',
 				'gasmass_init': 4e10,
 				'SFH': 'Milkyway.sfh',
         		't_end': 20.,
@@ -69,7 +69,7 @@ inits = [
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 0},
 
-			{	'name': 'Model_II',
+			{	'name': 'Model_B',
 				'gasmass_init': 4e10,
 				'SFH': 'MilkyWay.sfh',
         		't_end': 20.,

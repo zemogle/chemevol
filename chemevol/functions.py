@@ -513,8 +513,10 @@ def outflows_feldmann(sfr,m):
         y = (m/1e10)**-0.59
         f_comb = (x+y) - (x**-1+y**-1)**-1
         epsilon_out = 2 * f_comb
-        # Feldmann doesnt set a max value of outflow, but Hopkins paper has mean < Feldmann for low M*
-        # Here we use Hopkins mean + standard deviation to limit the max outflow rate to be < 30 (there are sims above this, but only few outliers)
+        # Feldmann doesnt set a max value of outflow, but Hopkins paper has mean < Feldmann for low M* so
+        # Feldmann equation likely overestimates the outflow
+        # Here we use Hopkins mean + standard deviation to limit the max outflow rate to be < 30
+        # (there are sims above this, but only few outliers)
         if (epsilon_out > 30):
             epsilon_out = 30
         # Feldmann sets outflows to never be less than 2 x SFR, but Hopkins paper has floor at ~1
