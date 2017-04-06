@@ -1,5 +1,5 @@
 [
-			{	"name": "Model_A",
+			{	"name": "Model_I",
 				"gasmass_init": 4e10,
 				"SFH": "Milkyway.sfh",
         		"t_end": 20.0,
@@ -8,12 +8,12 @@
 				"dust_source": "ALL",
 				"reduce_sn_dust": false,
 				"destroy": {"on": false, "mass": 0},
-				"inflows": {"metals": 0.0, "xSFR": 0.0, "dust": 0.0},
-				"outflows": {"on": false, "metals": false, "dust": false},
+				"inflows":{"on": false, "metals": 0.0, "xSFR": 0.0, "dust": 0.0},
+				"outflows":{"on": false, "metals": false, "dust": false},
 				"cold_gas_fraction": 0.5,
-				"epsilon_grain": 0},
+				"epsilon_grain": 800.0},
 
-			{	"name" : "Model_B",
+			{	"name" : "Model_VI",
 				"gasmass_init": 4e10,
   				"SFH": "MilkyWay.sfh",
           		"t_end": 20.0,
@@ -21,10 +21,9 @@
   				"IMF_fn": "Salp",
   				"dust_source": "SN+LIMS",
   				"reduce_sn_dust": 6,
-  				"destroy": {"on": true, "mass":100.0},
-  				"inflows": {"metals": 0.0, "xSFR": 1.5, "dust": 0.0},
+  				"destroy": {"on": true, "mass": 100},
+  				"inflows":{"on": true, "metals": 0.0, "xSFR": 1.5, "dust": 0.0},
   				"outflows":{"on": true, "metals": true, "dust": true},
   				"cold_gas_fraction": 0.5,
-  				"epsilon_grain": 800.0,
-          		"destruct": 100.0  }
+  				"epsilon_grain": 800.0 }
         ]

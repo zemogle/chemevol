@@ -21,26 +21,27 @@ initial_galaxy_params
 - reduce_sn_dust		reduce the contribution from SN dust (currently set to values from
 						Todini & Ferrera 2001).  If leave default specify False. To reduce dust mass
 						then quote number to reduce by
-- destroy: 				add dust destruction from SN shocks: True or False
-- inflows: 				there are three parameters
- 						inflows_metals = metallicity of inflow: input a number appropriate for primordial
-						inflow eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013).
-								 inflows_xSFR = inflow rate of gas is X * SFR: input a number
-								 inflows_dust = amount of dust inflow: input a number appropriate
-								 for dust eg 0.4 x the metallicity (Edmunds 2000)
-- outflows: 			there are three parameters
- 						outflows_metals = metallicity of inflow: input True or False
-								   True = metallicity of system, False = 0
-								 outflows_xSFR = outflow rate of gas is X * SFR: input a number
-								 outflows_dust = amount of dust in outflow: input True of False
-							  	 		  True = dust/gas of system, False = 0
+- destroy: 				on: add dust destruction from SN shocks: True or False
+						mass: Amount of material destroyed by each SN
+						(typically 1000 or 100Msun)
+- inflows: 				there are four parameters
+							on: do you wish to turn inflows on: input True or False
+							inflows_metals = metallicity of inflow Y or N: input a number appropriate for primordial
+							inflow gas eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013).
+							inflows_xSFR = inflow rate of gas is X * SFR: input a number X
+							inflows_dust = amount of dust inflow: input a number appropriate
+							for dust eg 0.4 x the metallicity (Edmunds 2000)
+- outflows: 			there are two parameters
+							on: do you wish to turn outflows on Y or N: input True or False
+ 							outflows_metals = metallicity of inflow: input True or False
+						   	(True = metallicity of system, False = 0)
+						 	outflows_dust = amount of dust in outflow: input True of False
+							(True = dust/gas of system, False = 0)
+							(The equation for outflows is take from simulations of feedback in Hopkins et al 2012, see Eq 27 in Feldmann et al 2015)
 - cold_gas_fraction = 	fraction of gas in cold dense state for grain growth
 					  	typically 0.5-0.9 for high z systems, default is 0.5 eg Asano et al 2013
 - epsilon_grain = 		grain growth parameter from Mattsson & Andersen 2012
 						default is 500 for t_grow ~ 10Myr.
-- destruct = 			amount of material destroyed by each SN
-						(typically 1000 or 100Msun)
-
 
 Each run will be used to generate the evolution of dust, gas,
 SFR, metals and stars over time
@@ -54,97 +55,34 @@ from astropy.table import Table
 # each {} entry is per galaxy separated by comma in list
 
 inits = [
-		{	'name': 'Model_I_test',
-			'gasmass_init': 4e10,
-			'SFH': 'Milkyway.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'SN+LIMS',
-			'reduce_sn_dust': False,
-			'destroy': False,
-			'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-			'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 0,
-			'destruct': 0 },
+			{	'name': 'Model_A',
+				'gasmass_init': 4e10,
+				'SFH': 'Milkyway.sfh',
+        		't_end': 20.,
+				'gamma': 0,
+				'IMF_fn': 'Chab',
+				'dust_source': 'All',
+				'reduce_sn_dust': False,
+				'destroy': {'on':False, 'mass': 0},
+				'inflows':{'on': False, 'metals': 0, 'xSFR': 0, 'dust': 0},
+				'outflows':{'on': True, 'metals': False, 'dust': False},
+				'cold_gas_fraction': 0.5,
+				'epsilon_grain': 0},
 
-		{	'name': 'Model_II_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'SN+LIMS',
-			'reduce_sn_dust': False,
-			'destroy': False,
-			'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-			'outflows':{'metals': False, 'xSFR': 0,'dust': False},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 0,
-			'destruct': 0 },
-
-		{	'name': 'Model_III_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'SN+LIMS',
-			'reduce_sn_dust': False,
-			'destroy': False,
-			'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 1.5,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 0,
-			'destruct': 0 },
-
-		{	'name': 'Model_IV_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 6,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 1.7, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 1.7,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 800,
-			'destruct': 150 },
-
-		{	'name': 'Model_V_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 12,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 6000,
-			'destruct': 1500},
-
-		{	'name': 'Model_VI_test', #needs to be run till 60Gyrs
-			'gasmass_init': 4e10,
-			'SFH': 'delayed_over_3_long.sfh',
-			't_end': 60.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 25,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 10000,
-			'destruct': 500}
-
-]
+			{	'name': 'Model_B',
+				'gasmass_init': 4e10,
+				'SFH': 'MilkyWay.sfh',
+        		't_end': 20.,
+				'gamma': 0,
+				'IMF_fn': 'Chab',
+				'dust_source': 'All',
+				'reduce_sn_dust': 20,
+				'destroy': {'on': True, 'mass': 100},
+				'inflows':{'on': True, 'metals': 0., 'xSFR': 1.5, 'dust': 0},
+				'outflows':{'on': True, 'metals': False, 'dust': True},
+				'cold_gas_fraction': 0.0,
+				'epsilon_grain': 800}
+		]
 
 
 
@@ -184,6 +122,7 @@ for item in inits:
 	params['ssfr'] = params['sfr']/params['mgas']
 	# write to astropy table
 	t = Table(params)
+
 	# write out to file based on 'name' identifier
 	name = item['name']
 	t.write(str(name+'.dat'), format='ascii', delimiter=' ')

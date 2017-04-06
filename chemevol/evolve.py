@@ -31,7 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
-    inflows, outflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust
+    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, \
+    gas_inandout, metals_inandout, dust_inandout, outflows_feldmann
 
 from astropy.table import Table
 import numpy as np
@@ -42,11 +43,9 @@ from datetime import datetime
 import os.path
 import json
 
-
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('chem')
-
 
 class ChemModel:
     def __init__(self, **inputs):
@@ -68,7 +67,6 @@ class ChemModel:
             self.SFH_file = inputs['SFH']
             self.coldfraction = inputs['cold_gas_fraction']
             self.epsilon = inputs['epsilon_grain']
-            self.destroy_ism = inputs['destruct']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
                 self.SFH_file = 'chemevol/Milkyway.sfh'
@@ -85,13 +83,8 @@ class ChemModel:
             self.imf = imf_kroup
         elif (self.imf_type in ["Salp", "salp", "s"]):
             self.imf = imf_salp
-        # Declare if destruction on or off
         if self.reduce_sn == False:
             self.reduce_sn = 1
-        if (self.destroy == False):
-            self.choice_des = 0
-        else:
-            self.choice_des = 1
         # set up dust source choice from user: sn = True; SN dust on, lims = True; LIMS dust on, gg = Grain Growth
         if self.dust_source in ["ALL", "all", "All"]:
             self.choice_dust = {
@@ -128,7 +121,7 @@ class ChemModel:
         '''
         try:
             vals = np.loadtxt(self.SFH_file)
-            scale = [1e-9,1e9] # Gyr conversions for time, SFR
+            scale = [1e-9,1e9] # Gyr conversions for time, SFR (because we want to do dt integral over Gyrs)
             sfh = vals*scale # converts time in Gyr and SFR in Msun/Gyr
             # extrapolates SFH back to 0.001Gyr using SFH file and power law (gamma)
             final_sfh = extra_sfh(sfh, self.gamma)
@@ -170,7 +163,7 @@ class ChemModel:
         sfr_lookup = []
         all_results = []
         # Limit time to less than tend
-        time = self.sfh[:,0]
+        time = self.sfh[:,0] # sfr is in units of Msun Gyr^-1
         time = time[time < self.tend]
         now = datetime.now()
         # TIME integral
@@ -184,40 +177,62 @@ class ChemModel:
             sfr_list.append([t,self.sfr(t)])
             sfr_lookup = array(sfr_list)
 
+            # Now for setting up the components of the integrals
+            # Stars, gas and dust
             '''
             GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
             set up astration, inflow, outflow components
             '''
-            gas_ast = self.sfr(t)
-            gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
-            gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
+            gas_ast = self.sfr(t) # gas lost due to astration
+            # How much gas is lost or gained dure to outflows/inflows
+            gas_inf,gas_out = gas_inandout(
+                self.inflows['on'],\
+                self.outflows['on'],\
+                self.inflows['xSFR'],\
+                self.sfr(t),\
+                mstars)
+        #    print 'time=',t,'sfr=',self.sfr(t)/1e9,'mstar=',mstars/1e10,'gas=','dust=',md_all/1e6,gas_out,gas_inf
 
             '''
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
             '''
+            # metals lost due to astration
             metals_ast = astration(metals,mg,self.sfr(t))
-            if self.outflows['metals']:
-                metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
-            else:
-                metals_out = 0.
-            metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
+            # are outflows and inflows on (True) and if so what metal parameters needed?
+            metals_inf,metals_out = metals_inandout(
+                self.inflows['on'],\
+                self.inflows['xSFR'],\
+                self.inflows['metals'],\
+                self.outflows['on'],\
+                self.outflows['metals'],\
+                self.sfr(t),\
+                metallicity,
+                mstars)
 
             '''
             DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
                          - (1-f)*Md/t_destroy + f(1-Md/Mg)*Md/t_graingrowth) * dt
             set up astration, inflows, outflows, destruction, grain growth components
             '''
-            if self.outflows['dust']:
-                mdust_out = (md/mg)*outflows(self.sfr(t), self.outflows['xSFR'])
-            else:
-                mdust_out = 0.
-            mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
+            # are outflows and inflows on (True) and if so what dust parameters needed?
+
+            mdust_inf,mdust_out = dust_inandout(
+                self.inflows['on'],\
+                self.inflows['xSFR'],\
+                self.inflows['dust'],\
+                self.outflows['on'],\
+                self.outflows['dust'],\
+                self.sfr(t),\
+                (md/mg),
+                mstars)
+
             mdust_ast = astration(md,mg,self.sfr(t))
 
-            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
-            mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
-
+            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'],self.epsilon,mg, self.sfr(t), \
+                metallicity, md, self.coldfraction)
+            mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, \
+                md, self.coldfraction)
             '''
             Get ejected masses from stars when they die
             gas_ej = e(t): ejected gas mass from stars of mass m at t = taum
@@ -228,12 +243,13 @@ class ChemModel:
                     mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             '''
-            STARS: dM_stars = (sfr(t) - e(t)) * dt
+            STARS: dM_stars = (sfr(t) - e(t) ) * dt
             '''
             dmstars = self.sfr(t) - gas_ej
-
+            
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
+            all time units should be in Gyr or per Gyr
             '''
             dmg = -gas_ast + gas_ej + gas_inf - gas_out
             dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
@@ -263,7 +279,6 @@ class ChemModel:
             all_results.append((t, mg, mstars, metals, metallicity, \
                                 md, dust_to_metals, self.sfr(t)*1e-9, \
                                 md_all, md_stars, md_gg, t_des, t_gg))
-            # to test code kinks
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return np.array(all_results)
 
@@ -276,7 +291,7 @@ class ChemModel:
         dm = 0.01
         prev_t = 1e-3
         # define time array
-        time = self.sfh[:,0]
+        time = self.sfh[:,0] # this is in units of Gyrs
         time = time[time < self.tend]
         for t in time:
             # need to clear the sn_rates as we don't want them adding up
@@ -291,10 +306,10 @@ class ChemModel:
                     dm = 0.5
                 sn_rate += initial_mass_function(m, self.imf_type)*dm
                 m += dm
-            r_sn = self.sfr(t)*sn_rate # units in N per Gyr
+            r_sn = self.sfr(t)*sn_rate # this is in units of Msun Gyr^-1 x Msun --> Gyr^-1
             dt = t - prev_t
             prev_t = t
-            sn_rate_list.append(r_sn)
+            sn_rate_list.append(r_sn) # roughly is ~10 per century at early times and <1 per century at late time
         return np.array(sn_rate_list)
 
 class BulkEvolve:
@@ -316,12 +331,14 @@ class BulkEvolve:
 
 
     def upload_csv(self):
-        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source', 'reduce_sn_dust', 'destroy', 'inflows_metals', 'inflows_xSFR', 'inflows_dust', 'outflows_metals','outflows_xSFR', 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct']
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source',\
+         'reduce_sn_dust', 'destroy_on', 'mass_destroy', 'inflows_on', 'inflows_metals', 'inflows_xSFR', \
+         'inflows_dust', 'outflows_on','outflows_metals', 'outflows_dust', 'cold_gas_fraction',\
+          'epsilon_grain']
         alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
-                    ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
-                    ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
-                    ('f16','<f8'), ('f17','<f8')])
+                    ('f8','bool'), ('f9','<f8'), ('f10','bool'), ('f11','<f8'),('f12','<f8'),('f13','<f8'),
+                    ('f14','bool'), ('f15','bool'),('f16','bool'), ('f17','<f8'), ('f18','<f8')])
         try:
             data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
         except ValueError:
@@ -330,12 +347,15 @@ class BulkEvolve:
         for i in range(0,len(data)):
             gal_tup = zip(names, data[i])
             gal_data = dict(gal_tup)
-            gal_data['inflows'] = {'metals': gal_data['inflows_metals'],
+            gal_data['inflows'] = { 'on': gal_data['inflows_on'],
+                                    'metals': gal_data['inflows_metals'],
                                     'xSFR': gal_data['inflows_xSFR'],
                                     'dust': gal_data['inflows_dust']}
-            gal_data['outflows'] = {'metals': gal_data['outflows_metals'],
-                                    'xSFR': gal_data['outflows_xSFR'],
+            gal_data['outflows'] = {'on': gal_data['inflows_on'],
+                                    'metals': gal_data['outflows_metals'],
                                     'dust': gal_data['outflows_dust']}
+            gal_data['destroy'] = {'on': gal_data['destroy_on'],
+                                    'mass': gal_data['mass_destroy']}
             init_list.append(gal_data)
         self.inits = init_list
         return
