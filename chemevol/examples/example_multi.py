@@ -60,15 +60,14 @@ inits = [
 			't_end': 20.,
 			'gamma': 0,
 			'IMF_fn': 'Chab',
-			'dust_source': 'All',
+			'dust_source': 'SN+LIMS',
 			'reduce_sn_dust': False,
 			'destroy': False,
 			'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 6, 'dust': False},
+			'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 			'cold_gas_fraction': 0.5,
 			'epsilon_grain': 0,
 			'destruct': 0 },
-
 
 		{	'name': 'Model_II_test',
 			'gasmass_init': 4e10,
