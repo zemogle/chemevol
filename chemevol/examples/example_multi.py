@@ -84,8 +84,6 @@ inits = [
 				'epsilon_grain': 800}
 		]
 
-
-
 snrate = []
 all_results = []
 galaxies = []
