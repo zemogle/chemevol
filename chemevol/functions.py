@@ -329,13 +329,12 @@ def grow_timescale(on,e,g,sfr,z,d):
     - f_c: fraction of gas in cold dense state for grain growth
 
     '''
-    sfr_in_years = sfr*1e-9 # to convert from per Gyr to per yr
     if (on == False or z <= 0 or e <= 0): # set to zero if destroy not turned on
         t_grow = 0
     else:
-        t_grow = g/(e*z*sfr_in_years)
+        t_grow = g/(e*z*sfr)
         t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
-    return t_grow
+    return t_grow #units of Gyrs
 
 def graingrowth(on,e,g,sfr,z,md,f_c):
     '''
@@ -360,9 +359,9 @@ def graingrowth(on,e,g,sfr,z,md,f_c):
         mdust_gg = 0.
         time_gg = 0.
     else:
-        time_gg = 1e-9*grow_timescale(on,e,g,sfr,z,md) # convert grain growth timescale to Gyrs
-        mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
-    return mdust_gg, time_gg
+        time_gg = grow_timescale(on,e,g,sfr,z,md) # units of Gyrs as SFR = Msun/Gyr
+        mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1  # units of mdust per Gyr
+    return mdust_gg, time_gg # units of Gyrs
 
 def destruction_timescale(on,destruct,g,supernova_rate):
     '''
@@ -377,12 +376,11 @@ def destruction_timescale(on,destruct,g,supernova_rate):
     destruct is often 100 or 1000 Msolar, appropriate for SNe expanding
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
     '''
-    supernova_rate = supernova_rate*1e-9
     if (supernova_rate <= 0 or on == False or destruct == 0): # set to zero if destroy not turned on
         t_destroy = 0.
     else:
         # sn_rate is in units of N per Gyr
-        t_destroy = g/(destruct*supernova_rate)
+        t_destroy = g/(destruct*supernova_rate)  # units are in Gyrs
     return t_destroy
 
 def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
@@ -404,8 +402,9 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
         mdust_des = 0
         t_des = 0
     else:
-        t_des = 1e-9*destruction_timescale(on,destruct,gasmass,supernova_rate)
+        t_des = destruction_timescale(on,destruct,gasmass,supernova_rate)
         mdust_des = md*(1-f_c)*t_des**-1
+#    print t_des, mdust_des
     return mdust_des, t_des
 
 def inflows(sfr,parameter):

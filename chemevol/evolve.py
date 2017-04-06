@@ -121,7 +121,7 @@ class ChemModel:
         '''
         try:
             vals = np.loadtxt(self.SFH_file)
-            scale = [1e-9,1e9] # Gyr conversions for time, SFR
+            scale = [1e-9,1e9] # Gyr conversions for time, SFR (because we want to do dt integral over Gyrs)
             sfh = vals*scale # converts time in Gyr and SFR in Msun/Gyr
             # extrapolates SFH back to 0.001Gyr using SFH file and power law (gamma)
             final_sfh = extra_sfh(sfh, self.gamma)
@@ -163,7 +163,7 @@ class ChemModel:
         sfr_lookup = []
         all_results = []
         # Limit time to less than tend
-        time = self.sfh[:,0]
+        time = self.sfh[:,0] # sfr is in units of Msun Gyr^-1
         time = time[time < self.tend]
         now = datetime.now()
         # TIME integral
@@ -229,11 +229,12 @@ class ChemModel:
 
             mdust_ast = astration(md,mg,self.sfr(t))
 
+
             mdust_gg, t_gg = graingrowth(self.choice_dust['gg'],self.epsilon,mg, self.sfr(t), \
                 metallicity, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, \
                 md, self.coldfraction)
-
+        #    print t,self.sfr(t),r_sn,t_gg,t_des
             '''
             Get ejected masses from stars when they die
             gas_ej = e(t): ejected gas mass from stars of mass m at t = taum
@@ -279,7 +280,7 @@ class ChemModel:
                                 md, dust_to_metals, self.sfr(t)*1e-9, \
                                 md_all, md_stars, md_gg, t_des, t_gg))
             # to test code kinks
-            print t, 'all',md_all, 'stardust', md_stars, mdust_stars,'gg', md_gg, mdust_gg, 'inf', mdust_inf, 'out',mdust_out, 'des',mdust_des
+            print t, 'all',md_all/1e8, 'stardust', md_stars/1e8, mdust_stars/1e8,'gg', md_gg/1e8, mdust_gg/1e8, 'inf', mdust_inf, 'out',mdust_out, 'des',mdust_des/1e8
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return np.array(all_results)
 
@@ -292,7 +293,7 @@ class ChemModel:
         dm = 0.01
         prev_t = 1e-3
         # define time array
-        time = self.sfh[:,0]
+        time = self.sfh[:,0] # this is in units of Gyrs
         time = time[time < self.tend]
         for t in time:
             # need to clear the sn_rates as we don't want them adding up
@@ -307,10 +308,10 @@ class ChemModel:
                     dm = 0.5
                 sn_rate += initial_mass_function(m, self.imf_type)*dm
                 m += dm
-            r_sn = self.sfr(t)*sn_rate # units in N per Gyr
+            r_sn = self.sfr(t)*sn_rate # this is in units of Msun Gyr^-1 x Msun --> Gyr^-1
             dt = t - prev_t
             prev_t = t
-            sn_rate_list.append(r_sn)
+            sn_rate_list.append(r_sn) # roughly is ~10 per century at early times and <1 per century at late time
         return np.array(sn_rate_list)
 
 class BulkEvolve:
