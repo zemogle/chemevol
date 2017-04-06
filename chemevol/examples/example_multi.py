@@ -67,9 +67,8 @@ inits = [
 				'inflows':{'on': False, 'metals': 0, 'xSFR': 0, 'dust': 0},
 				'outflows':{'on': True, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
-				'epsilon_grain': 0}
-			]
-'''
+				'epsilon_grain': 0},
+
 			{	'name': 'Model_B',
 				'gasmass_init': 4e10,
 				'SFH': 'MilkyWay.sfh',
@@ -84,7 +83,7 @@ inits = [
 				'cold_gas_fraction': 0.0,
 				'epsilon_grain': 800}
 		]
-'''
+
 
 
 snrate = []

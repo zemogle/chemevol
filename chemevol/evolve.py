@@ -248,6 +248,7 @@ class ChemModel:
             dmstars = self.sfr(t) - gas_ej
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
+            all time units should be in Gyr or per Gyr
             '''
             dmg = -gas_ast + gas_ej + gas_inf - gas_out
             dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
@@ -277,8 +278,6 @@ class ChemModel:
             all_results.append((t, mg, mstars, metals, metallicity, \
                                 md, dust_to_metals, self.sfr(t)*1e-9, \
                                 md_all, md_stars, md_gg, t_des, t_gg))
-            # to test code kinks
-            print t, 'all',md_all/1e8,'inf', mdust_inf, 'out',mdust_out
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return np.array(all_results)
 
