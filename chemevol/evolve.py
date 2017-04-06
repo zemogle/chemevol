@@ -229,7 +229,6 @@ class ChemModel:
 
             mdust_ast = astration(md,mg,self.sfr(t))
 
-
             mdust_gg, t_gg = graingrowth(self.choice_dust['gg'],self.epsilon,mg, self.sfr(t), \
                 metallicity, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, \
@@ -279,7 +278,7 @@ class ChemModel:
                                 md, dust_to_metals, self.sfr(t)*1e-9, \
                                 md_all, md_stars, md_gg, t_des, t_gg))
             # to test code kinks
-            print t, 'all',md_all/1e8, 'stardust', md_stars/1e8, mdust_stars/1e8,'gg', md_gg/1e8, mdust_gg/1e8, 'inf', mdust_inf, 'out',mdust_out, 'des',mdust_des/1e8
+            print t, 'all',md_all/1e8,'inf', mdust_inf, 'out',mdust_out
         print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
         return np.array(all_results)
 
