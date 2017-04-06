@@ -398,6 +398,7 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
+
     if (on == False or md == 0 or supernova_rate == 0 or destruct == 0):
         mdust_des = 0
         t_des = 0
@@ -434,7 +435,6 @@ def gas_inandout(in_on,out_on,in_sfr,sfr,m):
         gas_inf = 0
     else:
         gas_inf = inflows(sfr,in_sfr)
-
     if not out_on:
         gas_out = 0.
     else:

@@ -73,7 +73,7 @@ class ChemModel:
             self.sfh_file = self.SFH_file
             self.load_sfh()
         except KeyError:
-            logger.error('You must provide initial parameters')
+            logger.error('You must provide initial parameters in the correct format')
         # Set up IMF Function determined by user, allow for variety of spellings
         if (self.imf_type in ["Chab", "chab", "c"]):
             self.imf = imf_chab
@@ -246,6 +246,7 @@ class ChemModel:
             STARS: dM_stars = (sfr(t) - e(t) ) * dt
             '''
             dmstars = self.sfr(t) - gas_ej
+            
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
             all time units should be in Gyr or per Gyr

@@ -38,7 +38,7 @@ from functions import remnant_mass, destruction_timescale, destroy_dust, graingr
                     inflows, ejected_gas_mass, astration, fresh_metals, \
                     ejected_dust_mass, imf_chab, outflows_feldmann, gas_inandout,\
                     metals_inandout, dust_inandout
-
+        
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
