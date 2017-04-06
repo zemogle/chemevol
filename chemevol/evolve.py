@@ -234,7 +234,6 @@ class ChemModel:
                 metallicity, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, \
                 md, self.coldfraction)
-        #    print t,self.sfr(t),r_sn,t_gg,t_des
             '''
             Get ejected masses from stars when they die
             gas_ej = e(t): ejected gas mass from stars of mass m at t = taum
