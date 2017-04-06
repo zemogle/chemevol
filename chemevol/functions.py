@@ -404,7 +404,7 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
     else:
         t_des = destruction_timescale(on,destruct,gasmass,supernova_rate)
         mdust_des = md*(1-f_c)*t_des**-1
-    print t_des, mdust_des
+    #print t_des, mdust_des
     return mdust_des, t_des # in Gyrs
 
 def inflows(sfr,parameter):

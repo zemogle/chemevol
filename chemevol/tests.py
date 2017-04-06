@@ -82,8 +82,7 @@ class TestFunctions:
     '''
     def test_timescale_destruction(self):
         destroy = destruction_timescale(True,1000.,1.0992e10,6.6e6)
-        destroy = destroy*1e-6 #in Myr
-        assert  1660 < destroy < 1670
+        assert  1.660 < destroy < 1.670
 
     def test_dust_destruction(self):
         dust_sink = destroy_dust(True,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
@@ -100,8 +99,8 @@ class TestFunctions:
 
     def test_timescale_graingrowth(self):
         grow = grow_timescale(True,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
-        grow = grow*1e-6 #in Myr
-        assert 86.3 < grow < 86.4
+        grow = grow
+        assert 0.0863 < grow < 0.0864
 
     def test_timescale_graingrowth_off(self):
         grow = grow_timescale(False,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
