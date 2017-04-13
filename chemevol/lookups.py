@@ -93,7 +93,8 @@ t_lifetime['lifetime_high_metals'].unit = 'Gyr'
             M < 9 Msolar: mp_Z from van den Hoek &
             Groenewegen 1997 (A & AS 123 305) Z=0.001,0.004,0.008,0.02
 '''
-mass_yields =np.array([(0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-5, 0, 0),
+mass_yields =np.array([
+             (0.9, 0, 0, 0, 1.08e-5, 0, 6.83e-5, 0, 0),
              (1.0, 0, 0, 0, 8.54e-4, 0, 1.12e-4, 0, 1.61e-4),
              (1.3, 0, 3.09e-3, 0, 1.99e-3, 0, 1.70e-3, 0, 3.03e-3),
              (1.5, 0, 3.53e-3, 0, 2.57e-3, 0, 3.06e-3, 0, 2.08e-3),
