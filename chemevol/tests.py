@@ -347,15 +347,15 @@ class TestTables:
         assert lifetime[1][1] == 9.5
         assert lifetime[15][2] == 0.0026
 
-    def test_yields_return_by_mass(self):
-        assert mass_yields[1][1] == 0.
-        assert mass_yields[12][1] == 0.27
-        assert mass_yields[1][4] == 8.54e-4
-        assert mass_yields[20][3] == 41.6
-        assert mass_yields[1][6] == 1.12e-4
-        assert mass_yields[20][6] == 9.39
-        assert mass_yields[0][8] == 6.83e-3
-        assert mass_yields[19][8] == 17.75
+#    def test_yields_return_by_mass(self):
+#        assert mass_yields[1][1] == 0.
+#        assert mass_yields[12][1] == 0.27
+#        assert mass_yields[1][4] == 8.54e-4
+#        assert mass_yields[20][3] == 41.6
+#        assert mass_yields[1][6] == 1.12e-4
+#        assert mass_yields[20][6] == 9.39
+#        assert mass_yields[0][8] == 6.83e-3
+#        assert mass_yields[19][8] == 17.75
 
 class Testlookups:
     '''
