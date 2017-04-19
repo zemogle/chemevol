@@ -122,7 +122,7 @@ class TestFunctions:
 
     def test_fresh_metals_lowmassb_lowmetals(self):
         mass_yields = fresh_metals(2.,0.001)
-        assert mass_yields == 0.00529
+        assert mass_yields == 0.01058
 
     def test_fresh_metals_midmass_lowmetals(self):
         mass_yields = fresh_metals(30.,0.001)
@@ -134,11 +134,11 @@ class TestFunctions:
 
     def test_fresh_metals_lowmassa_highmetals(self):
         mass_yields = fresh_metals(1.,0.02)
-        assert mass_yields == 1.61e-4
+        assert mass_yields == 0.00161
 
     def test_fresh_metals_lowmassb_highmetals(self):
         mass_yields = fresh_metals(2.,0.02)
-        assert mass_yields == 0.00543
+        assert mass_yields == 0.00788
 
     def test_fresh_metals_midmass_highmetals(self):
         mass_yields = fresh_metals(30.,0.02)
@@ -251,7 +251,7 @@ class TestTables:
     def test_lifetimes(self):
         assert lifetime[1][1] == 9.5
         assert lifetime[15][2] == 0.0026
-'''
+
     def test_yields_return_by_mass(self):
         assert mass_yields[1][1] == 0.
         assert mass_yields[12][1] == 0.27
@@ -259,9 +259,9 @@ class TestTables:
         assert mass_yields[20][3] == 41.6
         assert mass_yields[1][6] == 1.12e-4
         assert mass_yields[20][6] == 9.39
-        assert mass_yields[0][8] == 6.83e-3
+        assert mass_yields[0][8] == 0
         assert mass_yields[19][8] == 17.75
-'''
+
 class Testlookups:
     '''
     Test the lookup functions
