@@ -67,9 +67,8 @@ inits = [
 			'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 			'cold_gas_fraction': 0.5,
 			'epsilon_grain': 0,
-			'destruct': 0 }
-			]
-''',
+			'destruct': 0 },
+
 
 		{	'name': 'Model_II_test',
 			'gasmass_init': 4e10,
@@ -161,7 +160,7 @@ inits = [
 			'epsilon_grain': 15000,
 			'destruct': 150 }
 ]
-'''
+
 
 snrate = []
 all_results = []
