@@ -258,7 +258,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     choice_lims = choice['lims']
     # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
     if m <= 8. and choice_lims:
-        delta_LIMS_recycled = 0.45
+        delta_LIMS_recycled = 0.40
     else:
         delta_LIMS_recycled = 0.
 
