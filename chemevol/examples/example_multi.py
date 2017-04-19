@@ -193,7 +193,8 @@ for item in inits:
 		   'dust_stars' : all_results[:,9],
 		   'dust_ism' : all_results[:,10],
 		   'time_destroy' : all_results[:,11],
-		   'time_gg' : all_results[:,12]}
+		   'time_gg' : all_results[:,12],
+           'oxygenmass' : all_results[:,13]}
 	params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
 	params['ssfr'] = params['sfr']/params['mgas']
 	# write to astropy table
