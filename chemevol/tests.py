@@ -68,10 +68,13 @@ class TestFunctions:
         mass = ejected_gas_mass(120.5,10.5,1)
         assert mass == 0.
 
-    def test_timescale_destruction(self):
-        destroy = destruction_timescale(1000.,1.0992e10,6.6e6)
-        destroy = destroy*1e-6 #in Myr
-        assert  1660 < destroy < 1670
+    def test_timescale_destruction_on(self):
+        destroy = destruction_timescale(True,1000.,1.0992e10,6.6e6)
+        assert  1.660 < destroy < 1.670
+
+    def test_timescale_destruction_off(self):
+        destroy = destruction_timescale(False,1000.,1.0992e10,6.6e6)
+        assert  destroy == 0
 
     def test_dust_destruction(self):
         dust_sink = destroy_dust(1,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
@@ -83,10 +86,13 @@ class TestFunctions:
         ast = astration(1,gasmass, sfr)
         assert ast == 1e-9
 
-    def test_timescale_graingrowth(self):
-        grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
-        grow = grow*1e-6 #in Myr
-        assert 86.3 < grow < 86.4
+    def test_timescale_graingrowth_on(self):
+        grow = grow_timescale(True,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        assert 0.0863 < grow < 0.0864
+
+    def test_timescale_graingrowth_off(self):
+        grow = grow_timescale(False,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        assert grow == 0
 
     def test_dust_graingrowth(self):
         dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
@@ -97,7 +103,7 @@ class TestFunctions:
         assert 8.18 < gas_outflow < 8.19
 
     def test_outflow_feld_high(Self):
-        gas_outflow = outflows_feldmann(10.0,1e8)
+        gas_outflow = outflows_feldmann(1,1e8)
         assert gas_outflow == 30
 
     def test_outflow_feld_m(Self):
@@ -162,7 +168,7 @@ class TestFunctions:
 
     def test_fresh_dust_mass_midmass_lowmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,1.0,5.0,0.001)
-        assert 0.00346 < dust_mass < 0.00348
+        assert 0.0173 < dust_mass < 0.0174
 
     def test_fresh_dust_mass_highmass_lowmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,1.0,30.0,0.001)

@@ -222,6 +222,8 @@ def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
                 sfrdiff * imf(m)
     return dej
 
+
+
 def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected dust mass from stars by mass loss/stellar death
@@ -304,7 +306,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
 
-    delta_new_LIMS = 0.45
+    delta_new_LIMS = 0.40
     if (m <= 8.0) and choice['lims']:
         dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
     elif (m > 8.0) and (m <= 40.0) and choice['sn']:
