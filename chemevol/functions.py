@@ -274,7 +274,7 @@ def ejected_oxygen_mass(m, sfrdiff, oxydiff, metallicity, imf):
         dej = ((m - (remnant_mass(m)))*oxydiff + fresh_oxygen(m, metallicity)) * \
                 sfrdiff * imf(m)
     return dej
-    
+
 
 def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
@@ -312,7 +312,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     choice_lims = choice['lims']
     # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
     if m <= 8. and choice_lims:
-        delta_LIMS_recycled = 0.40
+        delta_LIMS_recycled = 0.15
     else:
         delta_LIMS_recycled = 0.
 
@@ -358,7 +358,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
 
-    delta_new_LIMS = 0.4
+    delta_new_LIMS = 0.15
     if (m <= 8.0) and choice['lims']:
         dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
     elif (m > 8.0) and (m <= 40.0) and choice['sn']:

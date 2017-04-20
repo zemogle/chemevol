@@ -261,6 +261,7 @@ class ChemModel:
                 print ('Oops you have no interstellar medium left')
                 break
             metals += dmetals*dt # metal mass integral
+            oxymass += doxymass*dt # oxygen mass integral
             md += ddust*dt # dust mass integral
             md_all += dust_source_all*dt # dust mass sources integral
             md_gg += mdust_gg*dt # dust source from grain growth only
