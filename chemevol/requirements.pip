@@ -1,8 +1,8 @@
 astropy
 #ipython
 #ipython-genutils
-line-profiler
-matplotlib
+#line-profiler
+#matplotlib
 numpy
 pytest
 python-dateutil
