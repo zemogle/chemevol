@@ -1,9 +1,10 @@
 astropy
-#ipython
-#ipython-genutils
-#line-profiler
-#matplotlib
 numpy
 pytest
 python-dateutil
 pytz
+
+#ipython
+#ipython-genutils
+#line-profiler
+#matplotlib
