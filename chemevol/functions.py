@@ -355,7 +355,7 @@ def graingrowth(choice,e,g,sfr,z,md,f_c):
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
 
-    if choice and z != 0. and e != 0.: #accounts for 1/z in equation
+    if choice and z != 0. and e != 0. : #accounts for 1/z and t_grow in equation
         time_gg = 1e-9*grow_timescale(e,g,sfr,z,md) # convert grain growth timescale to Gyrs
         mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
     else:
