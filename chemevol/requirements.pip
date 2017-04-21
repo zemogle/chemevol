@@ -1,6 +1,6 @@
 astropy
-ipython
-ipython-genutils
+#ipython
+#ipython-genutils
 line-profiler
 matplotlib
 numpy
