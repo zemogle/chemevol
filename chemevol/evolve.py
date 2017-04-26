@@ -6,11 +6,12 @@ of gas, metals and dust in galaxies.
 Running this script will produce a results data file (filename.dat) with file name given by user
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
-and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040).
+and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040) and
+de Vis et al 2017b (MNRAS accepted).
 
 If you use this code, please do cite the above papers.
 
-Copyright (C) 2015 Haley Gomez, Edward Gomez and Simon Schofield, Cardiff University and LCOGT
+Copyright (C) 2015 Haley Gomez, Edward Gomez, Cardiff University and LCOGT
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -161,7 +162,7 @@ class ChemModel:
         md_stars = 0
         md_gg = 0
         metals = 0
-        oxymass = 0        
+        oxymass = 0
         prev_t = 1e-3
         metals_pre = 0
         oxymass_pre = 0
@@ -206,12 +207,12 @@ class ChemModel:
             oxymass_ast = astration(oxymass,mg,self.sfr(t))
             if self.outflows['metals']:
                 metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
-                oxymass_out = oxymass/mg*outflows(self.sfr(t), self.outflows['xSFR'])                
+                oxymass_out = oxymass/mg*outflows(self.sfr(t), self.outflows['xSFR'])
             else:
                 metals_out = 0.
                 oxymass_out = 0.
             metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
-            oxymass_inf = 0.64*self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])  # 64% of the metal mass consists of oxygen according to the initial mass abundances for Z=0.001 (Table 1 from Van Den Hoek et al., 1997)  
+            oxymass_inf = 0.64*self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])  # 64% of the metal mass consists of oxygen according to the initial mass abundances for Z=0.001 (Table 1 from Van Den Hoek et al., 1997)
 
             '''
             DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
