@@ -1,6 +1,7 @@
+###########################################################################################
+# Example of using ChemEvol without using the BulkEvolve class, but with multiple galaxies.
+###########################################################################################
 '''
-Example of using ChemEvol without using the BulkEvolve class, but with multiple galaxies.
-
 ---------------------------------------------------
 First set up initial parameters for galaxy model by editing the dictionary
 initial_galaxy_params

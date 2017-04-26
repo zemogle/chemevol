@@ -1,5 +1,5 @@
 [
-			{	"name": "Model_I",
+			{	"name": "test_model_1",
 				"gasmass_init": 4e10,
 				"SFH": "Milkyway.sfh",
         		"t_end": 20.0,
@@ -14,7 +14,7 @@
 				"epsilon_grain": 800.0,
         		"destruct": 0.0  },
 
-			{	"name" : "Model_VI",
+			{	"name" : "test_model_2",
 				"gasmass_init": 4e10,
   				"SFH": "MilkyWay.sfh",
           		"t_end": 20.0,
