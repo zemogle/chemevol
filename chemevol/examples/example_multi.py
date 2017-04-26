@@ -112,7 +112,7 @@ inits = [
 			'inflows':{'metals': 0., 'xSFR': 1.7, 'dust': 0},
 			'outflows':{'metals': True, 'xSFR': 1.7,'dust': True},
 			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 800,
+			'epsilon_grain': 700,
 			'destruct': 150 },
 
 		{	'name': 'Model_V_test',
@@ -127,7 +127,7 @@ inits = [
 			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
 			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
 			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 6000,
+			'epsilon_grain': 5000,
 			'destruct': 1500},
 
 		{	'name': 'Model_VI_test', #needs to be run till 60Gyrs
@@ -142,7 +142,7 @@ inits = [
 			'inflows':{'metals': 0., 'xSFR': 2.5, 'dust': 0},
 			'outflows':{'metals': True, 'xSFR': 2.5,'dust': True},
 			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 10000,
+			'epsilon_grain': 8000,
 			'destruct': 150},
 
 		{	'name': 'Model_VII_test',
@@ -157,7 +157,7 @@ inits = [
 			'inflows':{'metals': 0., 'xSFR': 4, 'dust': 0},
 			'outflows':{'metals': True, 'xSFR': 4,'dust': True},
 			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 15000,
+			'epsilon_grain': 12000,
 			'destruct': 150 }
 ]
 
@@ -176,7 +176,8 @@ for item in inits:
 
 	all results: 	t, mg, m*, mz, Z, md, md/mz, sfr,
 					dust_source(all), dust_source(stars),
-					dust_source(ism), destruction_time, graingrowth_time
+					dust_source(ism), destruction_time, graingrowth_time,
+					oxygen_mass
 	'''
 	snrate = ch.supernova_rate()
 	all_results = ch.gas_metal_dust_mass(snrate)
@@ -193,13 +194,14 @@ for item in inits:
 		   'dust_stars' : all_results[:,9],
 		   'dust_ism' : all_results[:,10],
 		   'time_destroy' : all_results[:,11],
-		   'time_gg' : all_results[:,12]}
+		   'time_gg' : all_results[:,12],
+           'oxygenmass' : all_results[:,13]}
 	params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
 	params['ssfr'] = params['sfr']/params['mgas']
 	# write to astropy table
 	t = Table(params)
 	# write out to file based on 'name' identifier
 	name = item['name']
-	t.write(str(name+'.dat'), format='ascii', delimiter=' ')
+	t.write(str(name+'.dat'), format='ascii', delimiter=' ',overwrite=True)
 	# if you want an array including every inits entry:
 	galaxies.append(params)
