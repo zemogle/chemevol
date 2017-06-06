@@ -192,18 +192,6 @@ def find_nearest(lookup,value):
     '''
     Take a 2D array and return pair of nearest neighbour values based on first column
     '''
-    # indices = zip(*lookup)
-    # pos = bisect_left(indices[0], value)
-    # if pos == 0:
-    #     return lookup[0]
-    # if pos == len(indices[0]):
-    #     return lookup[-1]
-    # before = indices[0][pos - 1]
-    # after = indices[0][pos]
-    # if after - value < value - before:
-    #    return lookup[pos]
-    # else:
-    #    return lookup[pos - 1]
     col1 = lookup[:,0]
     idx = (np.abs(col1-value)).argmin()
     return lookup[idx]

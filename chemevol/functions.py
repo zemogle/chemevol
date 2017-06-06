@@ -180,27 +180,41 @@ def fresh_metals(m, metallicity):
     For m <= 40, winds + SNe contribute
     '''
     massyields = find_nearest(mass_yields, m)
+    oxymassyields = find_nearest(oxymass_yields, m)
     if metallicity <= 0.0025:
         if m <= 40:
-            sum_yields = massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')]
+            sum_yields_tot, sum_yields_oxy = \
+                massyields[yn.index('yields_sn_001')]+massyields[yn.index('yields_winds_001')], \
+                oxymassyields[yn.index('yields_sn_001')]+oxymassyields[yn.index('yields_winds_001')]
+
         else:
-            sum_yields = massyields[yn.index('yields_winds_001')]
+            sum_yields_tot, sum_yields_oxy = massyields[yn.index('yields_winds_001')],\
+                oxymassyields[yn.index('yields_winds_001')]
     elif metallicity <= 0.006:
         if m <= 40:
-            sum_yields = massyields[yn.index('yields_sn_004')]+massyields[yn.index('yields_winds_004')]
+            sum_yields_tot, sum_yields_oxy  = \
+                massyields[yn.index('yields_sn_004')]+massyields[yn.index('yields_winds_004')], \
+                oxymassyields[yn.index('yields_sn_004')]+oxymassyields[yn.index('yields_winds_004')]
         else:
-            sum_yields = massyields[yn.index('yields_winds_004')]
+            sum_yields_tot, sum_yields_oxy  = massyields[yn.index('yields_winds_004')], \
+                oxymassyields[yn.index('yields_winds_004')]
     elif metallicity <= 0.01:
         if m <= 40:
-            sum_yields = massyields[yn.index('yields_sn_008')]+massyields[yn.index('yields_winds_008')]
+            sum_yields_tot, sum_yields_oxy  = \
+                massyields[yn.index('yields_sn_008')]+massyields[yn.index('yields_winds_008')],\
+                oxymassyields[yn.index('yields_sn_008')]+oxymassyields[yn.index('yields_winds_008')]
         else:
-            sum_yields = massyields[yn.index('yields_winds_008')]
+            sum_yields_tot, sum_yields_oxy  = massyields[yn.index('yields_winds_008')], \
+                oxymassyields[yn.index('yields_winds_008')]
     else:
         if m <= 40:
-            sum_yields = massyields[yn.index('yields_sn_02')]+massyields[yn.index('yields_winds_02')]
+            sum_yields_tot, sum_yields_oxy = \
+                massyields[yn.index('yields_sn_02')]+massyields[yn.index('yields_winds_02')],\
+                oxymassyields[yn.index('yields_sn_02')]+oxymassyields[yn.index('yields_winds_02')]
         else:
-            sum_yields = massyields[yn.index('yields_winds_02')]
-    return sum_yields
+            sum_yields_tot, sum_yields_oxy = massyields[yn.index('yields_winds_02')], \
+                oxymassyields[yn.index('yields_winds_02')]
+    return sum_yields_tot, sum_yields_oxy
 
 def fresh_oxygen(m, metallicity):
     '''
@@ -255,7 +269,7 @@ def ejected_oxygen_mass(m, sfrdiff, oxydiff, metallicity, imf):
                 sfrdiff * imf(m)
     return dej
 
-def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
+def ejected_metal_mass(m, sfrdiff, zdiff, oxydiff, metallicity, imf):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
     at time t, needs to be integrated from mass corresponding to
@@ -267,11 +281,14 @@ def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
     de (m,t) = (m-m_R(m)*Z(t-taum) + mp(m,Z)) x SFR(t-taum x phi(m)
     '''
     if m >= 120.0:
-        dej = 0.0
+        dej_tot, dej_oxy = 0, 0
     else:
-        dej = ((m - (remnant_mass(m)))*zdiff + fresh_metals(m, metallicity)) * \
-                sfrdiff * imf(m)
-    return dej
+        dej_tot, det_oxy = ((m - (remnant_mass(m)))*zdiff + fresh_metals(m, metallicity))[0] * \
+                sfrdiff * imf(m) , \
+                ((m - (remnant_mass(m)))*oxydiff + fresh_metals(m, metallicity))[1] * \
+                        sfrdiff * imf(m)
+
+    return dej_tot, det_oxy
 
 def ejected_dust_mass(choice, delta_lims, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
@@ -359,7 +376,7 @@ def dust_masses_fresh(choice, delta_lims, reduce_sn, m, metallicity):
 
 #    delta_new_LIMS = 0.15
     if (m <= 8.0) and choice['lims']:
-        dustmass = delta_lims * fresh_metals(m, metallicity)
+        dustmass = delta_lims * fresh_metals(m, metallicity)[0]
     elif (m > 8.0) and (m <= 40.0) and choice['sn']:
         # find dust mass from TF01 in dust_mass_sn table
         # assume massive star winds don't form dust
@@ -656,8 +673,8 @@ def mass_integral(choice, delta_lims, reduce_sn, t, metallicity, sfr_lookup, z_l
              zdiff = z_near(tdiff)[1] # find_nearest(z_lookup,tdiff)[1]
              oxydiff = oxy_near(tdiff)[1] # find_nearest(oxy_lookup,tdiff)[1]
              sfrdiff = sfr_near(tdiff)[1] # find_nearest(sfr_lookup,tdiff)[1]
-             ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
-             eom += ejected_oxygen_mass(mmid, sfrdiff, oxydiff, metallicity, imf) * dm
+             ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, oxydiff, metallicity, imf)[0] * dm
+             eom += ejected_metal_mass(mmid, sfrdiff, zdiff, oxydiff, metallicity, imf)[1] * dm
              em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
              edm += ejected_dust_mass(choice, delta_lims, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
 
