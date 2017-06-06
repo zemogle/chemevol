@@ -67,6 +67,7 @@ class ChemModel:
             self.SFH_file = inputs['SFH']
             self.coldfraction = inputs['cold_gas_fraction']
             self.epsilon = inputs['epsilon_grain']
+            self.delta_lims = inputs['delta_lims_fresh']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
                 self.SFH_file = 'chemevol/Milkyway.sfh'
@@ -240,13 +241,13 @@ class ChemModel:
             mdust_stars = ed(t): ejected dust mass from stars of mass m at t = taum (fresh + recycled)
             '''
             gas_ej, metals_stars, mdust_stars = \
-                    mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
+                    mass_integral(self.choice_dust, self.delta_lims, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
 
             '''
             STARS: dM_stars = (sfr(t) - e(t) ) * dt
             '''
             dmstars = self.sfr(t) - gas_ej
-            
+
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
             all time units should be in Gyr or per Gyr

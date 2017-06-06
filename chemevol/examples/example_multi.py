@@ -18,6 +18,8 @@ initial_galaxy_params
 						LIMS: low intermediate mass stars dust only
 						LIMS+SN: both SN and LIMS included
 						ALL: includes supernovae, LIMS and grain growth combined
+- delta_lims_fresh: 	Efficiency of fresh metals condensing into dust grains in LIMS (1<M_i<8Msun)
+						Set to 0.15-0.4 in Morgan & Edmunds (2003); 0.15 in De Vis et al 2017b in press
 - reduce_sn_dust		reduce the contribution from SN dust (currently set to values from
 						Todini & Ferrera 2001).  If leave default specify False. To reduce dust mass
 						then quote number to reduce by
@@ -62,6 +64,7 @@ inits = [
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'All',
+				'delta_lims_fresh': 0.15,
 				'reduce_sn_dust': False,
 				'destroy': {'on':False, 'mass': 0},
 				'inflows':{'on': False, 'metals': 0, 'xSFR': 0, 'dust': 0},
@@ -76,6 +79,7 @@ inits = [
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'All',
+				'delta_lims_fresh': 0.15, 	
 				'reduce_sn_dust': 20,
 				'destroy': {'on': True, 'mass': 100},
 				'inflows':{'on': True, 'metals': 0., 'xSFR': 1.5, 'dust': 0},
