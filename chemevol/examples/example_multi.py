@@ -94,6 +94,7 @@ galaxies = []
 
 for item in inits:
 	ch = ChemModel(**item)
+
 	'''
 	call modules to run the model:
 	snrate: 		SN rate at each time step - this also sets time array

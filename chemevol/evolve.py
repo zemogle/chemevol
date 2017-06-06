@@ -286,12 +286,13 @@ def gas_metal_dust_mass(self, sn_rate):
         time = self.sfh[:,0] # this is in units of Gyrs
         time = time[time < self.tend]
         for t in time:
+            
             # need to clear the sn_rates as we don't want them adding up
             sn_rate = 0.
             dsn_rate = 0.
             if t < 0.049:
                 m = lookup_fn(t_lifetime,'lifetime_high_metals',t)[0]
-                print m
+
             else:
                 m = 9.
             while m < 40.:
