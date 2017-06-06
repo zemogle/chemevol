@@ -116,8 +116,8 @@ yield_names = ['mass','yields_sn_001','yields_winds_001',
              'yields_sn_008','yields_winds_008',
              'yields_sn_02','yields_winds_02']
 
-#t_yields = Table(rows=mass_yields, names=yield_names,
-#                                          meta={'name': 'Mass Yields'})
+t_yields = Table(rows=mass_yields, names=yield_names,
+                                          meta={'name': 'Mass Yields'})
 
 '''
 - oxymass_yields: ejected oxygen yield in Msolar
@@ -162,8 +162,8 @@ oxymass_yields =np.array([(0.9, 0, -1.773e-06, 0, -6.498e-07, 0, 2.565e-05, 0, -
                 (85, 22.60, 0, 22.60, 0, 0.59, 3.37, 0.59, 3.37),
                 (120,35.30, 0,35.30, 0, 0.18, -0.13, 0.18, -0.13)])
 
-#oxyt_yields = Table(rows=oxymass_yields, names=yield_names,
-#                                          meta={'name': 'Oxygen Mass Yields'})
+oxyt_yields = Table(rows=oxymass_yields, names=yield_names,
+                                          meta={'name': 'Oxygen Mass Yields'})
 
 '''
 dust_mass_sn: dust mass returned by supernovae from Todini & Ferrara 2001 (MNRAS 325 276)
