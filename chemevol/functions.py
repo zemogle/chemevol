@@ -204,6 +204,59 @@ def fresh_metals(m, metallicity):
             sum_yields = massyields[yn.index('yields_winds_02')]
     return sum_yields
 
+def fresh_oxygen(m, metallicity):
+    '''
+    Function to return the fresh oxygen made by stars
+    These are metallicity dependent and calls oxymass_yields table
+    in lookups.py
+
+    metals for LIMS are from van Hoek
+    Massive stars are from Maeder 1992
+
+    For m > 40, then only winds contribute to ejected metals
+    For m <= 40, winds + SNe contribute
+    '''
+    oxymassyields = find_nearest(oxymass_yields, m)
+    if metallicity <= 0.0025:
+        if m <= 40:
+            sum_yields = oxymassyields[yn.index('yields_sn_001')]+oxymassyields[yn.index('yields_winds_001')]
+        else:
+            sum_yields = oxymassyields[yn.index('yields_winds_001')]
+    elif metallicity <= 0.006:
+        if m <= 40:
+            sum_yields = oxymassyields[yn.index('yields_sn_004')]+oxymassyields[yn.index('yields_winds_004')]
+        else:
+            sum_yields = oxymassyields[yn.index('yields_winds_004')]
+    elif metallicity <= 0.01:
+        if m <= 40:
+            sum_yields = oxymaessyields[yn.index('yields_sn_008')]+oxymassyields[yn.index('yields_winds_008')]
+        else:
+            sum_yields = oxymassyields[yn.index('yields_winds_008')]
+    else:
+        if m <= 40:
+            sum_yields = oxymassyields[yn.index('yields_sn_02')]+oxymassyields[yn.index('yields_winds_02')]
+        else:
+            sum_yields = oxymassyields[yn.index('yields_winds_02')]
+    return sum_yields
+
+def ejected_oxygen_mass(m, sfrdiff, oxydiff, metallicity, imf):
+    '''
+    Calculate the ejected oxygen mass from stars by mass loss/stellar death
+    at time t, needs to be integrated from mass corresponding to
+    age of system (tau(m)) -- 120 Msolar.
+
+    It calls function fresh_oxygen to find correct mass of new
+    oxygen ejected by stars of mass m (metallicity dependent)
+
+    de (m,t) = (m-m_R(m)*Z(t-taum) + mp(m,Z)) x SFR(t-taum x phi(m)
+    '''
+    if m >= 120.0:
+        dej = 0.0
+    else:
+        dej = ((m - (remnant_mass(m)))*oxydiff + fresh_oxygen(m, metallicity)) * \
+                sfrdiff * imf(m)
+    return dej
+
 def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
     '''
     Calculate the ejected metal mass from stars by mass loss/stellar death
@@ -221,8 +274,6 @@ def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
         dej = ((m - (remnant_mass(m)))*zdiff + fresh_metals(m, metallicity)) * \
                 sfrdiff * imf(m)
     return dej
-
-
 
 def ejected_dust_mass(choice, delta_lims, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     '''
@@ -528,7 +579,7 @@ def outflows_feldmann(sfr,m):
         outflow_feld = sfr * epsilon_out
     return outflow_feld
 
-def mass_integral(choice, delta_lims, reduce_sn, t, metallicity, sfr_lookup, z_lookup, imf):
+def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, imf):
      '''
      This function does the mass integral for:
      - e(t): ejected gas mass em
@@ -538,7 +589,6 @@ def mass_integral(choice, delta_lims, reduce_sn, t, metallicity, sfr_lookup, z_l
 
      In:
      -- choice: array of dust source choices
-     -- delta_lims: condensation efficiency of new metals condensing into dust in lims
      -- t: time in Gyrs
      -- metallicity: metal mass fraction Mz/Mg
      -- sfr_lookup: SFR array (time, SFR) based on previous time steps
@@ -549,6 +599,7 @@ def mass_integral(choice, delta_lims, reduce_sn, t, metallicity, sfr_lookup, z_l
 
      t_0 = 1e-3
      ezm = 0.
+     eom= 0.
      edm = 0.
      em = 0.
 
@@ -579,6 +630,7 @@ def mass_integral(choice, delta_lims, reduce_sn, t, metallicity, sfr_lookup, z_l
      count = 0
 
      z_near = lambda td : z_lookup[(abs(z_lookup[:,0]-td)).argmin()]
+     oxy_near = lambda td : oxy_lookup[(abs(oxy_lookup[:,0]-td)).argmin()]
      sfr_near = lambda td : sfr_lookup[(abs(sfr_lookup[:,0]-td)).argmin()]
 
      # loop over the full mass range
@@ -595,17 +647,20 @@ def mass_integral(choice, delta_lims, reduce_sn, t, metallicity, sfr_lookup, z_l
          # only release material after stars die
          if tdiff <= 0:
              ezm = 0
+             eom = 0
              edm = 0
              em = 0
          else:
              # get nearest Z and SFR which corresponds to Z and SFR at time=t-taum
              zdiff = z_near(tdiff)[1] # find_nearest(z_lookup,tdiff)[1]
+             oxydiff = oxy_near(tdiff)[1] # find_nearest(oxy_lookup,tdiff)[1]
              sfrdiff = sfr_near(tdiff)[1] # find_nearest(sfr_lookup,tdiff)[1]
              ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
+             eom += ejected_oxygen_mass(mmid, sfrdiff, oxydiff, metallicity, imf) * dm
              em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
-             edm += ejected_dust_mass(choice, delta_lims, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
+             edm += ejected_dust_mass(choice, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
 
          #Calculate the next mass value
          mnew = 10**(logmnew)
          m = mnew
-     return em, ezm, edm
+     return em, ezm, eom, edm

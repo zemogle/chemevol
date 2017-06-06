@@ -31,8 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
-    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, \
-    gas_inandout, metals_inandout, dust_inandout, outflows_feldmann
+    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, ejected_oxygen_mass, \
+    fresh_oxygen, gas_inandout, metals_inandout, dust_inandout, outflows_feldmann
 
 from astropy.table import Table
 import numpy as np
