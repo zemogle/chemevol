@@ -21,8 +21,8 @@ initial_galaxy_params
 - delta_lims_fresh: 	Efficiency of fresh metals condensing into dust grains in LIMS (1<M_i<8Msun)
 						Set to 0.15-0.4 in Morgan & Edmunds (2003); 0.15 in De Vis et al 2017b in press
 - reduce_sn_dust		reduce the contribution from SN dust (currently set to values from
-						Todini & Ferrera 2001).  If leave default specify False. To reduce dust mass
-						then quote number to reduce by
+						Todini & Ferrera 2001).  Can be True or False. To reduce dust mass
+						then quote number to reduce by (factor). 
 - destroy: 				on: add dust destruction from SN shocks: True or False
 						mass: Amount of material destroyed by each SN
 						(typically 1000 or 100Msun)
@@ -65,7 +65,7 @@ inits = [
 				'IMF_fn': 'Chab',
 				'dust_source': 'All',
 				'delta_lims_fresh': 0.15,
-				'reduce_sn_dust': False,
+				'reduce_sn_dust': {'on': False, 'factor': 0},
 				'destroy': {'on':False, 'mass': 0},
 				'inflows':{'on': False, 'metals': 0, 'xSFR': 0, 'dust': 0},
 				'outflows':{'on': True, 'metals': False, 'dust': False},
@@ -80,7 +80,7 @@ inits = [
 				'IMF_fn': 'Chab',
 				'dust_source': 'All',
 				'delta_lims_fresh': 0.15,
-				'reduce_sn_dust': 20,
+				'reduce_sn_dust': {'on': True, 'factor': 20},
 				'destroy': {'on': True, 'mass': 100},
 				'inflows':{'on': True, 'metals': 0., 'xSFR': 1.5, 'dust': 0},
 				'outflows':{'on': True, 'metals': False, 'dust': True},

@@ -84,8 +84,10 @@ class ChemModel:
             self.imf = imf_kroup
         elif (self.imf_type in ["Salp", "salp", "s"]):
             self.imf = imf_salp
-        if self.reduce_sn == False:
+        if self.reduce_sn['on'] == False:
             self.reduce_sn = 1
+        else:
+            self.reduce_sn = self.reduce_sn['factor']
         # set up dust source choice from user: sn = True; SN dust on, lims = True; LIMS dust on, gg = Grain Growth
         if self.dust_source in ["ALL", "all", "All"]:
             self.choice_dust = {
@@ -345,16 +347,15 @@ class BulkEvolve:
             logger.error('Cannot read: Are you sure this is a JSON file?')
         return
 
-
     def upload_csv(self):
-        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source','dust_lims_fresh',\
-         'reduce_sn_dust', 'destroy_on', 'mass_destroy', 'inflows_on', 'inflows_metals', 'inflows_xSFR', \
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source','delta_lims_fresh', \
+         'reduce_sn_dust_on', 'reduce_sn_dust_factor','destroy_on', 'mass_destroy', 'inflows_on', 'inflows_metals', 'inflows_xSFR', \
          'inflows_dust', 'outflows_on','outflows_metals', 'outflows_dust', 'cold_gas_fraction',\
           'epsilon_grain']
         alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
-                    ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),('f3','<f8'),
-                    ('f8','bool'), ('f9','<f8'), ('f10','bool'), ('f11','<f8'),('f12','<f8'),('f13','<f8'),
-                    ('f14','bool'), ('f15','bool'),('f16','bool'), ('f17','<f8'), ('f18','<f8')])
+                    ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','<f8'),('f8','bool'), ('f9','<f8'),
+                    ('f10','bool'), ('f11','<f8'), ('f12','bool'), ('f13','<f8'),('f14','<f8'),('f15','<f8'),
+                    ('f16','bool'), ('f17','bool'),('f18','bool'), ('f19','<f8'), ('f20','<f8')])
         try:
             data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
         except ValueError:
@@ -363,6 +364,8 @@ class BulkEvolve:
         for i in range(0,len(data)):
             gal_tup = zip(names, data[i])
             gal_data = dict(gal_tup)
+            gal_data['reduce_sn_dust'] = {'on': gal_data['reduce_sn_dust_on'],
+                                          'factor': gal_data['reduce_sn_dust_factor']}
             gal_data['inflows'] = { 'on': gal_data['inflows_on'],
                                     'metals': gal_data['inflows_metals'],
                                     'xSFR': gal_data['inflows_xSFR'],
@@ -377,7 +380,7 @@ class BulkEvolve:
         return
 
 
-def evolve_all(self):
+    def evolve_all(self):
         '''
         call modules to run the model:
         snrate:         SN rate at each time step - this also sets time array
