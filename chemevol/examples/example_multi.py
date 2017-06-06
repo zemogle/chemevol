@@ -123,6 +123,6 @@ for item in inits:
 
 	# write out to file based on 'name' identifier
 	name = item['name']
-	t.write(str(name+'.dat'), format='ascii', delimiter=' ')
+	t.write(str(name+'.dat'), format='ascii', delimiter=' ', overwrite=True)
 	# if you want an array including every inits entry:
 	galaxies.append(params)
