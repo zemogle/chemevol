@@ -577,7 +577,7 @@ def outflows_feldmann(sfr,m):
         outflow_feld = sfr * epsilon_out
     return outflow_feld
 
-def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, imf):
+def mass_integral(choice, delta_lims, reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, imf):
      '''
      This function does the mass integral for:
      - e(t): ejected gas mass em
@@ -587,6 +587,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_l
 
      In:
      -- choice: array of dust source choices
+     -- delta_lims: efficiency of fresh metals condensing into dust, set by user
      -- t: time in Gyrs
      -- metallicity: metal mass fraction Mz/Mg
      -- sfr_lookup: SFR array (time, SFR) based on previous time steps
@@ -656,7 +657,7 @@ def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_l
              ezm += ejected_metal_mass(mmid, sfrdiff, zdiff, metallicity, imf) * dm
              eom += ejected_oxygen_mass(mmid, sfrdiff, oxydiff, metallicity, imf) * dm
              em += ejected_gas_mass(mmid, sfrdiff, imf) * dm
-             edm += ejected_dust_mass(choice, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
+             edm += ejected_dust_mass(choice, delta_lims, reduce_sn, mmid, sfrdiff, zdiff, metallicity, imf) * dm
 
          #Calculate the next mass value
          mnew = 10**(logmnew)

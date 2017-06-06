@@ -228,7 +228,7 @@ def gas_metal_dust_mass(self, sn_rate):
         mdust_stars = ed(t): ejected dust mass from stars of mass m at t = taum (fresh + recycled)
         '''
         gas_ej, metals_stars, oxymass_stars, mdust_stars = \
-                mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, self.imf)
+                mass_integral(self.choice_dust, self.delta_lims, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, self.imf)
 
         '''
         STARS: dM_stars = (sfr(t) - e(t)) * dt
