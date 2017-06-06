@@ -36,7 +36,7 @@ import numpy as np
 from astropy.table import Table
 from functions import remnant_mass, destruction_timescale, destroy_dust, graingrowth, \
                     grow_timescale, dust_masses_fresh, initial_mass_function_integral, \
-                    inflows, outflows, ejected_gas_mass, astration, fresh_metals, \
+                    inflows, outflows_feldmann, ejected_gas_mass, astration, fresh_metals, \
                     ejected_dust_mass, imf_chab
 from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
@@ -69,10 +69,13 @@ class TestFunctions:
         mass = ejected_gas_mass(120.5,10.5,1)
         assert mass == 0.
 
-    def test_timescale_destruction(self):
-        destroy = destruction_timescale(1000.,1.0992e10,6.6e6)
-        destroy = destroy*1e-6 #in Myr
-        assert  1660 < destroy < 1670
+    def test_timescale_destruction_on(self):
+        destroy = destruction_timescale(True,1000.,1.0992e10,6.6e6)
+        assert  1.660 < destroy < 1.670
+
+    def test_timescale_destruction_off(self):
+        destroy = destruction_timescale(False,1000.,1.0992e10,6.6e6)
+        assert  destroy == 0
 
     def test_dust_destruction(self):
         dust_sink = destroy_dust(1,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
@@ -84,18 +87,29 @@ class TestFunctions:
         ast = astration(1,gasmass, sfr)
         assert ast == 1e-9
 
-    def test_timescale_graingrowth(self):
-        grow = grow_timescale(500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
-        grow = grow*1e-6 #in Myr
-        assert 86.3 < grow < 86.4
+    def test_timescale_graingrowth_on(self):
+        grow = grow_timescale(True,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        assert 0.0863 < grow < 0.0864
+
+    def test_timescale_graingrowth_off(self):
+        grow = grow_timescale(False,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        assert grow == 0
 
     def test_dust_graingrowth(self):
         dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
         assert  3.200e6 < dust_ism < 3.202e6
 
-    def test_outflow_func(Self):
-        gas_outflow = outflows(1.0,1.5)
-        assert gas_outflow == 1.5
+    def test_outflow_feld(Self):
+        gas_outflow = outflows_feldmann(1.0,1e9)
+        assert 8.18 < gas_outflow < 8.19
+
+    def test_outflow_feld_high(Self):
+        gas_outflow = outflows_feldmann(1,1e8)
+        assert gas_outflow == 30
+
+    def test_outflow_feld_m(Self):
+        gas_outflow = outflows_feldmann(1.0,1e6)
+        assert gas_outflow == 0
 
     def test_inflow_func(Self):
        gas_inflow = inflows(1.0,1.5)
@@ -155,7 +169,11 @@ class TestFunctions:
 
     def test_fresh_dust_mass_midmass_lowmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,1.0,5.0,0.001)
+<<<<<<< HEAD
         assert .00578 < dust_mass < 0.005795
+=======
+        assert 0.0154 < dust_mass < 0.0155
+>>>>>>> master
 
     def test_fresh_dust_mass_highmass_lowmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,1.0,30.0,0.001)
@@ -167,11 +185,19 @@ class TestFunctions:
 
     def test_fresh_dust_mass_lowmass_highmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,1.0,1.0,0.02)
+<<<<<<< HEAD
         assert  .000241 < dust_mass < .000242
 
     def test_fresh_dust_mass_midmass_highmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,1.0,2.0,0.02)
         assert .001181 < dust_mass < .001183
+=======
+        assert  .000643 < dust_mass < .000645
+
+    def test_fresh_dust_mass_midmass_highmetals(self):
+        dust_mass = dust_masses_fresh(dustchoice_all,1.0,2.0,0.02)
+        assert .00315 < dust_mass < .003153
+>>>>>>> master
 
     def test_fresh_dust_mass_highmass_highmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,1.0,30.0,0.02)
@@ -203,7 +229,11 @@ class TestFunctions:
 
     def test_fresh_dust_mass_lowmass_highmetals_no(self):
         dust_mass = dust_masses_fresh(dustchoice_lims,1,1.0,0.02)
+<<<<<<< HEAD
         assert  .0002414 < dust_mass < .0002416
+=======
+        assert  .000643 < dust_mass < .000645
+>>>>>>> master
 
     def test_fresh_dust_mass_midmass_highmetals_no(self):
         dust_mass = dust_masses_fresh(dustchoice_sn,1,2.0,0.02)
@@ -221,7 +251,11 @@ class TestFunctions:
     def test_freshdust_lims_only_highmetals(self):
         dustmass_low = dust_masses_fresh(dustchoice_lims, 1.0,4.9, 0.01)
         dustmass_high = dust_masses_fresh(dustchoice_lims, 1.0,15, 0.01)
+<<<<<<< HEAD
         assert dustmass_low == .0049425 and dustmass_high == 0.0
+=======
+        assert dustmass_low == 0.01318 and dustmass_high == 0.0
+>>>>>>> master
 '''
     def test_ejected_dust_mass(self):
         dustmass_all = ejected_dust_mass(dustchoice_all,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
@@ -231,7 +265,10 @@ class TestFunctions:
         assert dustmass_all == 214655.06895476999 and dustmass_both == 214655.06895476999 and \
                 dustmass_sn == 0 and dustmass_lims == 214655.06895476999
 '''
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 class TestInitials:
     '''
     Tests whether things are turned on or off correctly from init file
