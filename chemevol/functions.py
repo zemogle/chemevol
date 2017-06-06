@@ -238,9 +238,9 @@ def ejected_dust_mass(choice, delta_lims, reduce_sn, m, sfrdiff, zdiff, metallic
     2nd term: new dust from fresh heavy elements returned in dust_masses function where
               dust from massive stars (in SN only) are from Todini & Ferrara 2001 (TF01) and dust
               from Van den Hoek & Groenewegen:
-              delta_lims_new = fraction of new metals in LIMS that condense into dust
-              delta_lims_new ranges from 0.15-0.4 for stars in Morgan & Edmunds 2003 (MNRAS, 343, 427)
-              delta_lims_new is set to 0.15 in De Vis et al 2017b in press 1705.02340
+              delta_lims = fraction of new metals in LIMS that condense into dust, set by user in inits
+              NB delta_lims ranges from 0.15-0.4 for stars in Morgan & Edmunds 2003 (MNRAS, 343, 427)
+              NB delta_lims is set to 0.15 in De Vis et al 2017b in press 1705.02340
               md_SN = dust mass SN (from TF01)
 
     de/dm = (m-m_R(m)*Z(t-taum)*delta_lims_rec + (mp*delta_lims_new)+md_SN) x SFR(t-taum x phi(m)
@@ -250,6 +250,7 @@ def ejected_dust_mass(choice, delta_lims, reduce_sn, m, sfrdiff, zdiff, metallic
                0th element = sn value 1 or 0
                1st element = lims value 1 or 0
                2nd element = grain growth value 1 or 0
+    -- delta_lims: efficiency of fresh metals condensing into dust in lims
     -- reduce_sn: factor to reduce SN dust contribution, set by user in inits
     -- m: mass of star
     -- metallicity: metal mass fraction Mz/Mg
@@ -272,7 +273,7 @@ def ejected_dust_mass(choice, delta_lims, reduce_sn, m, sfrdiff, zdiff, metallic
         dej_recycled = 0
     else: # recycled + fresh dust
         # read in dust mass from freshly formed metals as function m and Z (chi_2 * LIMS yields)
-        dej_fresh = dust_masses_fresh(choice, delta_lims_new, reduce_sn, m, metallicity) * sfrdiff * imf(m)
+        dej_fresh = dust_masses_fresh(choice, delta_lims, reduce_sn, m, metallicity) * sfrdiff * imf(m)
         # recycled dust = LIMS condensation efficiency
         dej_recycled = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_rec) * sfrdiff * imf(m)
 
