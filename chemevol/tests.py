@@ -53,34 +53,44 @@ class TestFunctions:
     '''
 
     def test_remnant_mass_mid(self):
+        # test remnant mass function correct
         mass = remnant_mass(10.)
         assert mass == 1.5
 
     def test_remnant_mass_low(self):
+        # test remnant mass function correct
         mass = remnant_mass(1.)
         assert 0.5515 < mass < 0.5525
 
     def test_remnant_mass_high(self):
+        # test remnant mass look up correct
         mass = remnant_mass(40.)
         assert 10.6 < mass <10.65
 
     def test_ejected_gasmass_outofbounds(self):
+        # test gas mass ejected from stars = 0 if m_i > 120Msun
         mass = ejected_gas_mass(120.5,10.5,1)
         assert mass == 0.
 
     def test_timescale_destruction_on(self):
+        # test destruction characteristic timescale is on and outputs expected values
+        # for on,destruct,g,supernova_rate
         destroy = destruction_timescale(True,1000.,1.0992e10,6.6e6)
         assert  1.660 < destroy < 1.670
 
     def test_timescale_destruction_off(self):
+        # test destruction characteristic timescale is off and outputs zero
         destroy = destruction_timescale(False,1000.,1.0992e10,6.6e6)
         assert  destroy == 0
 
     def test_dust_destruction(self):
+        # test dust destruction timescale is on and outputs expected values
+        # for on,destruct,gasmass,supernova_rate,md,f_c; [0] ==> mdust_destroy
         dust_sink = destroy_dust(1,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
         assert 2.02e8 < dust_sink < 2.29e8
 
     def test_astration(Self):
+        # test tha astration function works as expected
         gasmass = 1e10
         sfr = 10
         ast = astration(1,gasmass, sfr)
@@ -99,14 +109,19 @@ class TestFunctions:
         assert  3.200e6 < dust_ism < 3.202e6
 
     def test_outflow_feld(Self):
+        # test feldmann outflow rate works as expected (sfr,mstar)
         gas_outflow = outflows_feldmann(1.0,1e9)
         assert 8.18 < gas_outflow < 8.19
 
     def test_outflow_feld_high(Self):
+        # test feldmann outflow rate works as expected (sfr,mstar)
+        # for outer boundaries when 1e8-1e9
         gas_outflow = outflows_feldmann(1,1e8)
         assert gas_outflow == 30
 
     def test_outflow_feld_m(Self):
+        # test feldmann outflow rate works is zero (sfr,mstar)
+        # for outer boundaries when Mstar < 1e6
         gas_outflow = outflows_feldmann(1.0,1e6)
         assert gas_outflow == 0
 
@@ -168,7 +183,7 @@ class TestFunctions:
 
     def test_fresh_dust_mass_midmass_lowmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,5.0,0.001)
-        assert 0.0154 < dust_mass < 0.0155
+        assert 0.00577 < dust_mass < 0.005812
 
     def test_fresh_dust_mass_highmass_lowmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.001)
@@ -180,11 +195,11 @@ class TestFunctions:
 
     def test_fresh_dust_mass_lowmass_highmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,1.0,0.02)
-        assert  .000643 < dust_mass < .000645
+        assert  0.0002411 < dust_mass < 0.00024187
 
     def test_fresh_dust_mass_midmass_highmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,2.0,0.02)
-        assert .00315 < dust_mass < .003153
+        assert .001181 < dust_mass < 0.0011823
 
     def test_fresh_dust_mass_highmass_highmetals(self):
         dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.02)
@@ -216,7 +231,7 @@ class TestFunctions:
 
     def test_fresh_dust_mass_lowmass_highmetals_no(self):
         dust_mass = dust_masses_fresh(dustchoice_lims,0.15,1,1.0,0.02)
-        assert  .000643 < dust_mass < .000645
+        assert  .0002411 < dust_mass < .00024187
 
     def test_fresh_dust_mass_midmass_highmetals_no(self):
         dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,2.0,0.02)
@@ -234,7 +249,7 @@ class TestFunctions:
     def test_freshdust_lims_only_highmetals(self):
         dustmass_low = dust_masses_fresh(dustchoice_lims,0.15, 1.0,4.9, 0.01)
         dustmass_high = dust_masses_fresh(dustchoice_lims,0.15, 1.0,15, 0.01)
-        assert dustmass_low == 0.01318 and dustmass_high == 0.0
+        assert dustmass_low == 0.0049425 and dustmass_high == 0.0
 '''
     def test_ejected_dust_mass(self):
         dustmass_all = ejected_dust_mass(dustchoice_all,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
