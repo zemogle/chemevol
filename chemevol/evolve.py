@@ -31,8 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
-    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, ejected_oxygen_mass, \
-    fresh_oxygen, gas_inandout, metals_inandout, dust_inandout, outflows_feldmann
+    inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, \
+    gas_inandout, metals_inandout, dust_inandout, outflows_feldmann, oxymass_yields
 
 from astropy.table import Table
 import numpy as np
@@ -140,137 +140,137 @@ class ChemModel:
         except:
             logger.error("No SFH yet")
 
-def gas_metal_dust_mass(self, sn_rate):
-    '''
-    Calculates the gas, metal and dust mass from stars
-    note mass is only ejected after stars die ie when
-    t - taum (where taum is lifetime of star) > 0
-    '''
-    # initialize
-    mg = self.gasmass_init
-    mstars = 0
-    md = 0
-    md_all = 0
-    md_stars = 0
-    md_gg = 0
-    metals = 0
-    oxymass = 0
-    prev_t = 1e-3
-    metals_pre = 0
-    oxymass_pre = 0
-    mstars_list = []
-    z = []
-    oxyz =[]
-    z_lookup = []
-    oxy_lookup = []
-    sfr_list = []
-    sfr_lookup = []
-    all_results = []
-    # Limit time to less than tend
-    time = self.sfh[:,0]
-    time = time[time < self.tend]
-    now = datetime.now()
-    # TIME integral
-    for item, t in enumerate(time):
-        r_sn = sn_rate [item]
-        metallicity = metals/mg
+    def gas_metal_dust_mass(self, sn_rate):
+        '''
+        Calculates the gas, metal and dust mass from stars
+        note mass is only ejected after stars die ie when
+        t - taum (where taum is lifetime of star) > 0
+        '''
+        # initialize
+        mg = self.gasmass_init
+        mstars = 0
+        md = 0
+        md_all = 0
+        md_stars = 0
+        md_gg = 0
+        metals = 0
+        oxymass = 0
+        prev_t = 1e-3
+        metals_pre = 0
+        oxymass_pre = 0
+        mstars_list = []
+        z = []
+        oxyz =[]
+        z_lookup = []
+        oxy_lookup = []
+        sfr_list = []
+        sfr_lookup = []
+        all_results = []
+        # Limit time to less than tend
+        time = self.sfh[:,0]
+        time = time[time < self.tend]
+        now = datetime.now()
+        # TIME integral
+        for item, t in enumerate(time):
+            r_sn = sn_rate [item]
+            metallicity = metals/mg
 
-        # start appending arrays for needing later
-        z.append([t,metallicity])
-        oxyz.append([t,(oxymass/mg)])
-        z_lookup = array(z)
-        oxy_lookup= array(oxyz)
-        sfr_list.append([t,self.sfr(t)])
-        sfr_lookup = array(sfr_list)
+            # start appending arrays for needing later
+            z.append([t,metallicity])
+            oxyz.append([t,(oxymass/mg)])
+            z_lookup = array(z)
+            oxy_lookup= array(oxyz)
+            sfr_list.append([t,self.sfr(t)])
+            sfr_lookup = array(sfr_list)
 
-        '''
-        GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
-        set up astration, inflow, outflow components
-        '''
-        gas_ast = self.sfr(t)
-        gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
-        gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
+            '''
+            GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
+            set up astration, inflow, outflow components
+            '''
+            gas_ast = self.sfr(t)
+            gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
+            gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
 
-        '''
-        METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
-        set up astration, inflow and outflow components
-        '''
-        metals_ast = astration(metals,mg,self.sfr(t))
-        oxymass_ast = astration(oxymass,mg,self.sfr(t))
-        if self.outflows['metals']:
-            metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
-            oxymass_out = oxymass/mg*outflows(self.sfr(t), self.outflows['xSFR'])
-        else:
-            metals_out = 0.
-            oxymass_out = 0.
-        metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
-        oxymass_inf = 0.64*self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])  # 64% of the metal mass consists of oxygen according to the initial mass abundances for Z=0.001 (Table 1 from Van Den Hoek et al., 1997)
+            '''
+            METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
+            set up astration, inflow and outflow components
+            '''
+            metals_ast = astration(metals,mg,self.sfr(t))
+            oxymass_ast = astration(oxymass,mg,self.sfr(t))
+            if self.outflows['metals']:
+                metals_out = metallicity*outflows(self.sfr(t), self.outflows['xSFR'])
+                oxymass_out = oxymass/mg*outflows(self.sfr(t), self.outflows['xSFR'])
+            else:
+                metals_out = 0.
+                oxymass_out = 0.
+            metals_inf = self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])
+            oxymass_inf = 0.64*self.inflows['metals']*inflows(self.sfr(t), self.inflows['xSFR'])  # 64% of the metal mass consists of oxygen according to the initial mass abundances for Z=0.001 (Table 1 from Van Den Hoek et al., 1997)
 
-        '''
-        DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
-                     - (1-f)*Md/t_destroy + f(1-Md/Mg)*Md/t_graingrowth) * dt
-        set up astration, inflows, outflows, destruction, grain growth components
-        '''
-        if self.outflows['dust']:
-            mdust_out = (md/mg)*outflows(self.sfr(t), self.outflows['xSFR'])
-        else:
-            mdust_out = 0.
-        mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
-        mdust_ast = astration(md,mg,self.sfr(t))
+            '''
+            DUST: dMd = (-Md/Mg*sfr(t) + ed(t) + Md/Mg*inflows(t) - Md/Mg*outflows(t)
+                         - (1-f)*Md/t_destroy + f(1-Md/Mg)*Md/t_graingrowth) * dt
+            set up astration, inflows, outflows, destruction, grain growth components
+            '''
+            if self.outflows['dust']:
+                mdust_out = (md/mg)*outflows(self.sfr(t), self.outflows['xSFR'])
+            else:
+                mdust_out = 0.
+            mdust_inf = self.inflows['dust']*inflows(self.sfr(t), self.inflows['xSFR'])
+            mdust_ast = astration(md,mg,self.sfr(t))
 
-        mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
-        mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
+            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity, md, self.coldfraction)
+            mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
 
-        '''
-        Get ejected masses from stars when they die
-        gas_ej = e(t): ejected gas mass from stars of mass m at t = taum
-        metals_stars = ez(t): ejected metal mass from stars of mass m at t = taum (fresh + recycled)
-        mdust_stars = ed(t): ejected dust mass from stars of mass m at t = taum (fresh + recycled)
-        '''
-        gas_ej, metals_stars, oxymass_stars, mdust_stars = \
-                mass_integral(self.choice_dust, self.delta_lims, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, self.imf)
+            '''
+            Get ejected masses from stars when they die
+            gas_ej = e(t): ejected gas mass from stars of mass m at t = taum
+            metals_stars = ez(t): ejected metal mass from stars of mass m at t = taum (fresh + recycled)
+            mdust_stars = ed(t): ejected dust mass from stars of mass m at t = taum (fresh + recycled)
+            '''
+            gas_ej, metals_stars, oxymass_stars, mdust_stars = \
+                    mass_integral(self.choice_dust, self.delta_lims, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, self.imf)
 
-        '''
-        STARS: dM_stars = (sfr(t) - e(t)) * dt
-        '''
-        dmstars = self.sfr(t) - gas_ej
+            '''
+            STARS: dM_stars = (sfr(t) - e(t)) * dt
+            '''
+            dmstars = self.sfr(t) - gas_ej
 
-        '''
-        integrate over time for gas, metals and stars (mg, metals, md)
-        '''
-        dmg = -gas_ast + gas_ej + gas_inf - gas_out
-        dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
-        doxymass = -oxymass_ast + oxymass_stars + oxymass_pre + oxymass_inf - oxymass_out
-        ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des
-        # dust_source_all separates out the dust sources (Md vs t) wihtout including sinks (Astration etc)
-        # and grain growth separately (this is the Md vs time contributed by dust sources)
-        dust_source_all = mdust_stars + mdust_gg
-        dt = t - prev_t             # calculate  next time step
-        prev_t = t
-        mstars += dmstars*dt
-        mg += dmg*dt # gas mass integral
-        if mg <= 0:
-            # exit program if all ISM removed
-            print ('Oops you have no interstellar medium left')
-            break
-        metals += dmetals*dt # metal mass integral
-        oxymass += doxymass*dt # oxygen mass integral
-        md += ddust*dt # dust mass integral
-        md_all += dust_source_all*dt # dust mass sources integral
-        md_gg += mdust_gg*dt # dust source from grain growth only
-        md_stars += mdust_stars*dt # dust source from stars only
-        Z = zip(*z_lookup) # write metallicity to an array
-        s_f_r = zip(*sfr_lookup) # write SFR lookup array
-        if mg <= 0. or metals <=0:  # write dust/metals ratio
-            dust_to_metals = 0.
-        else:
-            dust_to_metals = md/metals
-        all_results.append((t, mg, mstars, metals, metallicity, \
-                            md, dust_to_metals, self.sfr(t)*1e-9, \
-                            md_all, md_stars, md_gg, t_des, t_gg, oxymass))
-        # to test code kinks
-    print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
-    return np.array(all_results)
+            '''
+            integrate over time for gas, metals and stars (mg, metals, md)
+            '''
+            dmg = -gas_ast + gas_ej + gas_inf - gas_out
+            dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
+            doxymass = -oxymass_ast + oxymass_stars + oxymass_pre + oxymass_inf - oxymass_out
+            ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des
+            # dust_source_all separates out the dust sources (Md vs t) wihtout including sinks (Astration etc)
+            # and grain growth separately (this is the Md vs time contributed by dust sources)
+            dust_source_all = mdust_stars + mdust_gg
+            dt = t - prev_t             # calculate  next time step
+            prev_t = t
+            mstars += dmstars*dt
+            mg += dmg*dt # gas mass integral
+            if mg <= 0:
+                # exit program if all ISM removed
+                print ('Oops you have no interstellar medium left')
+                break
+            metals += dmetals*dt # metal mass integral
+            oxymass += doxymass*dt # oxygen mass integral
+            md += ddust*dt # dust mass integral
+            md_all += dust_source_all*dt # dust mass sources integral
+            md_gg += mdust_gg*dt # dust source from grain growth only
+            md_stars += mdust_stars*dt # dust source from stars only
+            Z = zip(*z_lookup) # write metallicity to an array
+            s_f_r = zip(*sfr_lookup) # write SFR lookup array
+            if mg <= 0. or metals <=0:  # write dust/metals ratio
+                dust_to_metals = 0.
+            else:
+                dust_to_metals = md/metals
+            all_results.append((t, mg, mstars, metals, metallicity, \
+                                md, dust_to_metals, self.sfr(t)*1e-9, \
+                                md_all, md_stars, md_gg, t_des, t_gg, oxymass))
+            # to test code kinks
+        print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
+        return np.array(all_results)
 
 
     def supernova_rate(self):
@@ -354,7 +354,7 @@ class BulkEvolve:
         return
 
 
-    def evolve_all(self):
+def evolve_all(self):
         '''
         call modules to run the model:
         snrate:         SN rate at each time step - this also sets time array
@@ -363,7 +363,8 @@ class BulkEvolve:
 
         all results:     t, mg, m*, mz, Z, md, md/mz, sfr,
                         dust_source(all), dust_source(stars),
-                        dust_source(ism), destruction_time, graingrowth_time
+                        dust_source(ism), destruction_time, graingrowth_time,\
+						oxygenmass (12+log(O/H))
         '''
         snrate = []
         all_results = []
@@ -389,14 +390,14 @@ class BulkEvolve:
                    'dust_ism' : all_results[:,10],
                    'time_destroy' : all_results[:,11],
                    'time_gg' : all_results[:,12],
-                   'oxygen_mass': all_results[:,13]}
+                   'oxygenmass' : all_results[:,13]}
             params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
             params['ssfr'] = params['sfr']/params['mgas']
             # write to astropy table
             t = Table(params)
             # write out to file based on 'name' identifier
             name = item['name']
-            t.write(str(name+'.dat'), format='ascii', delimiter=' ',overwrite=True)
+            t.write(str(name+'.dat'), format='ascii', delimiter=' ', overwrite=True)
             # if you want an array including every inits entry:
             galaxies.append(params)
         self.results = galaxies
