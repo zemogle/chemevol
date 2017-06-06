@@ -63,12 +63,12 @@ Once the code is run you will have an array called `galaxies.results` with all t
 gasmass  = galaxies.results[0]['mgas'] #etc
 ```
 
-The code writes data to a file (if you use the example in `<Download Dir>/chemevol/chemevol/examples/data.json` the code writes out two files called `Model_I.dat` and `Model_VI.dat`).  To read in this data for plotting or playing with you can use `astropy.table`:
+The code writes data to a file (if you use the example in `<Download Dir>/chemevol/chemevol/examples/data.json` the code writes out two files called `Model_A.dat` and `Model_B.dat`).  To read in this data for plotting or playing with you can use `astropy.table`:
 ```python
 from astropy.table import Table
 import matplotlib.pyplot as plt
 
-t = Table.read('Model_VI.dat', format='ascii')
+t = Table.read('Model_A.dat', format='ascii')
 plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars']))
 ```
 
