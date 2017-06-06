@@ -28,8 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 import numpy as np
 from numpy import abs, array
 import logging
-from lookups import find_nearest, dust_mass_sn, t_yields, \
-                    t_lifetime, lookup_fn, lookup_taum, mass_yields
+from lookups import find_nearest, dust_mass_sn, t_yields, t_lifetime, \
+                    lookup_fn, lookup_taum, mass_yields, oxymass_yields
 from lookups import yield_names as yn
 
 logger = logging.Logger('chem')

@@ -79,7 +79,7 @@ inits = [
 				'gamma': 0,
 				'IMF_fn': 'Chab',
 				'dust_source': 'All',
-				'delta_lims_fresh': 0.15, 	
+				'delta_lims_fresh': 0.15,
 				'reduce_sn_dust': 20,
 				'destroy': {'on': True, 'mass': 100},
 				'inflows':{'on': True, 'metals': 0., 'xSFR': 1.5, 'dust': 0},
@@ -119,7 +119,8 @@ for item in inits:
 		   'dust_stars' : all_results[:,9],
 		   'dust_ism' : all_results[:,10],
 		   'time_destroy' : all_results[:,11],
-		   'time_gg' : all_results[:,12]}
+		   'time_gg' : all_results[:,12],
+		   'oxygen_mass': all_results[:,13]}
 	params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
 	params['ssfr'] = params['sfr']/params['mgas']
 	# write to astropy table

@@ -1,6 +1,9 @@
 # ChemEvol
 [![Build Status](https://travis-ci.org/zemogle/chemevol.svg?branch=master)](https://travis-ci.org/zemogle/chemevol)
 
+
+This version of the code was used to make all the models in de Vis et al 2017b, accepted MNRAS. The parameters used to run galaxy Models I-VI used in that work are specified explicitly in the examples/example_multi.py file.
+
 Python package to read in a star formation history file, input galaxy parameters and run a chemical evolution model to determine the evolution of gas, metals and dust in galaxies.
 
 Running the script following the instructions below will produce:
@@ -9,7 +12,7 @@ Running the script following the instructions below will produce:
   by user from inits file - see instructions below)
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
-and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040), with latest features discussed in De Vis et al (submitted 2016).
+and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040), with latest features discussed in De Vis et al 2017b.
 
 If you use this code, please do cite the above papers.  The license is provided with this package.
 
@@ -68,7 +71,7 @@ The code writes data to a file (if you use the example in `<Download Dir>/chemev
 from astropy.table import Table
 import matplotlib.pyplot as plt
 
-t = Table.read('Model_A.dat', format='ascii')
+t = Table.read('Model_VI.dat', format='ascii')
 plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars']))
 ```
 
@@ -91,8 +94,9 @@ Copy the example_multi.py file to the desired directory (where your .sfh file is
 |   IMF_fn         	 |	 choice of IMF function: Chab/chab/c, TopChab/topchab/tc, 	Kroup/kroup/k or Salp/salp/s   |   None    |
 |   dust_source 		 |	 choice of dust sources to be included in run:	SN: supernova dust only; LIMS: low intermediate mass stars dust only; LIMS+SN: both SN and LIMS included; ALL: includes supernovae, LIMS and grain growth combined    |   None   |
 |   reduce_sn_dust   |	 reduce the contribution from SN dust (currently based on Todinin & Ferrara 2001).  If leave as is, specify False. To reduce dust mass, quote number to reduce by eg 5 or 20  |    None    |
-|   destroy 	       |	 on: add dust destruction from SN shocks: True or False <br><br> mass: amount of material destroyed by each supernova, typically 1000 or 100Msun for diffuse or dense interstellar gas    |   None   |
-|   inflows 		     |	 Inflows turned on or off: input True or False <br><br> inflows_metals = metallicity of inflow: input a number appropriate for the metallicity of gas inflows eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013) <br><br> inflows_xSFR = inflow rate of gas is X * SFR: input a number X <br> <br> inflows_dust = amount of dust inflow: input a number appropriate for dust inflows eg 0.4 x the metallicity (Edmunds 2000)  |   None   |
-|   outflows         | 	Outflows turned on or off: input True or False <br><br> outflows_metals = metallicity of inflow: input True or False where True = current metallicity of system, False = 0 <br><br>  outflows_dust = amount of dust in outflow: input True of False where	True = dust/gas of system, False = 0   |  Note that outflows are derived as a function of stellar mass, see Feldmann 2015 MNRAS 449 3274 (Eq 27) and Hopkins et al 2012 MNRAS 421 3522 (Fig 7).   |
+|   destroy 	       |	 add dust destruction from SN shocks: True or False   |   None   |
+|   inflows 		     |	 inflows_metals = metallicity of inflow: input a number appropriate for the metallicity of gas inflows eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013) <br><br> inflows_xSFR = inflow rate of gas is X * SFR: input a number X <br> <br> inflows_dust = amount of dust inflow: input a number appropriate for dust inflows eg 0.4 x the metallicity (Edmunds 2000)  |   None   |
+|   outflows         | 	 outflows_metals = metallicity of inflow: input True or False where True = current metallicity of system, False = 0 <br><br>  outflows_xSFR = outflow rate of gas is X * SFR: input a number <br><br> outflows_dust = amount of dust in outflow: input True of False where	True = dust/gas of system, False = 0   |   None    |
 |   cold_gas_fraction    |	fraction of gas in cold dense state for grain growth, typically 0.5 (eg Asano et al 2013)  |    None    |
 |   epsilon_grain   |		grain growth parameter from Mattsson & Andersen 2012, typically 500 for t_grow ~ 10Myr  consistent with MW |    None    |
+|   destruct        | 			amount of material destroyed by each supernova, typically 1000 or 100Msun for diffuse or dense interstellar gas   |   None   |

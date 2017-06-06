@@ -69,12 +69,6 @@ lifetime =  np.array([(0.8, 15.0, 26.0),
 t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low_metals','lifetime_high_metals'),meta={'name': 'Lifetime'})
 
 '''
-t_lifetime['mass'].unit = 'solMass' # write units to each column
-t_lifetime['lifetime_low_metals'].unit = 'Gyr'
-t_lifetime['lifetime_high_metals'].unit = 'Gyr'
-'''
-
-'''
 - mass_yields: ejected yield (all heavy elements) in Msolar
             1st col: initial mass of star Msolar
 
@@ -122,20 +116,54 @@ yield_names = ['mass','yields_sn_001','yields_winds_001',
              'yields_sn_008','yields_winds_008',
              'yields_sn_02','yields_winds_02']
 
-t_yields = Table(rows=mass_yields, names=yield_names,
-                                          meta={'name': 'Mass Yields'})
+#t_yields = Table(rows=mass_yields, names=yield_names,
+#                                          meta={'name': 'Mass Yields'})
 
 '''
-t_yields['mass'].unit = 'solMass'
-t_yields['yields_sn_001'].unit = 'solMass'
-t_yields['yields_winds_001'].unit = 'solMass'
-t_yields['yields_sn_004'].unit = 'solMass'
-t_yields['yields_winds_004'].unit = 'solMass'
-t_yields['yields_sn_008'].unit = 'solMass'
-t_yields['yields_winds_008'].unit = 'solMass'
-t_yields['yields_sn_02'].unit = 'solMass'
-t_yields['yields_winds_02'].unit = 'solMass'
+- oxymass_yields: ejected oxygen yield in Msolar
+            1st col: initial mass of star Msolar
+
+            2nd col: ejected yield Msolar from supernovae Z=0.001
+            3rd col: ejected yield Msolar from winds Z=0.001
+
+            4th col: ejected yield Msolar from supernovae Z=0.004
+            5th col: ejected yield Msolar from winds Z=0.004
+
+            6th col: ejected yield Msolar from supernovae Z=0.008
+            7th col: ejected yield Msolar from winds Z=0.008
+
+            8th col: ejected yield Msolar from supernovae Z=0.02
+            9th col: ejected yield Msolar from winds Z=0.02
+
+            M >= 9 Msolar: mp_Z from Maeder 1992 (A & A 264 105)
+            Z = 0.001 (used for Z < 0.008), Z = 0.02 (used for 0.008 =< Z < inf.)
+            M < 9 Msolar: mp_Z from van den Hoek &
+            Groenewegen 1997 (A & AS 123 305) Z=0.001,0.004,0.008,0.02
 '''
+oxymass_yields =np.array([(0.9, 0, -1.773e-06, 0, -6.498e-07, 0, 2.565e-05, 0, -3.483e-05),
+                (1, 0, -2.23e-06, 0, 6.36e-05, 0, 5.36e-05, 0, 0.000981),
+                (1.3, 0, 0.0003237, 0, 0.0001872, 0, 0.0001807, 0, 0.002431),
+                (1.5, 0, 0.000426, 0, 0.0003105, 0, 0.000324, 0, 0.0005565),
+                (1.7, 0, 0.0005168, 0, 0.0005253, 0, 0.0004233, 0, 0.0003026),
+                (2, 0, 0.0008, 0, 0.000722, 0, 0.000508, 0, 0.0001554),
+                (2.5, 0, 0.0010725, 0, 0.00099, 0, 0.0005875, 0, -0.00010475),
+                (3, 0, 0.001251, 0, 0.001536, 0, 0.000915, 0, -4.41e-06),
+                (4, 0, 0.001724, 0, 0.001104, 0, 0.0002288, 0, -0.000864),
+                (5, 0, 0.00206, 0, 0.001285, 0, 0.00033, 0, -0.001455),
+                (7, 0, 0.0004403, 0, -0.001778, 0, -0.004424, 0, -0.00896),
+                (8, 0, 0.000768, 0, -0.002568, 0, -0.007936, 0, -0.0128),
+                (9, 0.004, 0, 0.004, 0, 0, 0, 0, 0),
+                (12, 0.15, 0, 0.15, 0, 0.11, 0, 0.11, 0),
+                (15, 0.46, 0, 0.46, 0, 0.41, 0, 0.41, 0),
+                (20, 1.27, 0, 1.27, 0, 1.27, 0, 1.27, 0),
+                (25, 2.40, 0, 2.40, 0, 2.60, -0.03, 2.60, -0.03),
+                (40, 6.80, 0, 6.80, 0, 0.62, 1.46, 0.62, 1.46),
+                (60, 14.20, 0, 14.20, 0, 0.40, 1.03, 0.40, 1.03),
+                (85, 22.60, 0, 22.60, 0, 0.59, 3.37, 0.59, 3.37),
+                (120,35.30, 0,35.30, 0, 0.18, -0.13, 0.18, -0.13)])
+
+#oxyt_yields = Table(rows=oxymass_yields, names=yield_names,
+#                                          meta={'name': 'Oxygen Mass Yields'})
 
 '''
 dust_mass_sn: dust mass returned by supernovae from Todini & Ferrara 2001 (MNRAS 325 276)
@@ -159,10 +187,6 @@ dust_mass_sn = ((8.5,0),
                 (40, 0.4))
 
 t_dustmass_sn = Table(rows=dust_mass_sn, names=('mass','dustmass'), meta={'name': 'Dust Mass SN'})
-'''
-t_dustmass_sn['mass'].unit = 'solMass'
-t_dustmass_sn['dustmass'].unit = 'solMass'
-'''
 
 def find_nearest(lookup,value):
     '''
