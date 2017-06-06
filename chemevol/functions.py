@@ -232,12 +232,12 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
 
     1st term: dust re-released by stars
               Calculated by ejected gas mass * Z(t-taum) * dust condensation efficiency (delta_LIMS)
-              delta_LIMS ranges from 0.16-0.45 in Morgan & Edmunds 2003 (MNRAS, 343, 427)
+              delta_LIMS ranges 0.15 in Morgan & Edmunds 2003 (MNRAS, 343, 427)
 
     2nd term: new dust from fresh heavy elements returned in dust_masses function where
               dust from massive stars (in SN only) are from Todini & Ferrara 2001 (TF01) and dust
               from Van den Hoek & Groenewegen:
-              DELTA = fraction of new metals in LIMS (0.45)
+              DELTA = fraction of new metals in LIMS (0.15)
               md_SN = dust mass SN (from TF01)
 
     de/dm = (m-m_R(m)*Z(t-taum)*d_LIMS + (mp*DELTA)+md_SN) x SFR(t-taum x phi(m)
@@ -254,13 +254,13 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     -- zdiff: metallicity calculated at t-taum (when stars that are dying now were born)
     -- imf choice, set by user in inits
 
-    delta_LIMS_recycled: fraction of metals that condense into dust 0.45
+    delta_LIMS_recycled: fraction of metals that condense into dust 0.15
     '''
     # If LIMS is turned on or off
     choice_lims = choice['lims']
     # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
     if m <= 8. and choice_lims:
-        delta_LIMS_recycled = 0.4
+        delta_LIMS_recycled = 0.15
     else:
         delta_LIMS_recycled = 0.
 
@@ -269,7 +269,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
         dej_fresh = 0
         dej_recycled = 0
     else: # recycled + fresh dust
-        # read in dust mass from freshly formed metals as function m and Z (0.45 * LIMS yields)
+        # read in dust mass from freshly formed metals as function m and Z (0.15 * LIMS yields)
         dej_fresh = dust_masses_fresh(choice, reduce_sn, m, metallicity) * sfrdiff * imf(m)
         # recycled dust = LIMS condensation efficiency
         dej_recycled = ((m - (remnant_mass(m)))*zdiff*delta_LIMS_recycled) * sfrdiff * imf(m)
@@ -286,7 +286,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     two categories: winds from LIMS and SN.
 
     LIMS: we multiply the metal yields by a dust condensation
-    efficiency parameter assumed to be 0.45
+    efficiency parameter assumed to be 0.15
 
     For high mass stars we use the SN yields of
     Todini & Ferrara 2001 (MNRAS 325 276)
@@ -306,7 +306,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
 
-    delta_new_LIMS = 0.40
+    delta_new_LIMS = 0.15
     if (m <= 8.0) and choice['lims']:
         dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
     elif (m > 8.0) and (m <= 40.0) and choice['sn']:
