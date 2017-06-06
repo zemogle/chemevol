@@ -494,7 +494,7 @@ def gas_inandout(in_on,out_on,in_sfr,sfr,m):
         gas_out = outflows_feldmann(sfr, m)
     return gas_inf,gas_out
 
-def metals_inandout(in_on,in_sfr,in_met,out_on,out_met,sfr,Z,,Z_oxy,in_oxy,m):
+def metals_inandout(in_on,in_sfr,in_met,out_on,out_met,sfr,Z,Z_oxy,in_oxy,m):
     '''
     Derive the metals lost and gained from inflows and outflows
 
@@ -511,12 +511,12 @@ def metals_inandout(in_on,in_sfr,in_met,out_on,out_met,sfr,Z,,Z_oxy,in_oxy,m):
     -- m: stellar mass at time t
     '''
     if in_on == False:
-        metal_inf,oxy_inf = 0.
+        metal_inf,oxy_inf = 0., 0.
     else:
         metal_inf,oxy_inf = in_met*inflows(sfr, in_sfr), in_oxy*inflows(sfr, in_sfr)
 
     if out_on == False or out_met == False:
-        metal_out, oxy_out = 0.
+        metal_out, oxy_out = 0., 0.
     else:
         metal_out, oxy_out = Z*outflows_feldmann(sfr, m), Z_oxy*outflows_feldmann(sfr, m)
     return metal_inf,metal_out, oxy_out, oxy_out

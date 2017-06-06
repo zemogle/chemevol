@@ -250,8 +250,8 @@ class ChemModel:
                 metals_stars = ez(t): ejected metal mass from stars of mass m at t = taum (fresh + recycled)
                 mdust_stars = ed(t): ejected dust mass from stars of mass m at t = taum (fresh + recycled)
                 '''
-                gas_ej, metals_stars, mdust_stars = \
-                        mass_integral(self.choice_dust, self.delta_lims, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
+                gas_ej, metals_stars, oxymass_stars, mdust_stars = \
+                        mass_integral(self.choice_dust, self.delta_lims, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, self.imf)
 
                 '''
                 STARS: dM_stars = (sfr(t) - e(t) ) * dt
@@ -291,9 +291,9 @@ class ChemModel:
                     dust_to_metals = md/metals
                 all_results.append((t, mg, mstars, metals, metallicity, \
                                     md, dust_to_metals, self.sfr(t)*1e-9, \
-                                    md_all, md_stars, md_gg, t_des, t_gg,oxymass))
+                                    md_all, md_stars, md_gg, t_des, t_gg, oxymass))
             print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
-    return np.array(all_results)
+            return np.array(all_results)
 
 
     def supernova_rate(self):
