@@ -63,7 +63,7 @@ inits = [
         		't_end': 15.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
-				'dust_source': 'All',
+				'dust_source': 'SN',
 				'delta_lims_fresh': 0.15,
 				'reduce_sn_dust': {'on': False, 'factor': 0},
 				'destroy': {'on':False, 'mass': 0},

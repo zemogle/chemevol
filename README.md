@@ -49,7 +49,7 @@ galaxies.evolve_all()
 Or for CSV files:
 ```python
 import chemevol as ch
-galaxies = ch.BulkEvolve('<File directory>/data.csv')
+galaxies = ch.BulkEvolve('data.csv')
 galaxies.upload_csv()
 galaxies.evolve_all()
 ```
@@ -91,7 +91,7 @@ Copy the example_multi.py file to the desired directory (where your .sfh file is
 |   IMF_fn         	 |	 choice of IMF function: Chab/chab/c, TopChab/topchab/tc, 	Kroup/kroup/k or Salp/salp/s   |   None    |
 |   dust_source 		 |	 choice of dust sources to be included in run:	SN: supernova dust only; LIMS: low intermediate mass stars dust only; LIMS+SN: both SN and LIMS included; ALL: includes supernovae, LIMS and grain growth combined    |   None   |
 |   delta_lims_fresh		 |	 efficiency of fresh metals from low intermediate mass stars (LIMS: 1 < m_i < 8Msun) condensing into dust grains. This value ranges from 0.15-0.4 in Morgan & Edmunds 2003 (MNRAS, 343, 427); is ~0.8 in Dwek et al 1998; 0.15 in De Vis et al 2017b; ~0.4 in Rowlands et al 2014b    |   None   |
-|   reduce_sn_dust   |	 reduce the contribution from SN dust (currently based on Todinin & Ferrara 2001).  If leave as is, specify False. To reduce dust mass, quote number to reduce by eg 5 or 20  |    None    |
+|   reduce_sn_dust   |	 reduce the contribution from SN dust (currently based on Todinin & Ferrara 2001).  If leave as is, specify False or factor = 0. To reduce dust mass, quote number to reduce by eg factor = 5  |    None    |
 |   destroy 	       |	 add dust destruction from SN shocks: True or False   |   None   |
 |   inflows 		     |	 inflows_metals = metallicity of inflow: input a number appropriate for the metallicity of gas inflows eg 1e-3 to 1e-4 (Rubin et al 2012, Peng & Maiolino 2013) <br><br> inflows_xSFR = inflow rate of gas is X * SFR: input a number X <br> <br> inflows_dust = amount of dust inflow: input a number appropriate for dust inflows eg 0.4 x the metallicity (Edmunds 2000)  |   None   |
 |   outflows         | 	 outflows_metals = metallicity of inflow: input True or False where True = current metallicity of system, False = 0 <br><br>  outflows_xSFR = outflow rate of gas is X * SFR: input a number <br><br> outflows_dust = amount of dust in outflow: input True of False where	True = dust/gas of system, False = 0   |   None    |
