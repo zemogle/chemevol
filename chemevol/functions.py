@@ -227,7 +227,7 @@ def fresh_oxygen(m, metallicity):
             sum_yields = oxymassyields[yn.index('yields_winds_004')]
     elif metallicity <= 0.01:
         if m <= 40:
-            sum_yields = oxymaessyields[yn.index('yields_sn_008')]+oxymassyields[yn.index('yields_winds_008')]
+            sum_yields = oxymassyields[yn.index('yields_sn_008')]+oxymassyields[yn.index('yields_winds_008')]
         else:
             sum_yields = oxymassyields[yn.index('yields_winds_008')]
     else:
