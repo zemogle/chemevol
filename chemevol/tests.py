@@ -163,35 +163,35 @@ class TestFunctions:
         assert mass_yields == 9.39
 
     def test_fresh_dust_mass_lowmass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,1.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,1.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_midmass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,5.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,5.0,0.001)
         assert 0.0154 < dust_mass < 0.0155
 
     def test_fresh_dust_mass_highmass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,30.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.001)
         assert dust_mass == 1.0
 
     def test_fresh_dust_mass_highermass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,40.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,40.0,0.001)
         assert dust_mass == 0.4
 
     def test_fresh_dust_mass_lowmass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,1.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,1.0,0.02)
         assert  .000643 < dust_mass < .000645
 
     def test_fresh_dust_mass_midmass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,2.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,2.0,0.02)
         assert .00315 < dust_mass < .003153
 
     def test_fresh_dust_mass_highmass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,30.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.02)
         assert dust_mass == 1.0
 
     def test_fresh_dust_mass_highermass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,1.0,40.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,40.0,0.02)
         assert dust_mass == 0.4
 
     def test_fresh_metals_highmass_highmetals(self):
@@ -199,41 +199,41 @@ class TestFunctions:
         assert mass_yields == 9.39
 
     def test_fresh_dust_mass_lowmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_sn,1,2.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,2.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_midmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_gg,1,8.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_gg,0.15,1,8.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_highmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_gg,1,30.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_gg,0.15,1,30.0,0.001)
         assert dust_mass == 0
 
     def test_fresh_dust_mass_highermass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_sn,1,40.0,0.001)
+        dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,40.0,0.001)
         assert dust_mass == 0.4
 
     def test_fresh_dust_mass_lowmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_lims,1,1.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_lims,0.15,1,1.0,0.02)
         assert  .000643 < dust_mass < .000645
 
     def test_fresh_dust_mass_midmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_sn,1,2.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,2.0,0.02)
         assert dust_mass  == 0
 
     def test_fresh_dust_mass_highmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_snlims,1,30.0,0.02)
+        dust_mass = dust_masses_fresh(dustchoice_snlims,0.15,1,30.0,0.02)
         assert dust_mass == 1.0
 
     def test_freshdust_sn_only(self):
-        dustmass_low = dust_masses_fresh(dustchoice_sn, 1.0,4.9, 0.002)
-        dustmass_high = dust_masses_fresh(dustchoice_sn, 1.0,15, 0.002)
+        dustmass_low = dust_masses_fresh(dustchoice_sn,0.15, 1.0,4.9, 0.002)
+        dustmass_high = dust_masses_fresh(dustchoice_sn,0.15, 1.0,15, 0.002)
         assert dustmass_low == 0 and dustmass_high == 0.5
 
     def test_freshdust_lims_only_highmetals(self):
-        dustmass_low = dust_masses_fresh(dustchoice_lims, 1.0,4.9, 0.01)
-        dustmass_high = dust_masses_fresh(dustchoice_lims, 1.0,15, 0.01)
+        dustmass_low = dust_masses_fresh(dustchoice_lims,0.15, 1.0,4.9, 0.01)
+        dustmass_high = dust_masses_fresh(dustchoice_lims,0.15, 1.0,15, 0.01)
         assert dustmass_low == 0.01318 and dustmass_high == 0.0
 '''
     def test_ejected_dust_mass(self):
