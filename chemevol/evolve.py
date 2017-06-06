@@ -60,6 +60,7 @@ class ChemModel:
             self.tend = inputs['t_end']
             self.imf_type = inputs['IMF_fn']
             self.dust_source = inputs['dust_source']
+            self.delta_lims = inputs['delta_lims_fresh']
             self.reduce_sn = inputs['reduce_sn_dust']
             self.destroy = inputs['destroy']
             self.inflows = inputs['inflows']
@@ -67,7 +68,6 @@ class ChemModel:
             self.SFH_file = inputs['SFH']
             self.coldfraction = inputs['cold_gas_fraction']
             self.epsilon = inputs['epsilon_grain']
-            self.delta_lims = inputs['delta_lims_fresh']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
                 self.SFH_file = 'chemevol/Milkyway.sfh'
@@ -114,7 +114,6 @@ class ChemModel:
         else:
             print ('oops please check the dust sources are in the right format and try again')
             exit()
-
 
     def load_sfh(self):
         '''
@@ -286,7 +285,7 @@ def gas_metal_dust_mass(self, sn_rate):
         time = self.sfh[:,0] # this is in units of Gyrs
         time = time[time < self.tend]
         for t in time:
-            
+
             # need to clear the sn_rates as we don't want them adding up
             sn_rate = 0.
             dsn_rate = 0.
@@ -325,12 +324,12 @@ class BulkEvolve:
 
 
     def upload_csv(self):
-        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source',\
+        names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source','dust_lims_fresh',\
          'reduce_sn_dust', 'destroy_on', 'mass_destroy', 'inflows_on', 'inflows_metals', 'inflows_xSFR', \
          'inflows_dust', 'outflows_on','outflows_metals', 'outflows_dust', 'cold_gas_fraction',\
           'epsilon_grain']
         alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
-                    ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
+                    ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),('f3','<f8'),
                     ('f8','bool'), ('f9','<f8'), ('f10','bool'), ('f11','<f8'),('f12','<f8'),('f13','<f8'),
                     ('f14','bool'), ('f15','bool'),('f16','bool'), ('f17','<f8'), ('f18','<f8')])
         try:

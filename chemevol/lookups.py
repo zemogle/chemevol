@@ -231,5 +231,4 @@ def lookup_taum(mass, colnum):
     '''
     col1 = lifetime[:,0]
     idx = (np.abs(col1-mass)).argmin()
-    #print mass, col1, lifetime[idx][colnum]
     return lifetime[idx][colnum]
