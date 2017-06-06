@@ -68,7 +68,7 @@ The code writes data to a file (if you use the example in `<Download Dir>/chemev
 from astropy.table import Table
 import matplotlib.pyplot as plt
 
-t = Table.read('Model_VI.dat', format='ascii')
+t = Table.read('Model_A.dat', format='ascii')
 plt.semilogy(t['fg'],t['dustmass']/(t['mgas']+t['mstars']))
 ```
 
