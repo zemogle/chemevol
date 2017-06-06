@@ -103,7 +103,8 @@ for item in inits:
 
 	all results: 	t, mg, m*, mz, Z, md, md/mz, sfr,
 					dust_source(all), dust_source(stars),
-					dust_source(ism), destruction_time, graingrowth_time
+					dust_source(ism), destruction_time, graingrowth_time,\
+					oxygenmass (12+log(O/H))
 	'''
 	snrate = ch.supernova_rate()
 	all_results = ch.gas_metal_dust_mass(snrate)
@@ -121,7 +122,7 @@ for item in inits:
 		   'dust_ism' : all_results[:,10],
 		   'time_destroy' : all_results[:,11],
 		   'time_gg' : all_results[:,12],
-		   'oxygen_mass': all_results[:,13]}
+		   'oxygenmass': all_results[:,13]}
 	params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
 	params['ssfr'] = params['sfr']/params['mgas']
 	# write to astropy table
