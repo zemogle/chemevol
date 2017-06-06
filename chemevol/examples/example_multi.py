@@ -178,7 +178,7 @@ for item in inits:
 	all results: 	t, mg, m*, mz, Z, md, md/mz, sfr,
 					dust_source(all), dust_source(stars),
 					dust_source(ism), destruction_time, graingrowth_time,
-					oxygen_mass
+					oxygen_mass (12+log(O/H))
 	'''
 	snrate = ch.supernova_rate()
 	all_results = ch.gas_metal_dust_mass(snrate)
