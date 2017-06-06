@@ -84,7 +84,7 @@ class ChemModel:
             self.imf = imf_kroup
         elif (self.imf_type in ["Salp", "salp", "s"]):
             self.imf = imf_salp
-        if self.reduce_sn['on'] == False or self.reduce_sn['factor'] == 0:
+        if not self.reduce_sn['on'] or self.reduce_sn['factor'] == 0:
             self.reduce_sn = 1
         else:
             self.reduce_sn = self.reduce_sn['factor']
