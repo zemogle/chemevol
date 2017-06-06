@@ -361,6 +361,7 @@ class BulkEvolve:
         except ValueError:
             logger.error('Cannot read: Are you sure this is a CSV file?')
         init_list = []
+
         for i in range(0,len(data)):
             gal_tup = zip(names, data[i])
             gal_data = dict(gal_tup)

@@ -22,7 +22,7 @@ initial_galaxy_params
 						Set to 0.15-0.4 in Morgan & Edmunds (2003); 0.15 in De Vis et al 2017b in press
 - reduce_sn_dust		reduce the contribution from SN dust (currently set to values from
 						Todini & Ferrera 2001).  Can be True or False. To reduce dust mass
-						then quote number to reduce by (factor). 
+						then quote number to reduce by (factor).
 - destroy: 				on: add dust destruction from SN shocks: True or False
 						mass: Amount of material destroyed by each SN
 						(typically 1000 or 100Msun)
