@@ -68,9 +68,11 @@ lifetime =  np.array([(0.8, 15.0, 26.0),
 
 t_lifetime = Table(rows=lifetime, names=('mass','lifetime_low_metals','lifetime_high_metals'),meta={'name': 'Lifetime'})
 
+'''
 t_lifetime['mass'].unit = 'solMass' # write units to each column
 t_lifetime['lifetime_low_metals'].unit = 'Gyr'
 t_lifetime['lifetime_high_metals'].unit = 'Gyr'
+'''
 
 '''
 - mass_yields: ejected yield (all heavy elements) in Msolar
@@ -123,6 +125,7 @@ yield_names = ['mass','yields_sn_001','yields_winds_001',
 t_yields = Table(rows=mass_yields, names=yield_names,
                                           meta={'name': 'Mass Yields'})
 
+'''
 t_yields['mass'].unit = 'solMass'
 t_yields['yields_sn_001'].unit = 'solMass'
 t_yields['yields_winds_001'].unit = 'solMass'
@@ -132,6 +135,7 @@ t_yields['yields_sn_008'].unit = 'solMass'
 t_yields['yields_winds_008'].unit = 'solMass'
 t_yields['yields_sn_02'].unit = 'solMass'
 t_yields['yields_winds_02'].unit = 'solMass'
+'''
 
 '''
 dust_mass_sn: dust mass returned by supernovae from Todini & Ferrara 2001 (MNRAS 325 276)
@@ -155,8 +159,10 @@ dust_mass_sn = ((8.5,0),
                 (40, 0.4))
 
 t_dustmass_sn = Table(rows=dust_mass_sn, names=('mass','dustmass'), meta={'name': 'Dust Mass SN'})
+'''
 t_dustmass_sn['mass'].unit = 'solMass'
 t_dustmass_sn['dustmass'].unit = 'solMass'
+'''
 
 def find_nearest(lookup,value):
     '''
