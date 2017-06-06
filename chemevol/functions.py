@@ -29,7 +29,7 @@ import numpy as np
 from numpy import abs, array
 import logging
 from lookups import find_nearest, dust_mass_sn, t_yields, t_lifetime, \
-                    lookup_fn, lookup_taum, mass_yields, oxymass_yields
+                    lookup_fn, oxyt_yields, lookup_taum, mass_yields, oxymass_yields
 from lookups import yield_names as yn
 
 logger = logging.Logger('chem')

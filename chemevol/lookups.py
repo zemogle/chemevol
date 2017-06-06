@@ -117,7 +117,7 @@ yield_names = ['mass','yields_sn_001','yields_winds_001',
              'yields_sn_02','yields_winds_02']
 
 t_yields = Table(rows=mass_yields, names=yield_names,
-                                          meta={'name': 'Mass Yields'})
+                                          meta={'name': 'Metal Mass Yields'})
 
 '''
 - oxymass_yields: ejected oxygen yield in Msolar
