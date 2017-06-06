@@ -259,7 +259,6 @@ def ejected_metal_mass(m, sfrdiff, zdiff, metallicity, imf):
                 sfrdiff * imf(m)
     return dej
 
-<<<<<<< HEAD
 def ejected_oxygen_mass(m, sfrdiff, oxydiff, metallicity, imf):
     '''
     Calculate the ejected oxygen mass from stars by mass loss/stellar death
@@ -277,8 +276,6 @@ def ejected_oxygen_mass(m, sfrdiff, oxydiff, metallicity, imf):
         dej = ((m - (remnant_mass(m)))*oxydiff + fresh_oxygen(m, metallicity)) * \
                 sfrdiff * imf(m)
     return dej
-=======
->>>>>>> master
 
 
 def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
@@ -317,11 +314,7 @@ def ejected_dust_mass(choice, reduce_sn, m, sfrdiff, zdiff, metallicity, imf):
     choice_lims = choice['lims']
     # condensation efficiency of recycled stars in LIMS ONLY for m <= 8Msun
     if m <= 8. and choice_lims:
-<<<<<<< HEAD
         delta_LIMS_recycled = 0.15
-=======
-        delta_LIMS_recycled = 0.4
->>>>>>> master
     else:
         delta_LIMS_recycled = 0.
 
@@ -367,11 +360,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
     See Figure 3 in Rowlands et al 2014 (MNRAS 441, 1040)
     '''
 
-<<<<<<< HEAD
     delta_new_LIMS = 0.15
-=======
-    delta_new_LIMS = 0.40
->>>>>>> master
     if (m <= 8.0) and choice['lims']:
         dustmass = delta_new_LIMS * fresh_metals(m, metallicity)
     elif (m > 8.0) and (m <= 40.0) and choice['sn']:
@@ -382,7 +371,7 @@ def dust_masses_fresh(choice, reduce_sn, m, metallicity):
         dustmass = 0.
     return dustmass
 
-def grow_timescale(on,e,g,sfr,z,d):
+def grow_timescale(e,g,sfr,z,d):
     '''
     Calculates the grain growth timescale in years
     Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
@@ -396,14 +385,15 @@ def grow_timescale(on,e,g,sfr,z,d):
     - f_c: fraction of gas in cold dense state for grain growth
 
     '''
-    if (on == False or z <= 0 or e <= 0): # set to zero if destroy not turned on
+    sfr_in_years = sfr*1e-9 # to convert from per Gyr to per yr
+    if z <= 0. or e <= 0.:
         t_grow = 0
     else:
-        t_grow = g/(e*z*sfr)
+        t_grow = g/(e*z*sfr_in_years)
         t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
-    return t_grow #units of Gyrs
+    return t_grow
 
-def graingrowth(on,e,g,sfr,z,md,f_c):
+def graingrowth(choice,e,g,sfr,z,md,f_c):
     '''
     Calculates the grain growth contribution to dust mass, also
     returns grain growth timescale
@@ -411,33 +401,25 @@ def graingrowth(on,e,g,sfr,z,md,f_c):
 
     In:
     -- choice: is grain growth turned on or off (True or False)
-    -- e: the grain growth epsilon factor given by user
     -- g: gas mass at time t in Msolar
     -- sfr: SFR at time t in Msolar per Gyr
     -- z: metallicity of system (Mz/Mg)
     -- md: dust mass at time t in Msolar
     -- f_c: fraction of gas in cold dense clouds
 
-    e between 500-1000 appropriate for timescales < 1 Gyr.
+    e is between 500-1000 appropriate for timescales < 1 Gyr.
     In dust evolution, dMd/dt is proportional to Md/t_grow
     '''
 
-<<<<<<< HEAD
     if choice and z != 0. and e != 0. : #accounts for 1/z and t_grow in equation
         time_gg = 1e-9*grow_timescale(e,g,sfr,z,md) # convert grain growth timescale to Gyrs
         mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1
     else:
-=======
-    if (on == False or md == 0 or z == 0 or e == 0): #accounts for 1/z in equation
->>>>>>> master
         mdust_gg = 0.
         time_gg = 0.
-    else:
-        time_gg = grow_timescale(on,e,g,sfr,z,md) # units of Gyrs as SFR = Msun/Gyr
-        mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1  # units of mdust per Gyr
-    return mdust_gg, time_gg # units of Gyrs
+    return mdust_gg, time_gg
 
-def destruction_timescale(on,destruct,g,supernova_rate):
+def destruction_timescale(destruct,g,supernova_rate):
     '''
     Calculates the dust destruction timescale in years
     Based on Dwek, Galliano & Jones 2004 (ApJ, 662, 927)
@@ -450,14 +432,15 @@ def destruction_timescale(on,destruct,g,supernova_rate):
     destruct is often 100 or 1000 Msolar, appropriate for SNe expanding
     into galactic densities of 1cm^-3 or 0.1cm^-3 respectively.
     '''
-    if (supernova_rate <= 0 or on == False or destruct == 0): # set to zero if destroy not turned on
+    supernova_rate = supernova_rate*1e-9
+    if supernova_rate <= 0 or destruct <= 0:
         t_destroy = 0.
     else:
         # sn_rate is in units of N per Gyr
-        t_destroy = g/(destruct*supernova_rate)  # units are in Gyrs
-    return t_destroy # units are in Gyrs
+        t_destroy = g/(destruct*supernova_rate)
+    return t_destroy
 
-def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
+def destroy_dust(choice,destruct,gasmass,supernova_rate,md,f_c):
     '''
     Determine how much dust mass is removed by destruction in SN shocks
     Calls destruction_timescale function
@@ -466,21 +449,19 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
     -- choice: is destruction turned on or off (True or False)
     -- destruct: value of destruction parameter MISM
     -- gasmass: gas mass of system in Msolar at time t
-    -- supernova_rate: rate of core-collapse SN at time t (in units of Gyr^-1)
+    -- supernova_rate: rate of core-collapse SN at time t
     -- md: dust mass at time t
     -- f_c: fraction of gas in cold dense clouds
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
-
-    if (on == False or md == 0 or supernova_rate == 0 or destruct == 0):
+    if choice and md !=0 and destruct !=0:
+        t_des = 1e-9*destruction_timescale(destruct,gasmass,supernova_rate)
+        mdust_des = md*(1-f_c)*t_des**-1
+    else:
         mdust_des = 0
         t_des = 0
-    else:
-        t_des = destruction_timescale(on,destruct,gasmass,supernova_rate)
-        mdust_des = md*(1-f_c)*t_des**-1
-    #print t_des, mdust_des
-    return mdust_des, t_des # in Gyrs
+    return mdust_des, t_des
 
 def inflows(sfr,parameter):
     '''
@@ -494,109 +475,17 @@ def inflows(sfr,parameter):
     inflow_rate = sfr*parameter
     return inflow_rate
 
-def gas_inandout(in_on,out_on,in_sfr,sfr,m):
+def outflows(sfr,parameter):
     '''
-    Derive the gas lost and gained from inflows and outflows
-
-    In:
-    -- in_on: are inflows turned on? (True/False)
-    -- out_on: are outflows turned on? (True/False)
-    -- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
-    -- sfr: SFR at time t
-    -- m: stellar mass at time t
-    '''
-    if not in_on:
-        gas_inf = 0
-    else:
-        gas_inf = inflows(sfr,in_sfr)
-    if not out_on:
-        gas_out = 0.
-    else:
-        gas_out = outflows_feldmann(sfr, m)
-    return gas_inf,gas_out
-
-def metals_inandout(in_on,in_sfr,in_met,out_on,out_met,sfr,Z,m):
-    '''
-    Derive the metals lost and gained from inflows and outflows
-
-    In:
-    -- in_on: are inflows turned on? (True/False)
-    -- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
-    -- in_met: the metallicity of the inflow gas
-    -- out_on: are outflows turned on? (True/False)
-    -- out_met: is the outflow gas enriched? (True/False)
-    -- sfr: SFR at time t
-    -- Z: value of metallicity of system at time t
-    -- m: stellar mass at time t
-    '''
-    if in_on == False:
-        metal_inf = 0.
-    else:
-        metal_inf = in_met*inflows(sfr, in_sfr)
-
-    if out_on == False or out_met == False:
-        metal_out = 0.
-    else:
-        metal_out = Z*outflows_feldmann(sfr, m)
-    return metal_inf,metal_out
-
-def dust_inandout(in_on,in_sfr,in_md,out_on,out_md,sfr,D,m):
-    '''
-    Derive the dust mass lost and gained from inflows and outflows
-
-    In:
-    -- in_on: are inflows turned on? (True/False)
-    -- in_sfr: inflow rate at time t parameterised by N x SFR (See Rowlands et al 2014 MNRAS 441 1040)
-    -- in_md: the dust-to-gas ratio of the inflow gas
-    -- out_on: are outflows turned on? (True/False)
-    -- out_md: does the outflow include dust (True or False)
-    -- sfr: SFR at time t
-    -- D : dust-to-gas ratio of system at time t
-    -- m: stellar mass at time t
-    '''
-    # If inflows set to False, dust gained in inflows = 0
-    if in_on == False:
-        dust_inf = 0.
-    else:
-        dust_inf = in_md*inflows(sfr,in_sfr)
-    # if outflows: False or dust outflows False, dust lost in outflows = 0
-    if (out_on == False or out_md == False):
-        dust_out = 0.
-    else:
-        dust_out = D*outflows_feldmann(sfr,m)
-    return dust_inf,dust_out
-
-def outflows_feldmann(sfr,m):
-    '''
-    Define outflow rate, parameterised by epsilon_out = 2*f_comb, outflows = epsilon_out x SFR
-    See Feldmann et al 2015 MNRAS 449 327 Eq 27 derived from Hopkins et al 2012 MNRAS 421 3522 (Fig 7)
-    Here we use same terminology as their paper
+    Define outflow rate, parameterised by N x SFR
+    See Rowlands et al 2014 (MNRAS 441 1040)
 
     In:
     -- sfr: SFR at time t
-    -- m: stellar mass at time t
+    -- parameter: outflow parameter defined in input dictionary
     '''
-    x = 1
-    # the function is based on simulations in Hopkins et al 2012 and only go to logM* = 8.1 so we truncate mstar here
-    m_low = 1e8
-    if (m < m_low):
-        outflow_feld = 0.
-    else:
-        # equation from Feldmann et al 2015 based on Hopkins et al 2012 simulations
-        y = (m/1e10)**-0.59
-        f_comb = (x+y) - (x**-1+y**-1)**-1
-        epsilon_out = 2 * f_comb
-        # Feldmann doesnt set a max value of outflow, but Hopkins paper has mean < Feldmann for low M* so
-        # Feldmann equation likely overestimates the outflow
-        # Here we use Hopkins mean + standard deviation to limit the max outflow rate to be < 30
-        # (there are sims above this, but only few outliers)
-        if (epsilon_out > 30):
-            epsilon_out = 30
-        # Feldmann sets outflows to never be less than 2 x SFR, but Hopkins paper has floor at ~1
-        elif (epsilon_out < 1):
-            epsilon_out = 1
-        outflow_feld = sfr * epsilon_out
-    return outflow_feld
+    outflow_rate = sfr*parameter
+    return outflow_rate
 
 def mass_integral(choice, reduce_sn, t, metallicity, sfr_lookup, z_lookup, oxy_lookup, imf):
      '''
