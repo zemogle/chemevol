@@ -68,13 +68,13 @@ inits = [
 				'reduce_sn_dust': {'on': False, 'factor': 0},
 				'destroy': {'on':False, 'mass': 0},
 				'inflows':{'on': False, 'metals': 0, 'xSFR': 0, 'dust': 0},
-				'outflows':{'on': True, 'metals': False, 'dust': False},
+				'outflows':{'on': False, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
 				'epsilon_grain': 0},
 
 			{	'name': 'Model_B',
 				'gasmass_init': 4e10,
-				'SFH': 'MilkyWay.sfh',
+				'SFH': 'delayed.sfh',
         		't_end': 15.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
@@ -83,7 +83,7 @@ inits = [
 				'reduce_sn_dust': {'on': True, 'factor': 20},
 				'destroy': {'on': True, 'mass': 100},
 				'inflows':{'on': True, 'metals': 0., 'xSFR': 1.5, 'dust': 0},
-				'outflows':{'on': True, 'metals': False, 'dust': True},
+				'outflows':{'on': True, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.0,
 				'epsilon_grain': 800}
 		]

@@ -173,6 +173,8 @@ class ChemModel:
             time = self.sfh[:,0] # sfr is in units of Msun Gyr^-1
             time = time[time < self.tend]
             now = datetime.now()
+
+
             # TIME integral
             for item, t in enumerate(time):
                 r_sn = sn_rate [item]
@@ -296,7 +298,6 @@ class ChemModel:
                                     md_all, md_stars, md_gg, t_des, t_gg, oxymass))
             print("Gas, metal and dust mass exterior loop %s" % str(datetime.now()-now))
             return np.array(all_results)
-
 
     def supernova_rate(self):
         '''
