@@ -174,7 +174,6 @@ class ChemModel:
             time = time[time < self.tend]
             now = datetime.now()
 
-
             # TIME integral
             for item, t in enumerate(time):
                 r_sn = sn_rate [item]
@@ -213,7 +212,7 @@ class ChemModel:
                 # do oxygen metals so we can have 12+log(O/H) later
                 oxymass_ast = astration(oxymass,mg,self.sfr(t))
                 # are outflows and inflows on (True) and if so what metal parameters needed?
-                oxy_metal_inflow = 0.6 #64% of the metal mass consists of oxygen according to the initial mass abundances for Z=0.001 (Table 1 from Van Den Hoek et al., 1997)
+                oxy_metal_inflow = 0.3 
                 metals_inf,metals_out,oxymass_inf,oxymass_out = metals_inandout(
                     self.inflows['on'],\
                     self.inflows['xSFR'],\

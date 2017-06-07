@@ -519,7 +519,7 @@ def metals_inandout(in_on,in_sfr,in_met,out_on,out_met,sfr,Z,Z_oxy,in_oxy,m):
         metal_out, oxy_out = 0., 0.
     else:
         metal_out, oxy_out = Z*outflows_feldmann(sfr, m), Z_oxy*outflows_feldmann(sfr, m)
-    return metal_inf,metal_out, oxy_out, oxy_out
+    return metal_inf,metal_out, oxy_inf, oxy_out
 
 def dust_inandout(in_on,in_sfr,in_md,out_on,out_md,sfr,D,m):
     '''
