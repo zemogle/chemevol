@@ -74,7 +74,7 @@ inits = [
 
 			{	'name': 'Model_B',
 				'gasmass_init': 4e10,
-				'SFH': 'delayed.sfh',
+				'SFH': 'MilkyWay.sfh',
         		't_end': 15.,
 				'gamma': 0,
 				'IMF_fn': 'Chab',
