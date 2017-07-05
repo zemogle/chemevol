@@ -78,7 +78,7 @@ class ChemModel:
             self.sfh_file = self.SFH_file
             self.load_sfh()
         except KeyError:
-            logger.error('You must provide initial parameters')
+            logger.error('You must provide initial parameters in the correct format')
         # Set up IMF Function determined by user, allow for variety of spellings
         if (self.imf_type in ["Chab", "chab", "c"]):
             self.imf = imf_chab
@@ -178,12 +178,6 @@ class ChemModel:
         time = self.sfh[:,0]
         time = time[time < self.tend]
         now = datetime.now()
-
-        #Planet formation
-        planets = (self.f_disc*(self.f_wind+self.f_debris)-1.)*(-1.)
-        if planets < 0:
-            planets = -1.*planets
-
         # TIME integral
 
         for item, t in enumerate(time):
@@ -348,7 +342,7 @@ class BulkEvolve:
                 'inflows_xSFR', 'inflows_dust', 'outflows_metals', 'outflows_xSFR',
                 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct',
                 'f_disc', 'f_debris', 'f_wind']
-        alttype = np.dtype([('f0','S100'), ('f1', '<f8'), ('f2', 'S120'), ('f3','<f8'),
+        alttype = np.dtype([('f0','S50'), ('f1', '<f8'), ('f2', 'S100'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
                     ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
                     ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
