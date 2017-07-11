@@ -212,7 +212,7 @@ class ChemModel:
                 # do oxygen metals so we can have 12+log(O/H) later
                 oxymass_ast = astration(oxymass,mg,self.sfr(t))
                 # are outflows and inflows on (True) and if so what metal parameters needed?
-                oxy_metal_inflow = 0.3 
+                oxy_metal_inflow = 0.64*self.inflows['metals'] # fraction of total metals made up of oxygen
                 metals_inf,metals_out,oxymass_inf,oxymass_out = metals_inandout(
                     self.inflows['on'],\
                     self.inflows['xSFR'],\
@@ -371,7 +371,7 @@ class BulkEvolve:
                                     'metals': gal_data['inflows_metals'],
                                     'xSFR': gal_data['inflows_xSFR'],
                                     'dust': gal_data['inflows_dust']}
-            gal_data['outflows'] = {'on': gal_data['inflows_on'],
+            gal_data['outflows'] = {'on': gal_data['outflows_on'],
                                     'metals': gal_data['outflows_metals'],
                                     'dust': gal_data['outflows_dust']}
             gal_data['destroy'] = {'on': gal_data['destroy_on'],
