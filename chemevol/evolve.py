@@ -257,7 +257,7 @@ class ChemModel:
             dmg = -gas_ast + gas_ej + gas_inf - gas_out
             # System metallicity = metallicity produced by stars plus metallicity produced by planet formation
             dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out + metals_disc_toISM
-            ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des
+            ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des + dust_disc_toISM
             # dust_source_all separates out the dust sources (Md vs t) wihtout including sinks (Astration etc)
             # and grain growth separately (this is the Md vs time contributed by dust sources)
             dust_source_all = mdust_stars + mdust_gg
@@ -281,6 +281,7 @@ class ChemModel:
                 dust_to_metals = 0.
             else:
                 dust_to_metals = md/metals_system
+                 #metals_disc_toISM is not integrated over time - output for testing
             all_results.append((t, mg, mstars, metals_system, metallicity, metals_disc_toISM, mZ_planets, \
                                 md, dust_to_metals, self.sfr(t)*1e-9, \
                                 md_all, md_stars, md_gg, t_des, t_gg))
