@@ -192,6 +192,8 @@ class ChemModel:
             metals = metals_system - metals_disc_toISM #So star formation doesn't know about metals in the protoplanetary disc.
             metallicity = metals/mg
 
+            gas_disc_toISM = self.sfr(t)*self.f_disc*(self.f_debris+self.f_wind) #Msun/yr
+
             # start appending arrays for needing later
             z.append([t,metallicity])
             z_lookup = array(z)
@@ -202,7 +204,8 @@ class ChemModel:
             GAS: dMg = (-sfr(t) + e(t) + inflows(t) - outflows(t)) * dt
             set up astration, inflow, outflow components
             '''
-            gas_ast = self.sfr(t)
+
+            gas_ast = self.sfr(t) - gas_disc_toISM
             gas_inf = inflows(self.sfr(t), self.inflows['xSFR'])
             gas_out = outflows(self.sfr(t), self.outflows['xSFR'])
 
@@ -234,7 +237,7 @@ class ChemModel:
 
             mdust_ast = astration((md-dust_disc_toISM),mg,self.sfr(t))
 
-            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity_system, md, self.coldfraction)
+            mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon, mg, self.sfr(t), metallicity_system, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
 
             '''
@@ -249,7 +252,7 @@ class ChemModel:
             '''
             STARS: dM_stars = (sfr(t) - e(t)) * dt
             '''
-            dmstars = self.sfr(t) - gas_ej
+            dmstars = self.sfr(t) - gas_disc_toISM - gas_ej
 
             '''
             integrate over time for gas, metals and stars (mg, metals, md)
@@ -277,6 +280,9 @@ class ChemModel:
             md_stars += mdust_stars*dt # dust source from stars only
             Z = zip(*z_lookup) # write metallicity to an array
             s_f_r = zip(*sfr_lookup) # write SFR lookup array
+
+            print mg + mstars
+
             if mg <= 0. or metals_system <=0:  # write dust/metals ratio
                 dust_to_metals = 0.
             else:
