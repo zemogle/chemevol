@@ -181,16 +181,19 @@ class ChemModel:
         # TIME integral
 
         for item, t in enumerate(time):
-            r_sn = sn_rate [item]
+            r_sn = sn_rate[item]
 
             metallicity_system = metals_system/mg
 
-            metals_disc_toISM = metallicity_system*self.sfr(t)*self.f_disc*(self.f_debris+self.f_wind) #Msun/yr
-            metals_planets = (metallicity_system*self.sfr(t)*self.f_disc) - metals_disc_toISM
+            metals_disc_toISM = metals_system*self.f_disc*(self.f_debris+self.f_wind) #Msun
+            metals_planets = (metals_system*self.f_disc) - metals_disc_toISM
 
             #metals into stars = total metallicity - metals in disc
             metals = metals_system - metals_disc_toISM #So star formation doesn't know about metals in the protoplanetary disc.
             metallicity = metals/mg
+            #print metallicity_system, metallicity
+            if metallicity < 0.:
+                print 'metallicity < 0'
 
             # start appending arrays for needing later
             z.append([t,metallicity])
@@ -210,7 +213,8 @@ class ChemModel:
             METALS: dMz = (-Z*sfr(t) + ez(t) + Z*inflows(t) - Z*outflows(t)) * dt
             set up astration, inflow and outflow components
             '''
-            metals_ast = astration(metals,mg,self.sfr(t)) #* (1.-self.f_disc*self.f_debris)
+            metals_ast = astration(metals,mg,self.sfr(t)) #Uses reduced metals term
+
 
             if self.outflows['metals']:
                 metals_out = metallicity_system*outflows(self.sfr(t), self.outflows['xSFR'])
@@ -232,7 +236,7 @@ class ChemModel:
             dust_disc_toISM = (md/mg)*self.sfr(t)*self.f_disc*(self.f_debris+self.f_wind) #Msun/yr
             dust_planets = ((md/mg)*self.sfr(t)*self.f_disc) - dust_disc_toISM
 
-            mdust_ast = astration((md-dust_disc_toISM),mg,self.sfr(t))
+            mdust_ast = astration((md),mg,self.sfr(t)) #Don't subtract dust in disc, here, double counting. Use separate disc term in ddust
 
             mdust_gg, t_gg = graingrowth(self.choice_dust['gg'], self.epsilon,mg, self.sfr(t), metallicity_system, md, self.coldfraction)
             mdust_des, t_des = destroy_dust(self.choice_des, self.destroy_ism, mg, r_sn, md, self.coldfraction)
@@ -245,7 +249,7 @@ class ChemModel:
             '''
             gas_ej, metals_stars, mdust_stars = \
                     mass_integral(self.choice_dust, self.reduce_sn, t, metallicity, sfr_lookup, z_lookup, self.imf)
-
+            #Uses reduced metals term
             '''
             STARS: dM_stars = (sfr(t) - e(t)) * dt
             '''
@@ -255,10 +259,9 @@ class ChemModel:
             integrate over time for gas, metals and stars (mg, metals, md)
             '''
             dmg = -gas_ast + gas_ej + gas_inf - gas_out
-            # System metallicity = metallicity produced by stars plus metallicity produced by planet formation
-            dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out + metals_disc_toISM
+            dmetals = -metals_ast + metals_stars + metals_pre + metals_inf - metals_out
             ddust = -mdust_ast + mdust_stars + mdust_inf - mdust_out + mdust_gg - mdust_des + dust_disc_toISM
-            # dust_source_all separates out the dust sources (Md vs t) wihtout including sinks (Astration etc)
+            # dust_source_all separates out the dust sources (Md vs t) without including sinks (Astration etc)
             # and grain growth separately (this is the Md vs time contributed by dust sources)
             dust_source_all = mdust_stars + mdust_gg
             dt = t - prev_t             # calculate  next time step
@@ -281,8 +284,8 @@ class ChemModel:
                 dust_to_metals = 0.
             else:
                 dust_to_metals = md/metals_system
-                 #metals_disc_toISM is not integrated over time - output for testing
-            all_results.append((t, mg, mstars, metals_system, metallicity, metals_disc_toISM, mZ_planets, \
+
+            all_results.append((t, mg, mstars, metals_system, metallicity, mZ_planets, \
                                 md, dust_to_metals, self.sfr(t)*1e-9, \
                                 md_all, md_stars, md_gg, t_des, t_gg))
             # to test code kinks
@@ -343,7 +346,7 @@ class BulkEvolve:
                 'inflows_xSFR', 'inflows_dust', 'outflows_metals', 'outflows_xSFR',
                 'outflows_dust', 'cold_gas_fraction', 'epsilon_grain', 'destruct',
                 'f_disc', 'f_debris', 'f_wind']
-        alttype = np.dtype([('f0','S50'), ('f1', '<f8'), ('f2', 'S100'), ('f3','<f8'),
+        alttype = np.dtype([('f0','S100'), ('f1', '<f8'), ('f2', 'S100'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','bool'),
                     ('f8','bool'),('f9','<f8'),('f10','<f8'),('f11','<f8'),
                     ('f12','bool'),('f13','<f8'),('f14','bool'), ('f15','<f8'),
@@ -395,16 +398,15 @@ class BulkEvolve:
                    'mstars' : all_results[:,2],
                    'metalmass' : all_results[:,3],
                    'metallicity' : all_results[:,4],
-                   'metals_disc_toISM' : all_results[:,5],
-                   'metals_planets' : all_results[:,6],
-                   'dustmass' : all_results[:,7],
-                   'dust_metals_ratio' : all_results[:,8],
-                   'sfr' : all_results[:,9],
-                   'dust_all' : all_results[:,10],
-                   'dust_stars' : all_results[:,11],
-                   'dust_ism' : all_results[:,12],
-                   'time_destroy' : all_results[:,13],
-                   'time_gg' : all_results[:,14]}
+                   'metals_planets' : all_results[:,5],
+                   'dustmass' : all_results[:,6],
+                   'dust_metals_ratio' : all_results[:,7],
+                   'sfr' : all_results[:,8],
+                   'dust_all' : all_results[:,9],
+                   'dust_stars' : all_results[:,10],
+                   'dust_ism' : all_results[:,11],
+                   'time_destroy' : all_results[:,12],
+                   'time_gg' : all_results[:,13]}
             params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
             params['ssfr'] = params['sfr']/params['mgas']
             # write to astropy table
