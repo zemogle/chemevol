@@ -9,7 +9,7 @@ Running the script following the instructions below will produce:
   by user from inits file - see instructions below)
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
-and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040), with latest features discussed in De Vis et al 2017b.
+and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040), with latest features discussed in De Vis et al 2017b.  The version of this code used for De Vis et al 2017b is in release v_de_vis2017.
 
 If you use this code, please do cite the above papers.  The license is provided with this package.
 
