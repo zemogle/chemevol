@@ -45,7 +45,7 @@ def extra_sfh(sfh, gamma):
     t_0 = 1e-3 # we want it to start at 1e-3
     tend_sfh = sfh[1][0] # 1st time array after 0
     # work out difference between t_0 and [1] entry in SFH
-    dlogt = (np.log10(tend_sfh) - np.log10(t_0))/150
+    dlogt = (np.log10(tend_sfh) - np.log10(t_0))/1000 #150 can be used to speed up code if smooth SFH
     norm = sfh[1][1]*(1./np.exp(-1.*gamma*tend_sfh))
     sfr_extra = norm * np.exp(-1.*gamma*t_0)
     sfr_new = sfr_extra
