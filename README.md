@@ -10,7 +10,7 @@ Running the script following the instructions below will produce:
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
 and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040), with latest features discussed in De Vis et al (2017b).
-This version of the code is the one used in Forgan, Rowlands et al 2017.
+This version of the code is the one used in Forgan, Rowlands et al 2017 which adds in three new parameters to the chemical evolution equation to account for planet formation. 
 
 If you use this code, please do cite the above papers.  The license is provided with this package.
 
