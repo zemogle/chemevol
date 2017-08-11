@@ -9,7 +9,8 @@ Running the script following the instructions below will produce:
   by user from inits file - see instructions below)
 
 The code is based on Morgan & Edmunds 2003 (MNRAS, 343, 427)
-and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040), with latest features discussed in De Vis et al (submitted 2016).
+and described in detail in Rowlands et al 2014 (MNRAS, 441, 1040), with latest features discussed in De Vis et al (2017b).
+This version of the code is the one used in Forgan, Rowlands et al 2017. 
 
 If you use this code, please do cite the above papers.  The license is provided with this package.
 
@@ -96,4 +97,8 @@ Copy the example_multi.py file to the desired directory (where your .sfh file is
 |   outflows         | 	 outflows_metals = metallicity of inflow: input True or False where True = current metallicity of system, False = 0 <br><br>  outflows_xSFR = outflow rate of gas is X * SFR: input a number <br><br> outflows_dust = amount of dust in outflow: input True of False where	True = dust/gas of system, False = 0   |   None    |
 |   cold_gas_fraction    |	fraction of gas in cold dense state for grain growth, typically 0.5 (eg Asano et al 2013)  |    None    |
 |   epsilon_grain   |		grain growth parameter from Mattsson & Andersen 2012, typically 500 for t_grow ~ 10Myr  consistent with MW |    None    |
-|   destruct        | 			amount of material destroyed by each supernova, typically 1000 or 100Msun for diffuse or dense interstellar gas   |   None   |
+|   destruct        | amount of material destroyed by each supernova, typically 1000 or 100Msun for diffuse or dense interstellar gas   |   None   |
+| f_disc            | the fraction of protoplanetary disc material that is never accreted by the star during star formation (Forgan et al 2017) | set to 0.7-1.0 in Forgan et al 2017 |
+| f_debris          | 0.1*(1-f_wind) the further fraction of unaccreted disc material that remains in grain sizes amenable to FIR observations (Forgan et al 2017) |
+None |
+| f_wind            | the fraction of disc material that is ejected and returned to the ISM during the planet formation process | set to 0.7-1.0 in Forgan et al 2017 |
