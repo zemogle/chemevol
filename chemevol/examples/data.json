@@ -12,7 +12,10 @@
 				"outflows":{"metals": false, "xSFR": 0.0, "dust": false},
 				"cold_gas_fraction": 0.5,
 				"epsilon_grain": 800.0,
-        		"destruct": 0.0  },
+        		"destruct": 0.0,
+				"f_disc": 0.8,
+				"f_debris": 0.02,
+				"f_wind": 0.8    },
 
 			{	"name" : "Model_VI",
 				"gasmass_init": 4e10,
@@ -27,5 +30,8 @@
   				"outflows":{"metals": true, "xSFR": 1.5, "dust": true},
   				"cold_gas_fraction": 0.5,
   				"epsilon_grain": 800.0,
-          		"destruct": 100.0  }
+          		"destruct": 100.0,
+					"f_disc": 0.8,
+					"f_debris": 0.02,
+					"f_wind": 0.8  }
         ]
