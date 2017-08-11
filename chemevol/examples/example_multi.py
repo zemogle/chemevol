@@ -40,6 +40,9 @@ initial_galaxy_params
 						default is 500 for t_grow ~ 10Myr.
 - destruct = 			amount of material destroyed by each SN
 						(typically 1000 or 100Msun)
+- f_disc = 				the fraction of protoplanetary disc material that is never accreted by the star during star formation (Forgan et al 2017)
+- f_debris = 0.1*(1-f_wind) the further fraction of unaccreted disc material that remains in grain sizes amenable to FIR observations (Forgan et al 2017)
+-f_wind = the fraction of disc material that is ejected and returned to the ISM during the planet formation process
 
 
 Each run will be used to generate the evolution of dust, gas,
@@ -67,7 +70,10 @@ inits = [
 			'outflows':{'metals': False, 'xSFR': 0, 'dust': False},
 			'cold_gas_fraction': 0.5,
 			'epsilon_grain': 0,
-			'destruct': 0 },
+			'destruct': 0,
+			'f_disc': 0,
+			'f_debris':0.02,
+			'f_wind':0.8  },
 
 		{	'name': 'Model_II_test',
 			'gasmass_init': 4e10,
@@ -82,53 +88,10 @@ inits = [
 			'outflows':{'metals': False, 'xSFR': 0,'dust': False},
 			'cold_gas_fraction': 0.5,
 			'epsilon_grain': 0,
-			'destruct': 0 },
-
-		{	'name': 'Model_III_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'SN+LIMS',
-			'reduce_sn_dust': False,
-			'destroy': False,
-			'inflows':{'metals': 0., 'xSFR': 0, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 1.5,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 0,
-			'destruct': 0 },
-
-		{	'name': 'Model_IV_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 6,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 1.5, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 1.5,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 800,
-			'destruct': 100 },
-
-		{	'name': 'Model_V_test',
-			'gasmass_init': 4e10,
-			'SFH': 'delayed.sfh',
-			't_end': 20.,
-			'gamma': 0,
-			'IMF_fn': 'Chab',
-			'dust_source': 'All',
-			'reduce_sn_dust': 12,
-			'destroy': True,
-			'inflows':{'metals': 0., 'xSFR': 2.0, 'dust': 0},
-			'outflows':{'metals': True, 'xSFR': 2.0,'dust': True},
-			'cold_gas_fraction': 0.5,
-			'epsilon_grain': 6000,
-			'destruct': 1000},
-
+			'destruct': 0,
+			'f_disc': 0,
+			'f_debris':0.02,
+			'f_wind':0.8  }
         ]
 
 snrate = []
