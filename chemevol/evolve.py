@@ -426,7 +426,7 @@ class BulkEvolve:
             t = Table(params)
             # write out to file based on 'name' identifier
             name = item['name']
-            t.write(str(name+'.dat'), format='ascii', delimiter=' ', overwrite=True)
+            t.write(str(name+'.dat'), format='ascii', delimiter=' ')
             # if you want an array including every inits entry:
             galaxies.append(params)
         self.results = galaxies
