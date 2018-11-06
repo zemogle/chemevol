@@ -12,6 +12,8 @@
 				"inflows": {"on": false, "metals": 0.0, "xSFR": 0.0, "dust": 0.0},
 				"outflows": {"on": false, "metals": false, "dust": false},
 				"cold_gas_fraction": 0.5,
+				"available_metal_fraction": 0.6,
+				"effective_snrate_factor": 0.36,
 				"epsilon_grain": 0},
 
 			{	"name" : "Model_B",
@@ -27,5 +29,7 @@
   				"inflows": {"on": true, "metals": 0.0, "xSFR": 1.5, "dust": 0.0},
   				"outflows":{"on": true, "metals": true, "dust": true},
   				"cold_gas_fraction": 0.5,
+  				"available_metal_fraction": 0.6,
+				"effective_snrate_factor": 0.36,
   				"epsilon_grain": 800.0 }
         ]

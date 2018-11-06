@@ -1,3 +1,3 @@
-#name, gasmass_init, SFH, t_end, gamma, IMF_fn, dust_source, delta_lims_fresh, reduce_sn_dust_on, reduce_sn_dust_factor, destroy_on, mass_destroy, inflows_on, inflows_metals, inflows_xSFR, inflows_dust, outflows_on, outflows_metals,outflows_xSFR, outflows_dust, cold_gas_fraction, epsilon_grain
-Model_A, 4e10, Milkyway.sfh, 15., 0, Chab, ALL, 0.15, False, 0, False, 0., False, 0., 0., 0., True, False, False, 0.5, 0
-Model_B, 4e10, Milkyway.sfh, 15., 0, Salp, ALL, 0.15, True, 25, True, 100., True, 0., 0.5, 0, True, True, True, 0.5, 1000
+#name, gasmass_init, SFH, t_end, gamma, IMF_fn, dust_source, delta_lims_fresh, reduce_sn_dust_on, reduce_sn_dust_factor, destroy_on, mass_destroy, inflows_on, inflows_metals, inflows_xSFR, inflows_dust, outflows_on, outflows_metals,outflows_xSFR, outflows_dust, cold_gas_fraction, available_metal_fraction, effective_snrate_factor, epsilon_grain
+Model_A, 4e10, Milkyway.sfh, 15., 0, Chab, ALL, 0.15, False, 0, False, 0., False, 0., 0., 0., True, False, False, 0.5, 0.6, 0.36, 0
+Model_B, 4e10, Milkyway.sfh, 15., 0, Salp, ALL, 0.15, True, 25, True, 100., True, 0., 0.5, 0, True, True, True, 0.5, 0.6, 0.36, 1000

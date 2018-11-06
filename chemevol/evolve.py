@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ********************************************************************************
 '''
 
-from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
+from .functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab, \
     imf_salp, imf_kroup, initial_mass_function, initial_mass_function_integral, \
     ejected_gas_mass, fresh_metals, lookup_fn, lookup_taum, mass_integral, mass_yields, \
     inflows, remnant_mass, t_lifetime, t_yields, graingrowth, destroy_dust, \
@@ -39,7 +39,7 @@ from functions import extra_sfh, astration, remnant_mass, imf_chab, imf_topchab,
 from astropy.table import Table
 import numpy as np
 from numpy import array
-from lookups import find_nearest, lookup_fn, t_lifetime, lookup_taum
+from .lookups import find_nearest, lookup_fn, t_lifetime, lookup_taum
 import logging
 from datetime import datetime
 import os.path
@@ -69,6 +69,8 @@ class ChemModel:
             self.outflows = inputs['outflows']
             self.SFH_file = inputs['SFH']
             self.coldfraction = inputs['cold_gas_fraction']
+            self.availablefraction = inputs['available_metal_fraction']
+            self.eff_snrate = inputs['effective_snrate_factor']
             self.epsilon = inputs['epsilon_grain']
             # check for SFH file or use Milkway.sfh provided
             if not self.SFH_file:
@@ -246,9 +248,9 @@ class ChemModel:
                 mdust_ast = astration(md,mg,self.sfr(t))
 
                 mdust_gg, t_gg = graingrowth(self.choice_dust['gg'],self.epsilon,mg, self.sfr(t), \
-                    metallicity, md, self.coldfraction)
+                    metallicity, md, self.coldfraction, self.availablefraction)
                 mdust_des, t_des = destroy_dust(self.destroy['on'], self.destroy['mass'], mg, r_sn, \
-                    md, self.coldfraction)
+                    md, self.coldfraction , self.eff_snrate)
                 '''
                 Get ejected masses from stars when they die
                 gas_ej = e(t): ejected gas mass from stars of mass m at t = taum
@@ -352,12 +354,12 @@ class BulkEvolve:
     def upload_csv(self):
         names = ['name', 'gasmass_init', 'SFH', 't_end', 'gamma', 'IMF_fn', 'dust_source','delta_lims_fresh', \
          'reduce_sn_dust_on', 'reduce_sn_dust_factor','destroy_on', 'mass_destroy', 'inflows_on', 'inflows_metals', 'inflows_xSFR', \
-         'inflows_dust', 'outflows_on','outflows_metals', 'outflows_dust', 'cold_gas_fraction',\
-          'epsilon_grain']
+         'inflows_dust', 'outflows_on','outflows_metals', 'outflows_dust', 'cold_gas_fraction', 'available_metal_fraction', \
+         'effective_snrate_factor', 'epsilon_grain']
         alttype = np.dtype([('f0','S10'), ('f1', '<f8'), ('f2', 'S30'), ('f3','<f8'),
                     ('f4','<f8'), ('f5','S10'), ('f6','S10'),('f7','<f8'),('f8','bool'), ('f9','<f8'),
                     ('f10','bool'), ('f11','<f8'), ('f12','bool'), ('f13','<f8'),('f14','<f8'),('f15','<f8'),
-                    ('f16','bool'), ('f17','bool'),('f18','bool'), ('f19','<f8'), ('f20','<f8')])
+                    ('f16','bool'), ('f17','bool'),('f18','bool'), ('f19','<f8'), ('f20','<f8'), ('f21','<f8'), ('f22','<f8')])
         try:
             data = np.genfromtxt(self.filename, dtype=alttype,delimiter=',', autostrip=True, names=names)
         except ValueError:

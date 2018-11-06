@@ -86,7 +86,7 @@ class TestFunctions:
     def test_dust_destruction(self):
         # test dust destruction timescale is on and outputs expected values
         # for on,destruct,gasmass,supernova_rate,md,f_c; [0] ==> mdust_destroy
-        dust_sink = destroy_dust(1,1000.,1.02e10,6.66e6,6.765e08,0.5)[0]
+        dust_sink = destroy_dust(1,1000.,1.02e10,6.66e6,6.765e08,0.5,0.36)[0]
         assert 2.02e8 < dust_sink < 2.29e8
 
     def test_astration(Self):
@@ -97,15 +97,15 @@ class TestFunctions:
         assert ast == 1e-9
 
     def test_timescale_graingrowth_on(self):
-        grow = grow_timescale(True,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        grow = grow_timescale(True,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2),0.6)
         assert 0.0863 < grow < 0.0864
 
     def test_timescale_graingrowth_off(self):
-        grow = grow_timescale(False,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2))
+        grow = grow_timescale(False,500.,3.35e9,1.169e9,6.64e-2,(0.671*6.64e-2),0.6)
         assert grow == 0
 
     def test_dust_graingrowth(self):
-        dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,6.765e8,0.5)[0]
+        dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,6.765e8,0.5,0.6)[0]
         assert  3.200e6 < dust_ism < 3.202e6
 
     def test_outflow_feld(Self):

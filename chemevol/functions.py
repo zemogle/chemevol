@@ -26,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 import numpy as np
 from numpy import abs, array
 import logging
-from lookups import find_nearest, dust_mass_sn, t_yields, t_lifetime, \
+from .lookups import find_nearest, dust_mass_sn, t_yields, t_lifetime, \
                     lookup_fn, lookup_taum, mass_yields, oxymass_yields
-from lookups import yield_names as yn
+from .lookups import yield_names as yn
 
 logger = logging.Logger('chem')
 
@@ -368,7 +368,7 @@ def dust_masses_fresh(choice, delta_lims, reduce_sn, m, metallicity):
         dustmass = 0.
     return dustmass
 
-def grow_timescale(on,e,g,sfr,z,d):
+def grow_timescale(on,e,g,sfr,z,d,f_available):
     '''
     Calculates the grain growth timescale in years
     Based on Mattsson & Andersen 2012 (MNRAS 423, 38)
@@ -386,10 +386,10 @@ def grow_timescale(on,e,g,sfr,z,d):
         t_grow = 0
     else:
         t_grow = g/(e*z*sfr)
-        t_grow = t_grow/(1-((d/g)/z)) #to account for metals already locked up in grains
+        t_grow = t_grow/(f_available-((d/g)/z)) #to account for metals already locked up in grains and metals that can never be accreted onto dust grains
     return t_grow #units of Gyrs
 
-def graingrowth(on,e,g,sfr,z,md,f_c):
+def graingrowth(on,e,g,sfr,z,md,f_c,f_available):
     '''
     Calculates the grain growth contribution to dust mass, also
     returns grain growth timescale
@@ -412,8 +412,8 @@ def graingrowth(on,e,g,sfr,z,md,f_c):
         mdust_gg = 0.
         time_gg = 0.
     else:
-        time_gg = grow_timescale(on,e,g,sfr,z,md) # units of Gyrs as SFR = Msun/Gyr
-        mdust_gg = md * f_c * (1.-((md/g)/z)) * time_gg**-1  # units of mdust per Gyr
+        time_gg = grow_timescale(on,e,g,sfr,z,md,f_available) # units of Gyrs as SFR = Msun/Gyr; the factor (1.-((md/g)/z)) present in Mattsson & Andersen 2012 is a typo and should not be included here (it should only be in t_grow calculation above)
+        mdust_gg = md * f_c *  time_gg**-1 # units of mdust per Gyr; 
     return mdust_gg, time_gg # units of Gyrs
 
 def destruction_timescale(on,destruct,g,supernova_rate):
@@ -436,7 +436,7 @@ def destruction_timescale(on,destruct,g,supernova_rate):
         t_destroy = g/(destruct*supernova_rate)  # units are in Gyrs
     return t_destroy # units are in Gyrs
 
-def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
+def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c,sn_eff):
     '''
     Determine how much dust mass is removed by destruction in SN shocks
     Calls destruction_timescale function
@@ -456,7 +456,7 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c):
         mdust_des = 0
         t_des = 0
     else:
-        t_des = destruction_timescale(on,destruct,gasmass,supernova_rate)
+        t_des = destruction_timescale(on,destruct,gasmass,sn_eff*supernova_rate)  #the supernovae are quite clustered and so the supernova rate needs to be reduced (effective sn_rate = sn_eff * sn_rate) to account for supernova exploding in regions that have already been cleared of dust
         mdust_des = md*(1-f_c)*t_des**-1
     #print t_des, mdust_des
     return mdust_des, t_des # in Gyrs

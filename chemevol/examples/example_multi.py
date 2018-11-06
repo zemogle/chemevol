@@ -70,6 +70,8 @@ inits = [
 				'inflows':{'on': False, 'metals': 0, 'xSFR': 0, 'dust': 0},
 				'outflows':{'on': False, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.5,
+				'available_metal_fraction': 0.6,
+				'effective_snrate_factor': 0.36,
 				'epsilon_grain': 0},
 
 			{	'name': 'Model_B',
@@ -85,6 +87,8 @@ inits = [
 				'inflows':{'on': False, 'metals': 0., 'xSFR': 0, 'dust': 0},
 				'outflows':{'on': False, 'metals': False, 'dust': False},
 				'cold_gas_fraction': 0.0,
+				'available_metal_fraction': 0.6,
+				'effective_snrate_factor': 0.36,
 				'epsilon_grain': 800}
 		]
 
