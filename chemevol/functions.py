@@ -380,6 +380,7 @@ def grow_timescale(on,e,g,sfr,z,d,f_available):
     - Z: metallicity mass fraction
     - SFR: star formation rate in units of Msolar/Gyr
     - f_c: fraction of gas in cold dense state for grain growth
+    - f_available: fraction of metals that are available for dust grain growth
 
     '''
     if (on == False or z <= 0 or e <= 0): # set to zero if destroy not turned on
@@ -403,6 +404,7 @@ def graingrowth(on,e,g,sfr,z,md,f_c,f_available):
     -- z: metallicity of system (Mz/Mg)
     -- md: dust mass at time t in Msolar
     -- f_c: fraction of gas in cold dense clouds
+    - f_available: fraction of metals that are available for dust grain growth
 
     e between 500-1000 appropriate for timescales < 1 Gyr.
     In dust evolution, dMd/dt is proportional to Md/t_grow
@@ -448,6 +450,7 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c,sn_eff):
     -- supernova_rate: rate of core-collapse SN at time t (in units of Gyr^-1)
     -- md: dust mass at time t
     -- f_c: fraction of gas in cold dense clouds
+    -- sn_eff: correction factor to obtain the effective SN rate for dust destruction (to account for previous SN clearing out dust in the vicinity)
 
     In dust evolution, dMd/dt is proportional to (1-cold fraction) * Md/t_destroy
     '''
@@ -456,7 +459,7 @@ def destroy_dust(on,destruct,gasmass,supernova_rate,md,f_c,sn_eff):
         mdust_des = 0
         t_des = 0
     else:
-        t_des = destruction_timescale(on,destruct,gasmass,sn_eff*supernova_rate)  #the supernovae are quite clustered and so the supernova rate needs to be reduced (effective sn_rate = sn_eff * sn_rate) to account for supernova exploding in regions that have already been cleared of dust
+        t_des = destruction_timescale(on,destruct,gasmass,sn_eff*supernova_rate) 
         mdust_des = md*(1-f_c)*t_des**-1
     #print t_des, mdust_des
     return mdust_des, t_des # in Gyrs
