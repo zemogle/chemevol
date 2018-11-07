@@ -106,7 +106,7 @@ class TestFunctions:
 
     def test_dust_graingrowth(self):
         dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,3.765e8,0.5,0.6)[0]
-        assert  1.202e6 < dust_ism < 3.202e6
+        assert  3.202e7 < dust_ism < 4.7e7
 
     def test_outflow_feld(Self):
         # test feldmann outflow rate works as expected (sfr,mstar)
