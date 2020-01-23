@@ -593,47 +593,48 @@ class BulkEvolve:
             
             # write all the results to a dictionary
             params = {'time' : all_results[:,0],
-                   'z' : all_results[:,1],
-                   'mgas' : all_results[:,2],
-                   'mstars' : all_results[:,3],
-                   'metallicity' : all_results[:,4],
-                   'mdust' : all_results[:,5],
-                   'dust_metals_ratio' : all_results[:,6],
-                   'sfr' : all_results[:,7],
-                   'dust_all' : all_results[:,8],
-                   'dust_stars' : all_results[:,9],
-                   'dust_ism' : all_results[:,10],
-                   'time_destroy' : all_results[:,11],
-                   'time_fragment' : all_results[:,12],
-                   'time_gg_diffuse' : all_results[:,13],
-                   'time_gg_cloud' : all_results[:,14],
-                   'mgas_outflow' : all_results[:,15],
-                   'mgas_recycled' : all_results[:,16],
-                   'mgas_inflow' : all_results[:,17],
-                   'mgas_IGM' : all_results[:,18],
-                   'mdust_IGM' : all_results[:,19],
-                   'mdust_diffuse' : all_results[:,20],
-                   'mdust_cloud' : all_results[:,21]}
+           'mgas' : all_results[:,1],
+           'mstars' : all_results[:,2],
+           'metallicity' : all_results[:,3],
+           'mdust' : all_results[:,4],
+           'dust_metals_ratio' : all_results[:,5],
+           'sfr' : all_results[:,6],
+           'dust_all' : all_results[:,7],
+           'dust_stars' : all_results[:,8],
+           'dust_ism' : all_results[:,9],
+           'time_destroy' : all_results[:,10],
+           'time_fragment' : all_results[:,11],
+           'time_gg_diffuse' : all_results[:,12],
+           'time_gg_cloud' : all_results[:,13],
+           'mgas_outflow' : all_results[:,14],
+           'mgas_recycled' : all_results[:,15],
+           'mgas_inflow' : all_results[:,16],
+           'mgas_IGM' : all_results[:,17],
+           'mdust_IGM' : all_results[:,18],
+           'mdust_diffuse' : all_results[:,19],
+           'mdust_cloud' : all_results[:,20]}
 
             #compute additional parameters
             params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
             params['ssfr'] = params['sfr']/params['mstars']
-
-            #properties for the isotypes specified in input
-            for iso,nameiso in enumerate(item['isotopes']):
-                Miso=all_results[:,22+iso]
-                params['M'+nameiso]=Miso
-                Miso_IGM=all_results[:,22+iso+len(item['isotopes'])]
-                params['M'+nameiso+'_IGM']=Miso_IGM
-                paramsorder+=['M'+nameiso,'M'+nameiso+'_IGM']
-
-            # write out to file based on 'name' identifier
-            name = item['name']
+            
             paramsorder=['time','z','fg','mgas','mstars','mdust','mdust_diffuse',\
                         'mdust_cloud','metallicity','dust_metals_ratio','sfr',\
                         'ssfr','dust_all','dust_stars','dust_ism','time_destroy',\
                         'time_fragment','time_gg_diffuse','time_gg_cloud','mgas_outflow',\
                         'mgas_recycled','mgas_inflow','mgas_IGM','mdust_IGM']
+
+            #properties for the isotypes specified in input
+            for iso,nameiso in enumerate(item['isotopes']):
+                Miso=all_results[:,21+iso]
+                params['M'+nameiso]=Miso
+                Miso_IGM=all_results[:,21+iso+len(item['isotopes'])]
+                params['M'+nameiso+'_IGM']=Miso_IGM
+                paramsorder+=['M'+nameiso,'M'+nameiso+'_IGM']
+
+            # write out to file based on 'name' identifier
+            name = item['name']
+            
             ascii.write(params,str(name+'.csv'),format='csv',names=paramsorder)
             
             # if you want an array including every inits entry:

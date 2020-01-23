@@ -108,6 +108,8 @@ make_gridTable_dust.py creates the csv file for a grid of models, typically proc
 
 make_sfe_sfh.py shows how to create SFE/SFH files with some examples. Any changes to the star formation history or the inflow rates will be made here.
 
+There is also a log file that lists the warnings. These are warnings about corrections made during the model calculations. Actual errors or failures of the code will still cause the code to crash and give an appropriate error message.
+
 **.sfe   star formation efficiency files, as defined in De Vis et al. (2020)
 **.sfh   star formation history files, as defined in De Vis et al. (2017)
 **.dat 	 some example models
