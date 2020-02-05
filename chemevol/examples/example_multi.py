@@ -329,8 +329,8 @@ for item in inits:
 	# write out to file based on 'name' identifier
 	name = item['name']
 
-	ascii.write(params,"Models/"+str(name+'.dat'),format='csv',names=paramsorder)
-	#ascii.write(params,"Models/"+str(name+'.dat'),format='csv',names=paramsorder) # csv option
+	#ascii.write(params,str(name+'.dat'),names=paramsorder)
+	ascii.write(params,str(name+'.csv'),format='csv',names=paramsorder) # .csv option
 
 	# if you want an array including every inits entry:
 	galaxies.append(params)

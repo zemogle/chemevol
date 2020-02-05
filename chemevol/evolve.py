@@ -150,6 +150,13 @@ class ChemModel:
             final_sfh, final_inflows = extra_sfh_and_inflows(sfh, self.gamma)
             self.sfh = np.array(final_sfh)
             self.inflowvals= np.array(final_inflows)
+            dts=[self.sfh[i+1,0]-self.sfh[i,0] for i in range(len(self.sfh[:,0])-1)]
+            dts=np.append(dts,dts[-1])
+            if self.inflows['mass']>0:
+                self.inflowvals[:,1] = self.inflowvals[:,1]/np.sum((self.inflowvals[:,1]*dts)[np.where(self.inflowvals[:,0]<self.tend)])*self.inflows['mass'] # if available, rescale inflow mass to provided value
+            else:    
+                self.inflowvals[:,1] = self.inflowvals[:,1]/np.sum((self.inflowvals[:,1]*dts)[np.where(self.inflowvals[:,0]<self.tend)])*self.gasmass_init #if not provided, set inflow mass the same as initial gas mass
+            return vals[1]
         except Exception as e:
             print("File '%s' will not parse %s for model %s" % (self.SFH_file, e, self.name))
             self.sfh = None
@@ -170,11 +177,8 @@ class ChemModel:
         define inflow as function to look up nearest inflow rate value at any specified time
         '''
         try:
-            if self.inflows['mass']>0:
-                vals = find_nearest(self.inflowvals,t)/np.sum(self.inflowvals)*self.inflows['mass'] # if available, rescale inflow mass to provided value
-            else:    
-                vals = find_nearest(self.inflowvals,t)
-            return vals[1]
+            vals = find_nearest(self.inflowvals,t)
+            return vals[1] 
 
         except:
             print('No inflows yet for model %s'%(self.name))      
