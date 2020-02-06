@@ -62,7 +62,7 @@ def runModel(item):
     params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
     params['ssfr'] = params['sfr']/params['mstars']
 
-    paramsorder=['time','z','fg','mgas','mstars','mdust','mdust_diffuse',\
+    paramsorder=['time','fg','mgas','mstars','mdust','mdust_diffuse',\
                 'mdust_cloud','metallicity','dust_metals_ratio','sfr',\
                 'ssfr','dust_all','dust_stars','dust_ism','time_destroy',\
                 'time_fragment','time_gg_diffuse','time_gg_cloud','mgas_outflow',\

@@ -509,7 +509,7 @@ def gas_inandout(redshift,in_on,out_on,in_sfr,sfr,m,reduceout):
         gas_out = 0.
     else:
         gas_outflows= np.array(outflows(redshift,sfr, m))/reduceout
-        gas_out = gas_outflows[0]/reduceout
+        gas_out = gas_outflows[0]
  
     return gas_inf,gas_out,np.asarray(gas_outflows[1::])
 
