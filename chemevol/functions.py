@@ -469,8 +469,8 @@ def destroy_dust_frag_THEMIS(on,tau,gasmass,ssfr,md,f_c):
         mdust_des = 0
         t_des = 0
     else:
-        mdust_des = (1-f_c)*tau * md * ssfr/0.027 
-        t_des = md * (1-f_c) * mdust_des**-1
+        mdust_des = (1-f_c) * (1-0.1) * tau * md * ssfr/0.027  # (1-0.1) factor is to account for fragmentation not working on silicate grains
+        t_des = md * (1-f_c) * (1-0.1) * mdust_des**-1
 
     return mdust_des, t_des # in Msolar, Gyrs        
 
@@ -735,11 +735,12 @@ def recycle(t, dt, redshift, mstars, time, recycle_gas, recycle_dust, recycle_Z,
         ttest=tff_0
         idt=(np.abs(time-ttest-t)).argmin() #identify timestep that gas will be recycled
         factors=np.zeros(len(recycle_gas))
-
+        idtcurrent=(np.abs(time-t)).argmin()
         # spread out the recycling of this gas so they do not come in all at the same timestep but are rather smeared out over a range of steps 
         # (a discrete burst in outflow will not result in a discrete burst in recycling).
-        for ii in range(int(math.floor(idt/2)),min(idt*2,len(recycle_gas))):
-            factors[ii]= np.exp(-(time[ii]-time[idt])**2/ttest**2/4./2.)
+        for ii in range(int(math.floor(idt-(idt-idtcurrent)/2)),min(idt+(idt-idtcurrent)/2,len(recycle_gas))):
+            if time[ii]>t: # outflows need to be recycled after they are expelled 
+                factors[ii]= np.exp(-(time[ii]-time[idt])**2/ttest**2/4./2.)
 
         factors=factors/np.sum(factors) # normalise these factors so that mass is conserved
 
@@ -760,7 +761,7 @@ def recycle(t, dt, redshift, mstars, time, recycle_gas, recycle_dust, recycle_Z,
 
         for ii in range(int(math.floor(idt/2)),min(idt*2,len(recycle_gas))):
             recycle_gas[ii]+=factors[ii]*outflows[1]*dt*recycle_fraction_150
-            recycle_dust[ii]+=factors[ii]*outflows[1]*dt*mdust_out/gas_out*recycle_fraction_150
+            recycle_dust[ii]+=0. # dust in fast outflow components is destroyed by shocks 
             recycle_Z[ii]+=factors[ii]*outflows[1]*dt*metals_out/gas_out*recycle_fraction_150
     if np.isfinite(tff_300):
         ttest=tff_300
@@ -772,7 +773,7 @@ def recycle(t, dt, redshift, mstars, time, recycle_gas, recycle_dust, recycle_Z,
 
         for ii in range(int(math.floor(idt/2)),min(idt*2,len(recycle_gas))):
             recycle_gas[ii]+=factors[ii]*outflows[2]*dt*recycle_fraction_300
-            recycle_dust[ii]+=factors[ii]*outflows[2]*dt*mdust_out/gas_out*recycle_fraction_300
+            recycle_dust[ii]+=0. # dust in fast outflow components is destroyed by shocks 
             recycle_Z[ii]+=factors[ii]*outflows[2]*dt*metals_out/gas_out*recycle_fraction_300
             
     return recycle_gas, recycle_dust, recycle_Z
