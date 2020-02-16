@@ -75,7 +75,7 @@ for i in range(len(mastertable)):
 	if float(mastertable[i][8])==0:
 		dust_frag=False	
 	string="%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s,  %s,  %s, %s,  %s,  %s,  %s,  %s,  %s,  %s, %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s \n"%(name,\
-		mastertable[i][0], 0., 0., 0., mastertable[i][1], mastertable[i][2], 13.8, 0., 0, mastertable[i][3], dustsource, mastertable[i][4], True, mastertable[i][5],  dust_reduce, mastertable[i][6],\
+		mastertable[i][0], 0., 0., 0., mastertable[i][1], mastertable[i][2], 13.8, 1., 0, mastertable[i][3], dustsource, mastertable[i][4], True, mastertable[i][5],  dust_reduce, mastertable[i][6],\
 		dust_destroy, mastertable[i][7], dust_frag, mastertable[i][8],0.36, mastertable[i][9], mastertable[i][10], \
 		True, 0., 0., 1., 0., True, True, True, 1., True, 0.2, mastertable[i][11], mastertable[i][12], mastertable[i][13], mastertable[i][14], totyields, 'Z;O;N', '1.;0.435;0.055')
 	print(string)

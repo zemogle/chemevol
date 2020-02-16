@@ -32,7 +32,7 @@ from .lookups import find_nearest, find_yield, find_tot_yield, find_mass_loading
 
 logger = logging.Logger('chem')
 
-def extra_sfh_and_inflows(sfh, gamma):
+def extra_sfh_and_inflows(sfh, gamma, tstart):
     '''
     This extrapolates the SFH/SFE and inflows provided to start at 0.001Gyr
     with 100 extra steps between 0.001Gyr and the first non-zero
@@ -45,24 +45,26 @@ def extra_sfh_and_inflows(sfh, gamma):
     extrapolated SFH/SFE in this routine to the original input file
     '''
     #to start integral at t_0 regardless of when SFH file starts
-    t_0 = 1e-3 # we want it to start at 1e-3
-    tend_sfh = sfh[0][0] # 1st time array after 0
+    t_0 = tstart # we want it to start at 1e-3
+    sfh = sfh[np.where(sfh[:,0]>tstart)]
+    tend_sfh=sfh[1][0] # 1st time array after 0
+     
     # work out difference between t_0 and [1] entry in SFH
     dlogt = (np.log10(tend_sfh) - np.log10(t_0))/150.  # use larger number instead of 150 if the SFH at the start is not smooth
-    norm = sfh[0][1]*(1./np.exp(-1.*gamma*tend_sfh))
-    norm_inflow = sfh[0][2]*(1./np.exp(-1.*gamma*tend_sfh))
+    norm = sfh[1][1]*(1./np.exp(-1.*gamma*(tend_sfh-tstart)))
+    norm_inflow = sfh[1][2]*(1./np.exp(-1.*gamma*(tend_sfh-tstart)))
     t_new = t_0
     newSFH = []
     newinflows = []
     #create new array between 0.001 Gyr and start of SFH data
     while t_new < tend_sfh:
-        sfr_new = norm * np.exp(-1.*gamma*t_new)
-        inflow_new = norm_inflow * np.exp(-1.*gamma*t_new)
+        sfr_new = norm * np.exp(-1.*gamma*(t_new-tstart))
+        inflow_new = norm_inflow * np.exp(-1.*gamma*(t_new-tstart))
         newSFH.append([t_new,sfr_new])
         newinflows.append([t_new,inflow_new])
         t_new = 10.**(np.log10(t_new)+dlogt)
 
-    for i in range(len(sfh)-1):
+    for i in range(1,len(sfh)-1):
         newSFH.append([sfh[i+1][0],sfh[i+1][1]])
         newinflows.append([sfh[i+1][0],sfh[i+1][2]])   
     return newSFH[1::],newinflows[1::]
@@ -731,14 +733,14 @@ def recycle(t, dt, redshift, mstars, time, recycle_gas, recycle_dust, recycle_Z,
     recycle_fraction_0,recycle_fraction_150,recycle_fraction_300=[np.exp(-tff*escape_probability_perGyr) for tff in [tff_0,tff_150,tff_300]] 
     
     # for the lowest velocity component
+    idtcurrent=(np.abs(time-t)).argmin()
     if np.isfinite(tff_0):
         ttest=tff_0
         idt=(np.abs(time-ttest-t)).argmin() #identify timestep that gas will be recycled
         factors=np.zeros(len(recycle_gas))
-        idtcurrent=(np.abs(time-t)).argmin()
         # spread out the recycling of this gas so they do not come in all at the same timestep but are rather smeared out over a range of steps 
         # (a discrete burst in outflow will not result in a discrete burst in recycling).
-        for ii in range(int(math.floor(idt-(idt-idtcurrent)/2)),min(idt+(idt-idtcurrent)/2,len(recycle_gas))):
+        for ii in range(int(math.floor(idt-(idt-idtcurrent)/2)),int(min(idt+(idt-idtcurrent)/2,len(recycle_gas)))):
             if time[ii]>t: # outflows need to be recycled after they are expelled 
                 factors[ii]= np.exp(-(time[ii]-time[idt])**2/ttest**2/4./2.)
 
@@ -755,7 +757,7 @@ def recycle(t, dt, redshift, mstars, time, recycle_gas, recycle_dust, recycle_Z,
         ttest=tff_150
         idt=(np.abs(time-ttest-t)).argmin()
         factors=np.zeros(len(recycle_gas))
-        for ii in range(int(math.floor(idt/2)),min(idt*2,len(recycle_gas))):
+        for ii in range(int(math.floor(idt-(idt-idtcurrent)/2)),int(min(idt+(idt-idtcurrent)/2,len(recycle_gas)))):
             factors[ii]= np.exp(-(time[ii]-time[idt])**2/ttest**2/4./2.)
         factors=factors/np.sum(factors)    
 
@@ -767,7 +769,7 @@ def recycle(t, dt, redshift, mstars, time, recycle_gas, recycle_dust, recycle_Z,
         ttest=tff_300
         idt=(np.abs(time-ttest-t)).argmin()
         factors=np.zeros(len(recycle_gas))
-        for ii in range(int(math.floor(idt/2)),min(idt*2,len(recycle_gas))):
+        for ii in range(int(math.floor(idt-(idt-idtcurrent)/2)),int(min(idt+(idt-idtcurrent)/2,len(recycle_gas)))):
             factors[ii]= np.exp(-(time[ii]-time[idt])**2/ttest**2/4./2.)
         factors=factors/np.sum(factors)    
 

@@ -147,7 +147,7 @@ class ChemModel:
             sfh = vals*scale # converts time in Gyr and SFR in Msun/Gyr
             
             # extrapolates SFH back to 0.001Gyr using SFH file and power law (gamma)
-            final_sfh, final_inflows = extra_sfh_and_inflows(sfh, self.gamma)
+            final_sfh, final_inflows = extra_sfh_and_inflows(sfh, self.gamma, self.tstart)
             self.sfh = np.array(final_sfh)
             self.inflowvals= np.array(final_inflows)
             dts=[self.sfh[i+1,0]-self.sfh[i,0] for i in range(len(self.sfh[:,0])-1)]
