@@ -33,11 +33,11 @@ This sets all the unit tests for the code. To run: py.test tests.py
 import pytest
 import numpy as np
 from astropy.table import Table
-from functions import remnant_mass, destruction_timescale, destroy_dust, graingrowth, \
-                    grow_timescale, dust_masses_fresh, initial_mass_function_integral, \
-                    inflows, outflows_feldmann, ejected_gas_mass, astration, fresh_metals, \
+from chemevol.functions import remnant_mass, destruction_timescale, destroy_dust, graingrowth, \
+                    grow_timescale, initial_mass_function_integral, \
+                    outflows_feldmann, ejected_gas_mass, astration, \
                     ejected_dust_mass, imf_chab
-from lookups import lifetime, mass_yields, dust_mass_sn, find_nearest, \
+from chemevol.lookups import lifetime, dust_mass_sn, find_nearest, \
                     lookup_taum, lookup_fn
 
 dustchoice_all = {'sn' : True, 'lims' : True, 'gg':True}
@@ -106,28 +106,22 @@ class TestFunctions:
 
     def test_dust_graingrowth(self):
         dust_ism = graingrowth(1,500,1.02e10,1e9,0.07,3.765e8,0.5,0.6)[0]
-        assert  3.202e7 < dust_ism < 4.7e7
+        assert  3.202e7 < dust_ism < 9.5e7
 
     def test_outflow_feld(Self):
         # test feldmann outflow rate works as expected (sfr,mstar)
-        gas_outflow = outflows_feldmann(1.0,1e9)
+        gas_outflow = outflows_feldmann(0,1.0,1e9)[0]
         assert 8.18 < gas_outflow < 8.19
 
     def test_outflow_feld_high(Self):
         # test feldmann outflow rate works as expected (sfr,mstar)
         # for outer boundaries when 1e8-1e9
-        gas_outflow = outflows_feldmann(1,1e8)
+        gas_outflow = outflows_feldmann(0,1,1e8)[0]
         assert gas_outflow == 30
 
-    def test_outflow_feld_m(Self):
-        # test feldmann outflow rate works is zero (sfr,mstar)
-        # for outer boundaries when Mstar < 1e6
-        gas_outflow = outflows_feldmann(1.0,1e6)
-        assert gas_outflow == 0
-
-    def test_inflow_func(Self):
-       gas_inflow = inflows(1.0,1.5)
-       assert gas_inflow == 1.5
+    # def test_inflow_func(Self):
+    #    gas_inflow = inflows(1.0,1.5)
+    #    assert gas_inflow == 1.5
 
     def test_imf_integral_chab(self):
         unity = initial_mass_function_integral('Chab')
@@ -145,111 +139,111 @@ class TestFunctions:
         unity = initial_mass_function_integral('TopChab')
         assert 0.99 < unity < 1.09
 
-    def test_fresh_metals_lowmassa_lowmetals(self):
-        mass_yields = fresh_metals(1.,0.001)
-        assert mass_yields == 0
+    # def test_fresh_metals_lowmassa_lowmetals(self):
+    #     mass_yields = fresh_metals(1.,0.001)
+    #     assert mass_yields == 0
 
-    def test_fresh_metals_lowmassb_lowmetals(self):
-        mass_yields = fresh_metals(2.,0.001)
-        assert mass_yields == 0.01058
+    # def test_fresh_metals_lowmassb_lowmetals(self):
+    #     mass_yields = fresh_metals(2.,0.001)
+    #     assert mass_yields == 0.01058
 
-    def test_fresh_metals_midmass_lowmetals(self):
-        mass_yields = fresh_metals(30.,0.001)
-        assert mass_yields == 4.45
+    # def test_fresh_metals_midmass_lowmetals(self):
+    #     mass_yields = fresh_metals(30.,0.001)
+    #     assert mass_yields == 4.45
 
-    def test_fresh_metals_highmass_lowmetals(self):
-        mass_yields = fresh_metals(119,0.001)
-        assert mass_yields == 0
+    # def test_fresh_metals_highmass_lowmetals(self):
+    #     mass_yields = fresh_metals(119,0.001)
+    #     assert mass_yields == 0
 
-    def test_fresh_metals_lowmassa_highmetals(self):
-        mass_yields = fresh_metals(1.,0.02)
-        assert mass_yields == 0.00161
+    # def test_fresh_metals_lowmassa_highmetals(self):
+    #     mass_yields = fresh_metals(1.,0.02)
+    #     assert mass_yields == 0.00161
 
-    def test_fresh_metals_lowmassb_highmetals(self):
-        mass_yields = fresh_metals(2.,0.02)
-        assert mass_yields == 0.00788
+    # def test_fresh_metals_lowmassb_highmetals(self):
+    #     mass_yields = fresh_metals(2.,0.02)
+    #     assert mass_yields == 0.00788
 
-    def test_fresh_metals_midmass_highmetals(self):
-        mass_yields = fresh_metals(30.,0.02)
-        assert mass_yields == 4.48
+    # def test_fresh_metals_midmass_highmetals(self):
+    #     mass_yields = fresh_metals(30.,0.02)
+    #     assert mass_yields == 4.48
 
-    def test_fresh_metals_highmass_highmetals(self):
-        mass_yields = fresh_metals(119,0.02)
-        assert mass_yields == 9.39
+    # def test_fresh_metals_highmass_highmetals(self):
+    #     mass_yields = fresh_metals(119,0.02)
+    #     assert mass_yields == 9.39
 
-    def test_fresh_dust_mass_lowmass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,1.0,0.001)
-        assert dust_mass == 0
+    # def test_fresh_dust_mass_lowmass_lowmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,1.0,0.001)
+    #     assert dust_mass == 0
 
-    def test_fresh_dust_mass_midmass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,5.0,0.001)
-        assert 0.00577 < dust_mass < 0.005812
+    # def test_fresh_dust_mass_midmass_lowmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,5.0,0.001)
+    #     assert 0.00577 < dust_mass < 0.005812
 
-    def test_fresh_dust_mass_highmass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.001)
-        assert dust_mass == 1.0
+    # def test_fresh_dust_mass_highmass_lowmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.001)
+    #     assert dust_mass == 1.0
 
-    def test_fresh_dust_mass_highermass_lowmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,40.0,0.001)
-        assert dust_mass == 0.4
+    # def test_fresh_dust_mass_highermass_lowmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,40.0,0.001)
+    #     assert dust_mass == 0.4
 
-    def test_fresh_dust_mass_lowmass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,1.0,0.02)
-        assert  0.0002411 < dust_mass < 0.00024187
+    # def test_fresh_dust_mass_lowmass_highmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,1.0,0.02)
+    #     assert  0.0002411 < dust_mass < 0.00024187
 
-    def test_fresh_dust_mass_midmass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,2.0,0.02)
-        assert .001181 < dust_mass < 0.0011823
+    # def test_fresh_dust_mass_midmass_highmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,2.0,0.02)
+    #     assert .001181 < dust_mass < 0.0011823
 
-    def test_fresh_dust_mass_highmass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.02)
-        assert dust_mass == 1.0
+    # def test_fresh_dust_mass_highmass_highmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,30.0,0.02)
+    #     assert dust_mass == 1.0
 
-    def test_fresh_dust_mass_highermass_highmetals(self):
-        dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,40.0,0.02)
-        assert dust_mass == 0.4
+    # def test_fresh_dust_mass_highermass_highmetals(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_all,0.15,1.0,40.0,0.02)
+    #     assert dust_mass == 0.4
 
-    def test_fresh_metals_highmass_highmetals(self):
-        mass_yields = fresh_metals(119,0.02)
-        assert mass_yields == 9.39
+    # # def test_fresh_metals_highmass_highmetals(self):
+    # #     mass_yields = fresh_metals(119,0.02)
+    # #     assert mass_yields == 9.39
 
-    def test_fresh_dust_mass_lowmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,2.0,0.001)
-        assert dust_mass == 0
+    # def test_fresh_dust_mass_lowmass_lowmetals_no(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,2.0,0.001)
+    #     assert dust_mass == 0
 
-    def test_fresh_dust_mass_midmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_gg,0.15,1,8.0,0.001)
-        assert dust_mass == 0
+    # def test_fresh_dust_mass_midmass_lowmetals_no(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_gg,0.15,1,8.0,0.001)
+    #     assert dust_mass == 0
 
-    def test_fresh_dust_mass_highmass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_gg,0.15,1,30.0,0.001)
-        assert dust_mass == 0
+    # def test_fresh_dust_mass_highmass_lowmetals_no(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_gg,0.15,1,30.0,0.001)
+    #     assert dust_mass == 0
 
-    def test_fresh_dust_mass_highermass_lowmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,40.0,0.001)
-        assert dust_mass == 0.4
+    # def test_fresh_dust_mass_highermass_lowmetals_no(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,40.0,0.001)
+    #     assert dust_mass == 0.4
 
-    def test_fresh_dust_mass_lowmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_lims,0.15,1,1.0,0.02)
-        assert  .0002411 < dust_mass < .00024187
+    # def test_fresh_dust_mass_lowmass_highmetals_no(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_lims,0.15,1,1.0,0.02)
+    #     assert  .0002411 < dust_mass < .00024187
 
-    def test_fresh_dust_mass_midmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,2.0,0.02)
-        assert dust_mass  == 0
+    # def test_fresh_dust_mass_midmass_highmetals_no(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_sn,0.15,1,2.0,0.02)
+    #     assert dust_mass  == 0
 
-    def test_fresh_dust_mass_highmass_highmetals_no(self):
-        dust_mass = dust_masses_fresh(dustchoice_snlims,0.15,1,30.0,0.02)
-        assert dust_mass == 1.0
+    # def test_fresh_dust_mass_highmass_highmetals_no(self):
+    #     dust_mass = dust_masses_fresh(dustchoice_snlims,0.15,1,30.0,0.02)
+    #     assert dust_mass == 1.0
 
-    def test_freshdust_sn_only(self):
-        dustmass_low = dust_masses_fresh(dustchoice_sn,0.15, 1.0,4.9, 0.002)
-        dustmass_high = dust_masses_fresh(dustchoice_sn,0.15, 1.0,15, 0.002)
-        assert dustmass_low == 0 and dustmass_high == 0.5
+    # def test_freshdust_sn_only(self):
+    #     dustmass_low = dust_masses_fresh(dustchoice_sn,0.15, 1.0,4.9, 0.002)
+    #     dustmass_high = dust_masses_fresh(dustchoice_sn,0.15, 1.0,15, 0.002)
+    #     assert dustmass_low == 0 and dustmass_high == 0.5
 
-    def test_freshdust_lims_only_highmetals(self):
-        dustmass_low = dust_masses_fresh(dustchoice_lims,0.15, 1.0,4.9, 0.01)
-        dustmass_high = dust_masses_fresh(dustchoice_lims,0.15, 1.0,15, 0.01)
-        assert dustmass_low == 0.0049425 and dustmass_high == 0.0
+    # def test_freshdust_lims_only_highmetals(self):
+    #     dustmass_low = dust_masses_fresh(dustchoice_lims,0.15, 1.0,4.9, 0.01)
+    #     dustmass_high = dust_masses_fresh(dustchoice_lims,0.15, 1.0,15, 0.01)
+    #     assert dustmass_low == 0.0049425 and dustmass_high == 0.0
 '''
     def test_ejected_dust_mass(self):
         dustmass_all = ejected_dust_mass(dustchoice_all,1,5.0,10389385569.1, 7.70733489684e-06, 0.000166298678684,imf_chab)
@@ -281,15 +275,15 @@ class TestTables:
         assert lifetime[1][1] == 9.5
         assert lifetime[15][2] == 0.0026
 
-    def test_yields_return_by_mass(self):
-        assert mass_yields[1][1] == 0.
-        assert mass_yields[12][1] == 0.27
-        assert mass_yields[1][4] == 8.54e-4
-        assert mass_yields[20][3] == 41.6
-        assert mass_yields[1][6] == 1.12e-4
-        assert mass_yields[20][6] == 9.39
-        assert mass_yields[0][8] == 0
-        assert mass_yields[19][8] == 17.75
+    # def test_yields_return_by_mass(self):
+    #     assert mass_yields[1][1] == 0.
+    #     assert mass_yields[12][1] == 0.27
+    #     assert mass_yields[1][4] == 8.54e-4
+    #     assert mass_yields[20][3] == 41.6
+    #     assert mass_yields[1][6] == 1.12e-4
+    #     assert mass_yields[20][6] == 9.39
+    #     assert mass_yields[0][8] == 0
+    #     assert mass_yields[19][8] == 17.75
 
 class Testlookups:
     '''

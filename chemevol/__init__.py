@@ -1,1 +1,1 @@
-from .evolve import *
+from chemevol.evolve import *
