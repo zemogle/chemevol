@@ -286,47 +286,47 @@ for item in inits:
 
 	# write all the results to a dictionary
 	params = {'time' : all_results[:,0],
-        'z' : all_results[:,1],
-        'mgas' : all_results[:,2],
-        'mstars' : all_results[:,3],
-        'metallicity' : all_results[:,4],
-        'mdust' : all_results[:,5],
-        'dust_metals_ratio' : all_results[:,6],
-        'sfr' : all_results[:,7],
-        'dust_all' : all_results[:,8],
-        'dust_stars' : all_results[:,9],
-        'dust_ism' : all_results[:,10],
-        'dust_diff' : all_results[:,11],
-        'dust_cloud' : all_results[:,12],
-        'time_destroy' : all_results[:,13],
-        'time_fragment' : all_results[:,14],
-        'time_gg_diffuse' : all_results[:,15],
-        'time_gg_cloud' : all_results[:,16],
-        'mgas_outflow' : all_results[:,17],
-        'mgas_recycled' : all_results[:,18],
-        'mgas_inflow' : all_results[:,19],
-        'mgas_IGM' : all_results[:,20],
-        'mdust_IGM' : all_results[:,21],
-        'mdust_diffuse' : all_results[:,22],
-        'mdust_cloud' : all_results[:,23]}   
+	    'z' : all_results[:,1],
+	    'mgas' : all_results[:,2],
+	    'mstars' : all_results[:,3],
+	    'metallicity' : all_results[:,4],
+	    'mdust' : all_results[:,5],
+	    'dust_metals_ratio' : all_results[:,6],
+	    'sfr' : all_results[:,7],
+	    'dust_all' : all_results[:,8],
+	    'dust_stars' : all_results[:,9],
+	    'dust_ism' : all_results[:,10],
+	    'dust_diff' : all_results[:,11],
+	    'dust_cloud' : all_results[:,12],
+	    'time_destroy' : all_results[:,13],
+	    'time_fragment' : all_results[:,14],
+	    'time_gg_diffuse' : all_results[:,15],
+	    'time_gg_cloud' : all_results[:,16],
+	    'mgas_outflow' : all_results[:,17],
+	    'mgas_recycled' : all_results[:,18],
+	    'mgas_inflow' : all_results[:,19],
+	    'mgas_IGM' : all_results[:,20],
+	    'mdust_IGM' : all_results[:,21],
+	    'mdust_diffuse' : all_results[:,22],
+	    'mdust_cloud' : all_results[:,23]}   
 
-        #compute additional parameters           'dust_ism' : all_results[:,9],
-    params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
-    params['ssfr'] = params['sfr']/params['mstars']
-    
-    paramsorder=['time','z','fg','mgas','mstars','mdust','mdust_diffuse',\
-                'mdust_cloud','metallicity','dust_metals_ratio','sfr',\
-                'ssfr','dust_all','dust_stars','dust_ism','dust_diff','dust_cloud','time_destroy',\
-                'time_fragment','time_gg_diffuse','time_gg_cloud','mgas_outflow',\
-                'mgas_recycled','mgas_inflow','mgas_IGM','mdust_IGM']
+	#compute additional parameters           'dust_ism' : all_results[:,9],
+	params['fg'] = params['mgas']/(params['mgas']+params['mstars'])
+	params['ssfr'] = params['sfr']/params['mstars']
 
-    #properties for the isotypes specified in input
-    for iso,nameiso in enumerate(item['isotopes']):
-        Miso=all_results[:,24+iso]
-        params['M'+nameiso]=Miso
-        Miso_IGM=all_results[:,24+iso+len(item['isotopes'])]
-        params['M'+nameiso+'_IGM']=Miso_IGM
-        paramsorder+=['M'+nameiso,'M'+nameiso+'_IGM']
+	paramsorder=['time','z','fg','mgas','mstars','mdust','mdust_diffuse',\
+	            'mdust_cloud','metallicity','dust_metals_ratio','sfr',\
+	            'ssfr','dust_all','dust_stars','dust_ism','dust_diff','dust_cloud','time_destroy',\
+	            'time_fragment','time_gg_diffuse','time_gg_cloud','mgas_outflow',\
+	            'mgas_recycled','mgas_inflow','mgas_IGM','mdust_IGM']
+
+	#properties for the isotypes specified in input
+	for iso,nameiso in enumerate(item['isotopes']):
+	    Miso=all_results[:,24+iso]
+	    params['M'+nameiso]=Miso
+	    Miso_IGM=all_results[:,24+iso+len(item['isotopes'])]
+	    params['M'+nameiso+'_IGM']=Miso_IGM
+	    paramsorder+=['M'+nameiso,'M'+nameiso+'_IGM']
 
 	# write out to file based on 'name' identifier
 	name = item['name']
