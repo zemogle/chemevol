@@ -241,6 +241,8 @@ class ChemModel:
             recycle_dust = np.zeros(len(time))
             recycle_Z = np.zeros((len(time),nisotopes))
 
+            redshift_lookup = np.logspace(-3,2.5,100)
+            time_lookup = Planck12.age(redshift_lookup).value
             # TIME integral
             for item, t in enumerate(time[(time < self.tend) & (time>self.tstart)]):
                 dt = t - prev_t             # calculate  next time step
